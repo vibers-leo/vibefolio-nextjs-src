@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
       .select(`
         project_id, user_id, category_id, title, rendering_type, 
         thumbnail_url, views_count, likes_count, created_at, 
+        content_text, description,
         custom_data, allow_michelin_rating, allow_stickers, 
         allow_secret_comments, visibility, scheduled_at, audit_deadline, is_growth_requested
       `, { count: 'estimated' }) 

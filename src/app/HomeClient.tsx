@@ -114,7 +114,7 @@ function transformProjectToCard(proj: any): ImageDialogProps {
     },
     likes: proj.likes_count || proj.likes || 0,
     views: proj.views_count || proj.views || 0,
-    description: proj.content_text,
+    description: proj.content_text || proj.description || '',
     alt_description: proj.title,
     created_at: proj.created_at,
     width: 400,

@@ -1307,13 +1307,13 @@ export function ProjectDetailModalV2({
                 </div>
 
                 {/* 작가의 한마디 */}
-                {project.summary && (
+                {(project.summary || cData?.summary) && (
                   <div className="px-4 py-3 bg-gray-50 border-b border-gray-100">
                      <div className="flex items-start gap-2">
                         <FontAwesomeIcon icon={faUser} className="w-3 h-3 mt-1 text-gray-400" />
                         <div>
                            <p className="text-xs font-bold text-gray-700 mb-0.5">작가의 한마디</p>
-                           <p className="text-sm text-gray-800 leading-relaxed text-pretty">{project.summary}</p>
+                           <p className="text-sm text-gray-800 leading-relaxed text-pretty">{project.summary || cData?.summary}</p>
                         </div>
                      </div>
                   </div>
