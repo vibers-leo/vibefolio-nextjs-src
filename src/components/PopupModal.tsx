@@ -51,7 +51,7 @@ export function PopupModal() {
         .eq("is_visible", true)
         .order("created_at", { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) {
         // 데이터가 없으면 에러가 발생하므로 무시

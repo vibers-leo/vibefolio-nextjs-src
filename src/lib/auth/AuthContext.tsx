@@ -72,9 +72,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // 3. [Background] DB 상세 프로필 비동기 조회
         const { data: db, error } = await supabase
           .from('profiles')
-          .select('username, avatar_url, profile_image_url, role, interests, expertise, points')
+          .select('*') // Using * is actually safer against "column not found" in some cases if table exists, but can be heavy. However, let's select only what we use.
           .eq('id', u.id)
-          .single();
+          .maybeSingle();
 
         if (db && !error) {
           // 서비스 내부에서 설정한 이미지가 있는지 우선 확인

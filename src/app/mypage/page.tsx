@@ -108,7 +108,7 @@ export default function MyPage() {
       try {
         const { data: dbProfile } = await supabase
           .from('profiles')
-          .select('username, nickname, bio, cover_image_url, social_links, interests, is_public')
+          .select('username, bio')
           .eq('id', authUser.id)
           .single();
 
