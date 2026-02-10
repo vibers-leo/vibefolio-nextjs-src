@@ -131,15 +131,10 @@ export default function AdminProjectsPage() {
   }, []);
 
   useEffect(() => {
-    if (!adminLoading && !isAdmin) {
-      alert("관리자 권한이 필요합니다.");
-      router.push("/");
-      return;
-    }
     if (isAdmin) {
       loadProjects();
     }
-  }, [isAdmin, adminLoading, router, loadProjects]);
+  }, [isAdmin, loadProjects]);
 
   // 프로젝트 삭제
   const handleDelete = async (id: number) => {

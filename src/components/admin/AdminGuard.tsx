@@ -22,24 +22,30 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
     if (isAdmin) {
       // Context에서 이미 관리자로 판별됨
       setShowContent(true);
+      setDeniedEmail(null);
     } else {
       // Context가 관리자가 아니라고 할 때, 마지막으로 이메일 직접 체크 (Failsafe)
       const verifyFallback = async () => {
-         const { data: { user } } = await import("@/lib/supabase/client").then(m => m.supabase.auth.getUser());
-         const adminEmails = [
-           "juuuno@naver.com", 
-           "juuuno1116@gmail.com", 
-           "designd@designd.co.kr",
-           "designdlab@designdlab.co.kr",
-           "admin@vibefolio.net"
-         ];
-         
-         if (user?.email && adminEmails.includes(user.email)) {
-            setShowContent(true);
-         } else {
-            // 관리자가 아님 -> 거부 화면 표시 (디버깅용 이메일 노출)
-            setDeniedEmail(user?.email || "알 수 없음");
-            // router.replace("/"); // 기존 리다이렉트 제거
+         try {
+           const { data: { user: currentUser } } = await import("@/lib/supabase/client").then(m => m.supabase.auth.getUser());
+           const adminEmails = [
+             "juuuno@naver.com", 
+             "juuuno1116@gmail.com", 
+             "designd@designd.co.kr",
+             "designdlab@designdlab.co.kr",
+             "admin@vibefolio.net"
+           ];
+           
+           if (currentUser?.email && adminEmails.includes(currentUser.email)) {
+              setShowContent(true);
+              setDeniedEmail(null);
+           } else {
+              // 관리자가 아님 -> 거부 화면 표시 (디버깅용 이메일 노출)
+              setDeniedEmail(currentUser?.email || "로그인되지 않음");
+           }
+         } catch (err) {
+           console.error("Admin verification fallback error:", err);
+           setDeniedEmail("시스템 오류");
          }
       };
       

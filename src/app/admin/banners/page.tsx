@@ -136,15 +136,11 @@ export default function AdminBannersPage() {
   };
 
   useEffect(() => {
-    if (!adminLoading && !isAdmin) {
-      router.push("/");
-      return;
-    }
     if (isAdmin) {
       loadBanners();
       loadPromotedItems();
     }
-  }, [isAdmin, adminLoading, router]);
+  }, [isAdmin]);
 
   const handleOpenModal = (banner?: Banner) => {
     if (banner) {

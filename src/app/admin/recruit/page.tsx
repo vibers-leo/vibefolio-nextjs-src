@@ -156,15 +156,10 @@ export default function AdminRecruitPage() {
   };
 
   useEffect(() => {
-    if (!adminLoading && !isAdmin) {
-      alert("관리자 권한이 필요합니다.");
-      router.push("/");
-      return;
-    }
     if (isAdmin) {
       loadItems();
     }
-  }, [isAdmin, adminLoading, router]);
+  }, [isAdmin]);
 
   // 수동 크롤링 트리거
   const handleManualCrawl = async () => {
