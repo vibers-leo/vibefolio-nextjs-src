@@ -100,7 +100,7 @@ export default function MyEvaluationsPage() {
         // Filter projects where is_growth_requested is true (or check custom_data)
         const { data: projectsData, error: projectsError } = await supabase
           .from('Project')
-          .select('id, title, thumbnail_url, created_at, views, likes, custom_data')
+          .select('project_id, title, thumbnail_url, created_at, views_count, likes_count, custom_data')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
         
@@ -115,12 +115,12 @@ export default function MyEvaluationsPage() {
           .map((p: any) => {
              const cData = typeof p.custom_data === 'string' ? JSON.parse(p.custom_data) : p.custom_data;
              return {
-               id: String(p.id),
+               id: String(p.project_id),
                title: p.title,
                thumbnail_url: p.thumbnail_url || '/placeholder.jpg',
                created_at: p.created_at,
-               views: p.views || 0,
-               likes: p.likes || 0,
+               views: p.views_count || 0,
+               likes: p.likes_count || 0,
                is_audit_mode: !!cData?.audit_config
              };
           });
