@@ -191,7 +191,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       "juuuno1116@gmail.com", 
       "designd@designd.co.kr", 
       "designdlab@designdlab.co.kr", 
-      "admin@vibefolio.net"
+      "admin@vibefolio.net",
+      "duscontactus@gmail.com"
     ];
     const isMatched = !!(user?.email && adminEmails.includes(user.email)) || userProfile?.role === "admin";
     
