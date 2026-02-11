@@ -187,7 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ====== 권한 체크 & 메모이제이션 ======
   const isAdminUser = React.useMemo(() => {
-    const isMatched = isAdminEmail(user?.email) || userProfile?.role === "admin";
+    const isMatched = isAdminEmail(user) || userProfile?.role === "admin";
     
     // 원칙에 따라 로그가 필요할 때만 출력
     if (user && userProfile) {

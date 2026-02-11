@@ -27,7 +27,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
           const { supabase } = await import("@/lib/supabase/client");
           const { data: { user } } = await supabase.auth.getUser();
 
-          if (isAdminEmail(user?.email)) {
+          if (isAdminEmail(user)) {
             setShowContent(true);
             setDeniedEmail(null);
           } else {

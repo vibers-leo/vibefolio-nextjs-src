@@ -7,7 +7,17 @@ export const ADMIN_EMAILS = [
   "duscontactus@gmail.com"
 ];
 
-export const isAdminEmail = (email?: string | null) => {
+export const isAdminEmail = (userOrEmail?: any) => {
+  if (!userOrEmail) return false;
+  
+  // If it's a string (email)
+  if (typeof userOrEmail === 'string') {
+    return ADMIN_EMAILS.includes(userOrEmail.toLowerCase());
+  }
+  
+  // If it's a Supabase User object
+  const email = userOrEmail.email || userOrEmail.user_metadata?.email;
   if (!email) return false;
+  
   return ADMIN_EMAILS.includes(email.toLowerCase());
 };
