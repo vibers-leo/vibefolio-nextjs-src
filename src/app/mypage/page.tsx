@@ -195,11 +195,10 @@ export default function MyPage() {
                 } 
             }
           })));
-          
         } else if (activeTab === 'likes') {
           const { data } = await supabase
             .from('Like')
-            .select('*, Project(*)')
+            .select('*, Project(project_id, title, thumbnail_url, views_count, likes_count)')
             .eq('user_id', userId)
             .order('created_at', { ascending: false }) as any;
           
@@ -237,7 +236,7 @@ export default function MyPage() {
             // 첫 번째 컬렉션의 아이템 로드
             const { data: items } = await supabase
               .from('CollectionItem')
-              .select('*, Project(*)')
+              .select('*, Project(project_id, title, thumbnail_url, views_count, likes_count)')
               .eq('collection_id', firstId)
               .order('added_at', { ascending: false }) as any;
             
@@ -281,7 +280,6 @@ export default function MyPage() {
     loadData();
   }, [userId, activeTab, initialized, userProfile]);
 
-  const cn = (...classes: any[]) => classes.filter(Boolean).join(' ');
 
   // 3. 컬렉션 선택 변경 시 아이템 로드
   const handleCollectionChange = async (collectionId: string) => {
@@ -293,7 +291,7 @@ export default function MyPage() {
     try {
       const { data: items } = await supabase
         .from('CollectionItem')
-        .select('*, Project(*)')
+        .select('*, Project(project_id, title, thumbnail_url, views_count, likes_count)')
         .eq('collection_id', collectionId)
         .order('added_at', { ascending: false }) as any;
       

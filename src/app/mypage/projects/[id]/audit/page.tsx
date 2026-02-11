@@ -55,17 +55,15 @@ export default function AuditReportPage() {
         
         setProject({ ...projectData, custom_data: customData });
 
-        // 2. Fetch All Ratings
-        const { data: ratingData } = await (supabase
-          .from('ProjectRating') as any)
+        const { data: ratingData } = await (supabase as any)
+          .from('ProjectRating')
           .select('*')
           .eq('project_id', Number(projectId));
         
         setRatings(ratingData || []);
 
-        // 3. Fetch All Polls
-        const { data: pollData } = await (supabase
-          .from('ProjectPoll') as any)
+        const { data: pollData } = await (supabase as any)
+          .from('ProjectPoll')
           .select('*')
           .eq('project_id', Number(projectId));
         
@@ -166,7 +164,7 @@ export default function AuditReportPage() {
                <span className="px-3 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded-full text-[10px] font-black tracking-widest uppercase">
                   V-Audit Insights
                </span>
-               <span className="text-slate-600 font-bold text-[10px]">VER. {project?.id?.slice(0, 8)}</span>
+               <span className="text-slate-600 font-bold text-[10px]">VER. {project?.project_id?.toString().slice(0, 8)}</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">{project?.title}</h1>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

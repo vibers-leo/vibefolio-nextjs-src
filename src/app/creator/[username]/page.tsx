@@ -104,10 +104,9 @@ export default function CreatorProfilePage() {
           socialLinks: (userData as any).social_links || {},
         });
 
-        // 해당 사용자의 프로젝트 가져오기
         const { data: projectsData, error: projectsError } = await supabase
           .from('Project')
-          .select('*')
+          .select('project_id, title, thumbnail_url, likes_count, views_count, created_at, content_text, rendering_type')
           .eq('user_id', userData.id)
           .order('created_at', { ascending: false });
 

@@ -4,6 +4,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback, use
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
+import { isAdminEmail } from "./admins";
 
 interface UserProfile {
   username: string;
@@ -186,15 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ====== 권한 체크 & 메모이제이션 ======
   const isAdminUser = React.useMemo(() => {
-    const adminEmails = [
-      "juuuno@naver.com", 
-      "juuuno1116@gmail.com", 
-      "designd@designd.co.kr", 
-      "designdlab@designdlab.co.kr", 
-      "admin@vibefolio.net",
-      "duscontactus@gmail.com"
-    ];
-    const isMatched = !!(user?.email && adminEmails.includes(user.email)) || userProfile?.role === "admin";
+    const isMatched = isAdminEmail(user?.email) || userProfile?.role === "admin";
     
     // 원칙에 따라 로그가 필요할 때만 출력
     if (user && userProfile) {

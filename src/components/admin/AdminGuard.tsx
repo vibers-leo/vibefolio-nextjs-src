@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAdmin } from "@/hooks/useAdmin";
 import { Loader2, ShieldAlert } from "lucide-react";
+import { isAdminEmail } from "@/lib/auth/admins";
 
 export function AdminGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -26,16 +27,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
           const { supabase } = await import("@/lib/supabase/client");
           const { data: { user } } = await supabase.auth.getUser();
 
-          const adminEmails = [
-            "juuuno@naver.com",
-            "juuuno1116@gmail.com",
-            "designd@designd.co.kr",
-            "designdlab@designdlab.co.kr",
-            "admin@vibefolio.net",
-            "duscontactus@gmail.com"
-          ];
-
-          if (user?.email && adminEmails.includes(user.email)) {
+          if (isAdminEmail(user?.email)) {
             setShowContent(true);
             setDeniedEmail(null);
           } else {

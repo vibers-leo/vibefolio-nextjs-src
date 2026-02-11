@@ -8,6 +8,7 @@ import { createClient } from '@/lib/supabase/server';
 import { GENRE_TO_CATEGORY_ID } from '@/lib/constants';
 
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { isAdminEmail } from '@/lib/auth/admins';
 
 export async function GET(
   request: NextRequest,
@@ -86,7 +87,7 @@ export async function GET(
     // 5. Update Views (Admin)
     await supabaseAdmin
       .from('Project')
-      .update({ views: (data.views || 0) + 1 })
+      .update({ views_count: (data.views_count || 0) + 1 })
       .eq('project_id', id);
 
     return NextResponse.json({ project: data });
@@ -99,14 +100,7 @@ export async function GET(
   }
 }
 
-// ADMIN_EMAILS preserved
-const ADMIN_EMAILS = [
-  "juuuno@naver.com", 
-  "juuuno1116@gmail.com", 
-  "designd@designd.co.kr", 
-  "designdlab@designdlab.co.kr", 
-  "admin@vibefolio.net"
-];
+// ADMIN_EMAILS handled by isAdminEmail utility
 
 export async function PUT(
   request: NextRequest,
@@ -159,10 +153,10 @@ export async function PUT(
     }
 
     // 2. 권한 확인 (관리자 또는 프로젝트 소유자)
-    const isAdminEmail = authenticatedUser.email && ADMIN_EMAILS.includes(authenticatedUser.email);
+    const isAdminEmailUser = isAdminEmail(authenticatedUser.email);
     let isDbAdmin = false;
     
-    if (!isAdminEmail) {
+    if (!isAdminEmailUser) {
       const { data: profile } = await supabaseAdmin
         .from('profiles')
         .select('role')
@@ -171,7 +165,7 @@ export async function PUT(
       isDbAdmin = profile?.role === 'admin';
     }
 
-    const isAuthorizedAdmin = isAdminEmail || isDbAdmin;
+    const isAuthorizedAdmin = isAdminEmailUser || isDbAdmin;
 
     // 프로젝트 소유자 확인 및 기존 데이터 조회 (Merge용)
     const { data: existingProject, error: fetchError } = await (supabaseAdmin as any)
@@ -371,13 +365,13 @@ export async function DELETE(
     }
 
     // 2. 권한 확인
-    const isAdminEmail = authenticatedUser.email && ADMIN_EMAILS.includes(authenticatedUser.email);
+    const isAdminEmailUser = isAdminEmail(authenticatedUser.email);
     let isDbAdmin = false;
-    if (!isAdminEmail) {
+    if (!isAdminEmailUser) {
       const { data: profile } = await supabaseAdmin.from('profiles').select('role').eq('id', authenticatedUser.id).single();
       isDbAdmin = profile?.role === 'admin';
     }
-    const isAuthorizedAdmin = isAdminEmail || isDbAdmin;
+    const isAuthorizedAdmin = isAdminEmailUser || isDbAdmin;
 
     // 프로젝트 조회
     const { data: project, error: fetchError } = await (supabaseAdmin as any)

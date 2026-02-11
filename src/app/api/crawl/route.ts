@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { crawlAll } from '@/lib/crawlers/crawler';
 import { createClient } from '@supabase/supabase-js';
+import { isAdminEmail } from '@/lib/auth/admins';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -40,12 +41,7 @@ export async function GET(request: NextRequest) {
   // 2. 관리자 권한 확인 (세션 체크)
   const { data: { user } } = await supabaseAdmin.auth.getUser(authHeader?.replace('Bearer ', '') || '');
   
-  // 관리자 권한 확인 로직 (이메일 등)
-  const isAdmin = user && [
-    "juuuno@naver.com", 
-    "juuuno1116@gmail.com", 
-    "admin@vibefolio.net"
-  ].includes(user.email || '');
+  const isAdmin = isAdminEmail(user?.email);
 
   if (isAdmin) {
     return getCrawlStatus();
@@ -64,11 +60,7 @@ export async function POST(request: NextRequest) {
   // 권한 확인
   const isCronRequest = cronSecret && authHeader === `Bearer ${cronSecret}`;
   const { data: { user } } = await supabaseAdmin.auth.getUser(authHeader?.replace('Bearer ', '') || '');
-  const isAdmin = user && [
-    "juuuno@naver.com", 
-    "juuuno1116@gmail.com", 
-    "admin@vibefolio.net"
-  ].includes(user.email || '');
+  const isAdmin = isAdminEmail(user?.email);
 
   if (!isCronRequest && !isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });

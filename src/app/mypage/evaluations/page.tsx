@@ -67,32 +67,39 @@ export default function MyEvaluationsPage() {
         setCurrentUserId(user.id);
 
         // 1. Fetch ratings I WROTE
-        const { data: ratingsData, error: ratingsError } = await (supabase as any)
+        const { data: rawRatings, error: ratingsError } = await (supabase as any)
           .from('ProjectRating')
-          .select(`
-            *,
-            Project (
-              project_id,
-              title,
-              thumbnail_url,
-              user_id
-            )
-          `)
+          .select('*')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
         if (ratingsError) throw ratingsError;
 
-        const mappedEvaluations = (ratingsData || []).map((r: any) => ({
-          rating_id: String(r.id),
-          project_id: String(r.project_id),
-          project_title: r.Project?.title || '제목 없음',
-          thumbnail_url: r.Project?.thumbnail_url || '/placeholder.jpg',
-          score: r.score || 0,
-          comment: r.proposal || r.comment || '',
-          created_at: r.created_at,
-          project_owner_id: String(r.Project?.user_id || ''),
-        }));
+        let mappedEvaluations: any[] = [];
+        if (rawRatings && rawRatings.length > 0) {
+          const projectIds = [...new Set(rawRatings.map((r: any) => r.project_id))] as number[];
+          const { data: projectsData } = await supabase
+            .from('Project')
+            .select('project_id, title, thumbnail_url, user_id')
+            .in('project_id', projectIds);
+
+          const projectMap = new Map();
+          projectsData?.forEach((p: any) => projectMap.set(String(p.project_id), p));
+
+          mappedEvaluations = rawRatings.map((r: any) => {
+            const project = projectMap.get(String(r.project_id));
+            return {
+              rating_id: String(r.id),
+              project_id: String(r.project_id),
+              project_title: project?.title || '제목 없음',
+              thumbnail_url: project?.thumbnail_url || '/placeholder.jpg',
+              score: r.score || 0,
+              comment: r.proposal || r.comment || '',
+              created_at: r.created_at,
+              project_owner_id: String(project?.user_id || ''),
+            };
+          });
+        }
 
         setEvaluations(mappedEvaluations);
 

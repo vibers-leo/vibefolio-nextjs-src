@@ -102,17 +102,17 @@ export default function AdminPage() {
           { data: projects },
           { data: recentInqs }
         ] = await Promise.all([
-          supabase.from('Project').select('*', { count: 'exact', head: true }),
-          supabase.from('profiles').select('*', { count: 'exact', head: true }),
-          supabase.from('notices').select('*', { count: 'exact', head: true }),
-          supabase.from('inquiries').select('*', { count: 'exact', head: true }),
-          supabase.from('recruit_items').select('*', { count: 'exact', head: true }),
-          supabase.from('banners').select('*', { count: 'exact', head: true }),
-          supabase.from('faqs').select('*', { count: 'exact', head: true }),
-          supabase.from('notices').select('*', { count: 'exact', head: true }).eq('is_popup', true),
-          (supabase as any).from('ProjectRating').select('*', { count: 'exact', head: true }),
-          supabase.from('Project').select('*').order('created_at', { ascending: false }).limit(5),
-          supabase.from('inquiries').select('*').order('created_at', { ascending: false }).limit(5)
+          supabase.from('Project').select('project_id', { count: 'exact', head: true }),
+          supabase.from('profiles').select('id', { count: 'exact', head: true }),
+          supabase.from('notices').select('id', { count: 'exact', head: true }),
+          supabase.from('inquiries').select('id', { count: 'exact', head: true }),
+          supabase.from('recruit_items').select('id', { count: 'exact', head: true }),
+          supabase.from('banners').select('id', { count: 'exact', head: true }),
+          supabase.from('faqs').select('id', { count: 'exact', head: true }),
+          supabase.from('notices').select('id', { count: 'exact', head: true }).eq('is_popup', true),
+          (supabase as any).from('ProjectRating').select('id', { count: 'exact', head: true }),
+          supabase.from('Project').select('project_id, title, thumbnail_url, created_at').order('created_at', { ascending: false }).limit(5),
+          supabase.from('inquiries').select('id, title, created_at').order('created_at', { ascending: false }).limit(5)
         ]);
 
         setRecentInquiries(recentInqs || []);
@@ -146,7 +146,7 @@ export default function AdminPage() {
             fetchPromise: Promise.all([
               (supabase as any).from('site_stats').select('visits').eq('date', dateStr).maybeSingle(),
               supabase.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', queryDateStart).lte('created_at', queryDateEnd),
-              supabase.from('Project').select('*', { count: 'exact', head: true }).gte('created_at', queryDateStart).lte('created_at', queryDateEnd),
+              supabase.from('Project').select('project_id', { count: 'exact', head: true }).gte('created_at', queryDateStart).lte('created_at', queryDateEnd),
               supabase.from('recruit_items').select('*', { count: 'exact', head: true }).gte('created_at', queryDateStart).lte('created_at', queryDateEnd),
             ])
           };
@@ -184,7 +184,7 @@ export default function AdminPage() {
         
         const { count: lastWeekCount } = await supabase
           .from('Project')
-          .select('*', { count: 'exact', head: true })
+          .select('project_id', { count: 'exact', head: true })
           .gte('created_at', prevWeekStart.toISOString())
           .lt('created_at', prevWeekEnd.toISOString());
 
