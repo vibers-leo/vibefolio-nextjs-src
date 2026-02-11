@@ -12,12 +12,19 @@ export const isAdminEmail = (userOrEmail?: any) => {
   
   // If it's a string (email)
   if (typeof userOrEmail === 'string') {
-    return ADMIN_EMAILS.includes(userOrEmail.toLowerCase());
+    const result = ADMIN_EMAILS.includes(userOrEmail.toLowerCase());
+    console.log(`[AdminCheck] string: ${userOrEmail} -> ${result}`);
+    return result;
   }
   
   // If it's a Supabase User object
   const email = userOrEmail.email || userOrEmail.user_metadata?.email;
-  if (!email) return false;
+  if (!email) {
+    console.log(`[AdminCheck] No email found in user object`, userOrEmail);
+    return false;
+  }
   
-  return ADMIN_EMAILS.includes(email.toLowerCase());
+  const result = ADMIN_EMAILS.includes(email.toLowerCase());
+  console.log(`[AdminCheck] object email: ${email} -> ${result}`);
+  return result;
 };

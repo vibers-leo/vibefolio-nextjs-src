@@ -13,28 +13,31 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   const [deniedEmail, setDeniedEmail] = useState<string | null>(null);
 
   useEffect(() => {
-    // 로딩 중이면 체크를 미룹니다.
+    console.log("[AdminGuard] Check:", { isAdmin, isLoading, showContent });
     if (isLoading) return;
 
     if (isAdmin) {
-      // 이미 관리자로 확인됨
+      console.log("[AdminGuard] Verified via Hook");
       setShowContent(true);
       setDeniedEmail(null);
     } else {
-      // 관리자가 아닐 경우, 이메일 기반 최종 확인 (DB 동기화 지연 방지)
       const verifyFinal = async () => {
+        console.log("[AdminGuard] Falling back to verifyFinal");
         try {
           const { supabase } = await import("@/lib/supabase/client");
           const { data: { user } } = await supabase.auth.getUser();
+          console.log("[AdminGuard] verifyFinal user:", user?.email);
 
           if (isAdminEmail(user)) {
+            console.log("[AdminGuard] verifyFinal -> Access Granted");
             setShowContent(true);
             setDeniedEmail(null);
           } else {
+            console.log("[AdminGuard] verifyFinal -> Access Denied");
             setDeniedEmail(user?.email || "알 수 없는 계정");
           }
         } catch (err) {
-          console.error("Admin verification error:", err);
+          console.error("[AdminGuard] verifyFinal error:", err);
           setDeniedEmail("시스템 오류가 발생했습니다.");
         }
       };

@@ -189,9 +189,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const isAdminUser = React.useMemo(() => {
     const isMatched = isAdminEmail(user) || userProfile?.role === "admin";
     
-    // 원칙에 따라 로그가 필요할 때만 출력
     if (user && userProfile) {
-      // console.log(`[Auth] Determined: ${isMatched ? 'ADMIN' : 'USER'} (${user.email})`);
+       console.log(`[Auth] Determined: ${isMatched ? 'ADMIN' : 'USER'} (${user.email})`, { role: userProfile.role });
     }
 
     return isMatched;
