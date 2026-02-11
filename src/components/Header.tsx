@@ -266,7 +266,7 @@ export function Header({
                              <FontAwesomeIcon icon={faChartSimple} className="mr-2 h-4 w-4" /> 내 피드백
                            </button>
                            {isAdmin && (
-                             <button onClick={() => router.push('/admin')} className="w-full text-left px-2 py-2 mt-1 rounded-lg cursor-pointer text-indigo-600 bg-indigo-50 hover:bg-indigo-100 text-sm font-bold flex items-center">
+                             <button onClick={() => { console.log('Admin Center Clicked'); router.push('/admin'); }} className="w-full text-left px-2 py-2 mt-1 rounded-lg cursor-pointer text-indigo-600 bg-indigo-50 hover:bg-indigo-100 text-sm font-bold flex items-center">
                                 <FontAwesomeIcon icon={faColumns} className="mr-2 h-4 w-4" /> 관리자 센터
                              </button>
                            )}
