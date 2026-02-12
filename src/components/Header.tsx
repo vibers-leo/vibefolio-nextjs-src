@@ -85,7 +85,7 @@ export function Header({
           body: JSON.stringify({ query }),
         }).catch(err => console.error("Log error:", err));
 
-        router.push(`/?q=${encodeURIComponent(query)}`);
+        router.push(`/search?q=${encodeURIComponent(query)}`);
         setIsSearchOpen(false);
         target.value = '';
       }
@@ -99,7 +99,7 @@ export function Header({
       body: JSON.stringify({ query }),
     }).catch(err => console.error("Log error:", err));
 
-    router.push(`/?q=${encodeURIComponent(query)}`);
+    router.push(`/search?q=${encodeURIComponent(query)}`);
     setIsSearchOpen(false);
   };
 

@@ -168,9 +168,12 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
   const [userInterests, setUserInterests] = useState<{ genres: string[]; fields: string[] } | null>(null);
   const [usePersonalized, setUsePersonalized] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
-  
+
   // Ref for checking loading status without triggering re-memoization of loadProjects
   const isFetchingRef = React.useRef(false);
+
+  // Intersection Observer를 위한 센티넬 요소 참조
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
   
   // 검색/필터가 변경되면 SSR 데이터를 무시하고 새로 로드
   const [initialDataUsed, setInitialDataUsed] = useState(!searchQuery && selectedCategory === 'all');
@@ -378,32 +381,36 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
     }
   };
 
-  // 무한 스크롤
+  // 무한 스크롤 - Intersection Observer 사용
   useEffect(() => {
-    let ticking = false;
+    if (!sentinelRef.current) return;
+    if (!hasMore || loading) return;
 
-    const handleScroll = () => {
-      if (isFetchingRef.current || ticking) return;
-      
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-            if (
-              window.innerHeight + window.scrollY >= document.body.offsetHeight - 500 &&
-              !loading &&
-              hasMore
-            ) {
-              setLoadingMore(true);
-              setPage(prev => prev + 1);
-              loadProjects(page + 1).then(() => setLoadingMore(false));
-            }
-            ticking = false;
-        });
-        ticking = true;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && !isFetchingRef.current) {
+          isFetchingRef.current = true;
+          setLoadingMore(true);
+          setPage(prev => prev + 1);
+          loadProjects(page + 1).then(() => {
+            setLoadingMore(false);
+            isFetchingRef.current = false;
+          });
+        }
+      },
+      {
+        root: null, // viewport 기준
+        rootMargin: '200px', // 화면 하단 200px 전에 미리 로드
+        threshold: 0.1, // 10%만 보여도 트리거
       }
+    );
+
+    observer.observe(sentinelRef.current);
+
+    return () => {
+      observer.disconnect();
     };
-    
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, [loading, hasMore, page, loadProjects]);
 
   return (
@@ -506,20 +513,35 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
 
             {/* 프로젝트 리스트 (Grid Layout) - 한 줄에 최대 4개 */}
             {sortedProjects.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-12 gap-x-6">
-                {sortedProjects.map((project, index) => (
-                  <div key={project.id} className="w-full">
-                    <ImageCard
-                      onClick={() => handleProjectClick(project)}
-                      props={project}
-                      priority={index < 8}
-                    />
-                  </div>
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-12 gap-x-6">
+                  {sortedProjects.map((project, index) => (
+                    <div key={project.id} className="w-full">
+                      <ImageCard
+                        onClick={() => handleProjectClick(project)}
+                        props={project}
+                        priority={index < 8}
+                      />
+                    </div>
+                  ))}
+                </div>
+
+                {/* 무한 스크롤 센티넬 & 로딩 스피너 */}
+                <div ref={sentinelRef} className="w-full py-12 flex items-center justify-center">
+                  {loadingMore && (
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="w-8 h-8 border-3 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+                      <p className="text-sm text-gray-500 font-medium">더 많은 프로젝트 불러오는 중...</p>
+                    </div>
+                  )}
+                  {!hasMore && sortedProjects.length > 0 && (
+                    <p className="text-sm text-gray-400">모든 프로젝트를 불러왔습니다 ✨</p>
+                  )}
+                </div>
+              </>
             ) : (
                !loading && (
-                 <EmptyState 
+                 <EmptyState
                    icon="search"
                    title={searchQuery ? "검색 결과가 없습니다" : "등록된 프로젝트가 없습니다"}
                    description={searchQuery ? `'${searchQuery}'에 대한 결과를 찾을 수 없습니다.` : "가장 먼저 프로젝트를 등록해보세요!"}
@@ -528,7 +550,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
                  />
                )
             )}
-            
+
             {loading && <ProjectGridSkeleton count={10} />}
         </div>
       </main>

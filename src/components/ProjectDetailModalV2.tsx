@@ -259,7 +259,7 @@ export function ProjectDetailModalV2({
 
     // 초기값 세팅
 
-    setViewsCount(project.views || 0);
+    setViewsCount(project.views_count || 0);
 
     const checkUserAndFetchData = async () => {
       // 1. 세션 및 사용자 정보
@@ -286,7 +286,7 @@ export function ProjectDetailModalV2({
       const { data: commentsData, error: commentsError } = await supabase
         .from('Comment')
         .select(`
-          id,
+          comment_id,
           content,
           created_at,
           user_id,
@@ -298,7 +298,7 @@ export function ProjectDetailModalV2({
       if (commentsData) {
         // 기존 상태 타입에 맞춰 매핑
         const mappedComments = commentsData.map((c: any) => ({
-          comment_id: c.id,
+          comment_id: c.comment_id,
           user_id: c.user_id,
           user_name: c.user?.username || 'Unknown',
           user_image: c.user?.profile_image_url || null,
@@ -948,14 +948,18 @@ export function ProjectDetailModalV2({
               </div>
 
               {/* 작성자 정보 */}
-              <div className="px-4 py-4 border-t border-gray-100 flex flex-col items-center">
-                <Avatar className="w-16 h-16 border-2 border-gray-200 mb-2">
+              <button
+                onClick={() => { window.location.href = `/creator/${project.user.username}`; }}
+                className="px-4 py-4 border-t border-gray-100 flex flex-col items-center w-full hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                <Avatar className="w-16 h-16 border-2 border-gray-200 mb-2 group-hover:border-green-500 transition-colors">
                   <AvatarImage src={project.user.profile_image.large} />
                   <AvatarFallback><FontAwesomeIcon icon={faUser} className="w-6 h-6" /></AvatarFallback>
                 </Avatar>
-                <p className="font-bold text-base">{project.user.username}</p>
+                <p className="font-bold text-base hover:text-green-600 transition-colors">{project.user.username}</p>
                 <p className="text-sm text-gray-500 mb-4 text-center">{authorBio}</p>
-              </div>
+                <span className="text-xs text-green-600 font-medium">프로필 보기 →</span>
+              </button>
 
               {/* Mobile Feedback Integration Section */}
               {isFeedbackRequested && ((project as any).allow_michelin_rating || (project as any).allow_stickers) && (
@@ -1234,7 +1238,44 @@ export function ProjectDetailModalV2({
                         {stripHtml(project.description)}
                      </div>
                   )}
-                  
+
+                  {/* 관련 프로젝트 섹션 (데스크톱) */}
+                  {otherProjects.length > 0 && (
+                    <div className="w-full max-w-5xl mt-16 mb-8">
+                      <div className="border-t border-gray-100 pt-12">
+                        <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                          {otherProjectsTitle}
+                          <span className="text-sm font-normal text-gray-400">({otherProjects.length})</span>
+                        </h3>
+                        <div className="grid grid-cols-4 gap-6">
+                          {otherProjects.map((p) => (
+                            <a
+                              key={p.project_id}
+                              href={`/project/${p.project_id}`}
+                              className="block group"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                window.location.href = `/project/${p.project_id}`;
+                              }}
+                            >
+                              <div className="aspect-square rounded-xl overflow-hidden bg-gray-100 mb-3 shadow-sm ring-1 ring-gray-100 group-hover:ring-green-500 transition-all">
+                                <OptimizedImage
+                                  src={p.thumbnail_url || '/placeholder.jpg'}
+                                  alt={p.title}
+                                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                  width={400}
+                                  height={400}
+                                />
+                              </div>
+                              <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-green-600 transition-colors">{p.title}</p>
+                              <p className="text-xs text-gray-500 mt-0.5">{project.user.username}</p>
+                            </a>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="h-20" />
               </div>
             </div>
@@ -1277,21 +1318,41 @@ export function ProjectDetailModalV2({
                 </div>
               )}
 
-              <button onClick={() => toggleLike()} disabled={!isLoggedIn} className={`w-12 h-12 rounded-full border border-gray-100 shadow-lg flex items-center justify-center transition-all hover:scale-105 ${isLiked ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 hover:bg-red-50'}`}>
-                <FontAwesomeIcon icon={isLiked ? faHeart : faHeartRegular} className="w-5 h-5" />
-              </button>
+              <div className="relative group flex items-center">
+                <button onClick={() => toggleLike()} disabled={!isLoggedIn} className={`w-12 h-12 rounded-full border border-gray-100 shadow-lg flex items-center justify-center transition-all hover:scale-105 ${isLiked ? 'bg-red-500 text-white border-red-500' : 'bg-white text-gray-700 hover:bg-red-50'}`}>
+                  <FontAwesomeIcon icon={isLiked ? faHeart : faHeartRegular} className="w-5 h-5" />
+                </button>
+                <div className="absolute right-full mr-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-md">
+                  {isLiked ? '좋아요 취소' : '좋아요'}
+                </div>
+              </div>
 
-              <button onClick={handleCollectionClick} className={`w-12 h-12 rounded-full border border-gray-100 shadow-lg flex items-center justify-center transition-all hover:scale-105 ${bookmarked ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-blue-50'}`}>
-                <FontAwesomeIcon icon={bookmarked ? faBookmark : faBookmarkRegular} className="w-5 h-5" />
-              </button>
+              <div className="relative group flex items-center">
+                <button onClick={handleCollectionClick} className={`w-12 h-12 rounded-full border border-gray-100 shadow-lg flex items-center justify-center transition-all hover:scale-105 ${bookmarked ? 'bg-blue-500 text-white' : 'bg-white text-gray-700 hover:bg-blue-50'}`}>
+                  <FontAwesomeIcon icon={bookmarked ? faBookmark : faBookmarkRegular} className="w-5 h-5" />
+                </button>
+                <div className="absolute right-full mr-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-md">
+                  {bookmarked ? '컬렉션에서 제거' : '컬렉션에 추가'}
+                </div>
+              </div>
 
-              <button onClick={() => setShareModalOpen(true)} className="w-12 h-12 rounded-full bg-white text-gray-700 border border-gray-100 shadow-lg hover:bg-green-600 hover:text-white hover:scale-105 flex items-center justify-center transition-all">
-                <FontAwesomeIcon icon={faShareNodes} className="w-5 h-5" />
-              </button>
+              <div className="relative group flex items-center">
+                <button onClick={() => setShareModalOpen(true)} className="w-12 h-12 rounded-full bg-white text-gray-700 border border-gray-100 shadow-lg hover:bg-green-600 hover:text-white hover:scale-105 flex items-center justify-center transition-all">
+                  <FontAwesomeIcon icon={faShareNodes} className="w-5 h-5" />
+                </button>
+                <div className="absolute right-full mr-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-md">
+                  공유하기
+                </div>
+              </div>
 
-              <button onClick={() => setCommentsPanelOpen(!commentsPanelOpen)} className={`w-12 h-12 rounded-full border border-gray-100 shadow-lg flex items-center justify-center transition-all hover:scale-105 ${commentsPanelOpen ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-700 hover:bg-green-600 hover:text-white'}`}>
-                <FontAwesomeIcon icon={faComment} className="w-5 h-5" />
-              </button>
+              <div className="relative group flex items-center">
+                <button onClick={() => setCommentsPanelOpen(!commentsPanelOpen)} className={`w-12 h-12 rounded-full border border-gray-100 shadow-lg flex items-center justify-center transition-all hover:scale-105 ${commentsPanelOpen ? 'bg-green-600 text-white border-green-600' : 'bg-white text-gray-700 hover:bg-green-600 hover:text-white'}`}>
+                  <FontAwesomeIcon icon={faComment} className="w-5 h-5" />
+                </button>
+                <div className="absolute right-full mr-3 px-3 py-1.5 bg-gray-900 text-white text-xs font-medium rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-md">
+                  {commentsPanelOpen ? '댓글 패널 닫기' : '댓글 보기'}
+                </div>
+              </div>
             </div>
 
             {/* 3. 댓글 패널 (사이드바) - Restore & Integrate Evaluation */}
@@ -1336,7 +1397,7 @@ export function ProjectDetailModalV2({
                                {allowMichelin && (
                                    <div className="mb-8">
                                        <MichelinRating 
-                                           projectId={project.id} 
+                                           projectId={project.project_id} 
                                            hideSubmit={true} 
                                            onChange={(scores) => setEvalScores(scores)} 
                                        />
@@ -1350,7 +1411,7 @@ export function ProjectDetailModalV2({
                                          <FontAwesomeIcon icon={faFaceSmile} className="text-blue-500" /> 간편 평판 선택
                                        </h5>
                                        <FeedbackPoll 
-                                           projectId={project.id} 
+                                           projectId={project.project_id} 
                                            offline={true} 
                                            onVote={(type) => setEvalSticker(type)} 
                                        />

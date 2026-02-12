@@ -22,7 +22,7 @@ export interface Comment {
 export async function getProjectComments(projectId: string | number): Promise<Comment[]> {
   const { data, error } = await supabase
     .from("Comment")
-    .select("id, project_id, user_id, content, created_at, username, user_avatar_url, is_secret")
+    .select("comment_id, project_id, user_id, content, created_at, username, user_avatar_url, is_secret")
     .eq("project_id", Number(projectId))
     .order("created_at", { ascending: false });
 
@@ -34,7 +34,7 @@ export async function getProjectComments(projectId: string | number): Promise<Co
   /* Safe Casting: Supabase returns partial or full Row objects */
   const comments = data as any;
   return (comments || []).map((c: any) => ({
-    id: c.id,
+    id: String(c.comment_id),
     project_id: c.project_id,
     user_id: c.user_id,
     content: c.content,
@@ -66,7 +66,7 @@ export async function addComment(
       user_avatar_url: avatarUrl,
       is_secret: isSecret,
     } as unknown as CommentInsert)
-    .select("id, project_id, user_id, content, created_at, username, user_avatar_url, is_secret")
+    .select("comment_id, project_id, user_id, content, created_at, username, user_avatar_url, is_secret")
     .single();
 
   if (error) {
@@ -79,7 +79,7 @@ export async function addComment(
   const d = data as any;
 
   return {
-    id: d.id,
+    id: String(d.comment_id),
     project_id: d.project_id,
     user_id: d.user_id,
     content: d.content,
@@ -97,7 +97,7 @@ export async function deleteComment(commentId: string, userId: string): Promise<
   const { error } = await supabase
     .from("Comment")
     .delete()
-    .eq("id", commentId)
+    .eq("comment_id", Number(commentId))
     .eq("user_id", userId);
 
   if (error) {
