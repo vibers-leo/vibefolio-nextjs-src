@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import dayjs from "dayjs";
 import { FeedbackReportModal } from "./FeedbackReportModal";
 import { FeedbackRequestModal } from "./FeedbackRequestModal";
+import { LoginModal } from "./LoginModal";
 import { getCategoryName } from "@/lib/categoryMap";
 
 // 기본 폴백 이미지
@@ -76,6 +77,7 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
     const [avatarError, setAvatarError] = useState(false);
     const [showReportModal, setShowReportModal] = useState(false);
     const [showFeedbackRequestModal, setShowFeedbackRequestModal] = useState(false);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const { user } = useAuth();
     const router = useRouter();
     
@@ -271,14 +273,13 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
             </div>
             
             <div className="flex items-center gap-3 text-xs text-gray-400 flex-shrink-0">
-               <div 
-                  className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 p-1 rounded-full px-2 transition-colors" 
+               <div
+                  className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 p-1 rounded-full px-2 transition-colors"
                   title={`좋아요 ${displayLikes}`}
                   onClick={(e) => {
                       e.stopPropagation();
                       if (!user) {
-                          toast.error("로그인이 필요합니다.");
-                          router.push('/login');
+                          setShowLoginModal(true);
                           return;
                       }
                       toggleLike();
@@ -307,13 +308,21 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
         
         {/* Feedback Request Modal (New) */}
         {showFeedbackRequestModal && (
-             <FeedbackRequestModal 
+             <FeedbackRequestModal
                 open={showFeedbackRequestModal}
                 onOpenChange={setShowFeedbackRequestModal}
                 projectId={props.id}
                 projectTitle={props.title || "Untitled"}
              />
         )}
+
+        {/* Login Modal */}
+        <LoginModal
+          open={showLoginModal}
+          onOpenChange={setShowLoginModal}
+          message="좋아요를 누르려면 로그인이 필요해요!"
+          returnTo={typeof window !== 'undefined' ? window.location.pathname : '/'}
+        />
       </div>
     );
   }
