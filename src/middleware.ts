@@ -1,5 +1,23 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
+/**
+ * ============================================================
+ *  [CRITICAL WARNING] 이 미들웨어에서 Supabase 인증을 사용하지 마세요!
+ * ============================================================
+ *
+ * 이 프로젝트의 Supabase 클라이언트는 인증 토큰을 localStorage에 저장합니다.
+ * Next.js 미들웨어는 서버(Edge Runtime)에서 실행되므로 localStorage에 접근 불가합니다.
+ * 따라서 미들웨어에서 getUser(), getSession() 등을 호출하면 항상 null이 반환됩니다.
+ *
+ * [2026-02-13] 이 문제로 /admin 페이지가 일주일간 접근 불가했었습니다.
+ *
+ * 인증이 필요한 경우:
+ * - /admin → AdminGuard 컴포넌트 (src/components/admin/AdminGuard.tsx)
+ * - /mypage → 각 페이지 내 useAuth() hook
+ * - /project/upload → 각 페이지 내 useAuth() hook
+ * ============================================================
+ */
+
 export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const hostname = request.headers.get('host');

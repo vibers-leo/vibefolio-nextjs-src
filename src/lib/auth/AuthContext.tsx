@@ -6,6 +6,8 @@ import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { isAdminEmail } from "./admins";
 
+const IS_DEV = process.env.NODE_ENV === 'development';
+
 interface UserProfile {
   username: string;
   profile_image_url: string;
@@ -192,7 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const roleCheck = userProfile?.role === "admin";
     const isMatched = emailCheck || roleCheck;
 
-    if (user) {
+    if (IS_DEV && user) {
        console.log(`[Auth] Admin Check:`, {
          email: user.email,
          emailInWhitelist: emailCheck,
