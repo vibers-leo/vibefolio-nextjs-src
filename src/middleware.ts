@@ -80,19 +80,17 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  // [Performance] Only call getUser() for protected routes.
-  // getUser() is a network request, while getSession() is just a cookie check.
-  const { data: { user } } = await supabase.auth.getUser();
+  // [Performance] getSession()은 쿠키만 읽으므로 빠름 (네트워크 호출 없음)
+  // getUser()는 Supabase API 호출이므로 느리고 실패할 수 있음
+  const { data: { session } } = await supabase.auth.getSession();
 
-  // Admin protection
-  // Admin protection
+  // Admin protection: 세션 존재 여부만 체크
+  // 상세 권한 체크(관리자 여부)는 클라이언트 사이드 AdminGuard에서 처리
   if (request.nextUrl.pathname.startsWith('/admin')) {
-    // [Changed] Middleware only checks if user is logged in.
-    // Detailed Role check is delegated to Client-Side AdminGuard (which checks 'profiles' table).
-    // This allows admins defined in DB but not in metadata to access the page without redirect loop.
-    if (!user) {
-      return NextResponse.redirect(new URL('/', request.url));
+    if (!session) {
+      return NextResponse.redirect(new URL('/login', request.url));
     }
+    // 세션이 있으면 AdminGuard로 넘김 (관리자 여부는 클라이언트에서 판단)
   }
 
   return response;
