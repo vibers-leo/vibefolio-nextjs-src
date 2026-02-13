@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"; // skeleton for cards
 import { ProjectGridSkeleton } from "@/components/ui/ProjectSkeleton";
 import { MainBanner } from "@/components/MainBanner";
 import { ImageCard } from "@/components/ImageCard";
+import { LazyImageCard } from "@/components/LazyImageCard";
 import { StickyMenu } from "@/components/StickyMenu";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { getCategoryName, getCategoryNameById, getCategoryValue } from "@/lib/categoryMap";
@@ -516,13 +517,12 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-12 gap-x-6">
                   {sortedProjects.map((project, index) => (
-                    <div key={project.id} className="w-full">
-                      <ImageCard
-                        onClick={() => handleProjectClick(project)}
-                        props={project}
-                        priority={index < 8}
-                      />
-                    </div>
+                    <LazyImageCard
+                      key={project.id}
+                      project={project}
+                      onClick={() => handleProjectClick(project)}
+                      priority={index < 8}
+                    />
                   ))}
                 </div>
 

@@ -191,16 +191,49 @@ export function useNotifications(): UseNotificationsReturn {
           toast.success(newNotif.title, {
             description: newNotif.message,
             duration: 5000,
-            style: { 
-              background: '#18181b', 
-              border: '1px solid #333', 
-              color: '#fff', 
-              boxShadow: '0 8px 20px rgba(0,0,0,0.4)' 
+            style: {
+              background: '#18181b',
+              border: '1px solid #333',
+              color: '#fff',
+              boxShadow: '0 8px 20px rgba(0,0,0,0.4)'
             }
           });
 
-          // 목록 새로고침 (보낸 사람 정보 등을 위해)
-          loadNotifications();
+          // Incremental insert: 새 알림만 추가 (전체 재조회 대신)
+          let sender: Notification["sender"] | undefined;
+          if (newNotif.sender_id) {
+            try {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('id, username, profile_image_url')
+                .eq('id', newNotif.sender_id)
+                .maybeSingle();
+              if (profile) {
+                sender = {
+                  id: profile.id,
+                  nickname: profile.username || '알 수 없음',
+                  profileImage: profile.profile_image_url || undefined,
+                };
+              }
+            } catch (e) {
+              console.warn("[Notifications] Sender profile fetch failed:", e);
+            }
+          }
+
+          const formatted: Notification = {
+            id: newNotif.id,
+            type: newNotif.type,
+            title: newNotif.title,
+            message: newNotif.message,
+            link: newNotif.link,
+            action_label: newNotif.action_label,
+            action_url: newNotif.action_url,
+            read: newNotif.read ?? false,
+            createdAt: newNotif.created_at,
+            sender,
+          };
+
+          setNotifications((prev) => [formatted, ...prev]);
         }
       )
       .subscribe();
