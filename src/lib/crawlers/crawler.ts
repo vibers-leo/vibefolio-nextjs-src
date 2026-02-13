@@ -9,7 +9,7 @@ import { crawlRocketPunch } from './rocketpunch';
 import { crawlDevpost } from './devpost';
 import { crawlNaverNews } from './naver_news';
 import { crawlHaebojago } from './haebojago';
-import { crawlMcpSearch } from './search_mcp';
+import { crawlMcpSearch, crawlContestAI } from './search_mcp';
 
 // ============================================================
 // Wevity (Contest) - 상세 요약 정보 강화
@@ -222,16 +222,19 @@ export async function crawlByType(type: 'job' | 'contest' | 'event', keyword?: s
     const tasks: Promise<CrawledItem[]>[] = [];
 
     if (type === 'contest') {
-      // 1. Wevity (항상 실행, 키워드 지원)
-      tasks.push(crawlWevity(keyword));
+      // 1. AI 기반 웹 검색 (PRIMARY - Tavily 다중 쿼리, 키워드 없이도 동작)
+      tasks.push(crawlContestAI().catch(() => []));
+
+      // 2. Wevity HTML 파싱 (SECONDARY - 실패해도 AI 크롤러가 커버)
+      tasks.push(crawlWevity(keyword).catch(() => []));
 
       if (keyword) {
-          // 2. 키워드가 있으면 [웹서치 모드] -> 네이버 뉴스 + Haebojago + [New] MCP Search
+          // 3. 키워드가 있으면 추가 소스 활용
           tasks.push(crawlNaverNews(keyword).catch(() => []));
           tasks.push(crawlHaebojago(keyword).catch(() => []));
           tasks.push(crawlMcpSearch(keyword).catch(() => []));
       } else {
-          // 3. 키워드가 없으면 [일반 수집 모드] -> 씽굿 일반 목록 수집
+          // 4. 키워드가 없으면 씽굿도 시도 (보조)
           tasks.push(crawlThinkContest().catch(() => []));
       }
     } else if (type === 'job') {
