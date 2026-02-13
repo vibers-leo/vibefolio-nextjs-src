@@ -187,14 +187,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // ====== 권한 체크 & 메모이제이션 ======
   const isAdminUser = React.useMemo(() => {
-    const isMatched = isAdminEmail(user) || userProfile?.role === "admin";
-    
-    if (user && userProfile) {
-       console.log(`[Auth] Determined: ${isMatched ? 'ADMIN' : 'USER'} (${user.email})`, { role: userProfile.role });
+    // 이메일 체크와 role 체크 분리하여 로깅
+    const emailCheck = isAdminEmail(user);
+    const roleCheck = userProfile?.role === "admin";
+    const isMatched = emailCheck || roleCheck;
+
+    if (user) {
+       console.log(`[Auth] Admin Check:`, {
+         email: user.email,
+         emailInWhitelist: emailCheck,
+         profileRole: userProfile?.role,
+         roleIsAdmin: roleCheck,
+         finalResult: isMatched ? 'ADMIN ✅' : 'USER ❌'
+       });
     }
 
     return isMatched;
-  }, [user?.email, userProfile?.role]);
+  }, [user, userProfile]);
 
   const authValue = React.useMemo(() => ({
     user,
