@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, ExternalLink, Calendar, MapPin, Award, DollarSign } from "lucide-react";
+import { Check, X, ExternalLink, Calendar, MapPin, Award, DollarSign, CheckCheck, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface PendingItem {
@@ -30,6 +30,8 @@ export default function RecruitApprovalPage() {
   const [pendingItems, setPendingItems] = useState<PendingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<number | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [bulkProcessing, setBulkProcessing] = useState(false);
 
   useEffect(() => {
     loadPendingItems();
@@ -46,6 +48,7 @@ export default function RecruitApprovalPage() {
       if (error) throw error;
 
       setPendingItems((data as any) || []);
+      setSelectedIds(new Set()); // 새로고침 시 선택 초기화
     } catch (error) {
       console.error('Failed to load pending items:', error);
       toast.error('승인 대기 항목을 불러오는데 실패했습니다.');
@@ -54,11 +57,36 @@ export default function RecruitApprovalPage() {
     }
   };
 
+  // === 선택 관리 ===
+  const toggleSelect = useCallback((id: number) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds(prev => {
+      if (prev.size === pendingItems.length) {
+        return new Set(); // 전체 해제
+      }
+      return new Set(pendingItems.map(item => item.id)); // 전체 선택
+    });
+  }, [pendingItems]);
+
+  const isAllSelected = pendingItems.length > 0 && selectedIds.size === pendingItems.length;
+
+  // === 개별 승인/거부 ===
   const handleApprove = async (id: number) => {
     setProcessing(id);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       const { error } = await supabase
         .from('recruit_items')
         .update({
@@ -100,6 +128,70 @@ export default function RecruitApprovalPage() {
       toast.error('거부에 실패했습니다.');
     } finally {
       setProcessing(null);
+    }
+  };
+
+  // === 일괄 승인 ===
+  const handleBulkApprove = async () => {
+    if (selectedIds.size === 0) {
+      toast.error('선택된 항목이 없습니다.');
+      return;
+    }
+
+    setBulkProcessing(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      const ids = Array.from(selectedIds);
+
+      const { error } = await supabase
+        .from('recruit_items')
+        .update({
+          is_approved: true,
+          is_active: true,
+          approved_at: new Date().toISOString(),
+          approved_by: user?.id
+        })
+        .in('id', ids);
+
+      if (error) throw error;
+
+      toast.success(`${ids.length}개 항목이 승인되었습니다!`);
+      loadPendingItems();
+    } catch (error) {
+      console.error('Bulk approval failed:', error);
+      toast.error('일괄 승인에 실패했습니다.');
+    } finally {
+      setBulkProcessing(false);
+    }
+  };
+
+  // === 일괄 거부 ===
+  const handleBulkReject = async () => {
+    if (selectedIds.size === 0) {
+      toast.error('선택된 항목이 없습니다.');
+      return;
+    }
+
+    if (!confirm(`선택된 ${selectedIds.size}개 항목을 모두 거부(삭제)하시겠습니까?`)) return;
+
+    setBulkProcessing(true);
+    try {
+      const ids = Array.from(selectedIds);
+
+      const { error } = await supabase
+        .from('recruit_items')
+        .delete()
+        .in('id', ids);
+
+      if (error) throw error;
+
+      toast.success(`${ids.length}개 항목이 거부되었습니다.`);
+      loadPendingItems();
+    } catch (error) {
+      console.error('Bulk rejection failed:', error);
+      toast.error('일괄 거부에 실패했습니다.');
+    } finally {
+      setBulkProcessing(false);
     }
   };
 
@@ -152,6 +244,48 @@ export default function RecruitApprovalPage() {
           </div>
         </div>
 
+        {/* 일괄 액션 바 */}
+        {pendingItems.length > 0 && (
+          <div className="mb-6 flex items-center gap-3 p-4 bg-white rounded-xl border shadow-sm">
+            <button
+              onClick={toggleSelectAll}
+              className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all cursor-pointer ${
+                isAllSelected
+                  ? 'bg-green-600 border-green-600 text-white'
+                  : 'border-gray-300 hover:border-green-400'
+              }`}
+            >
+              {isAllSelected && <Check size={14} strokeWidth={3} />}
+            </button>
+            <span className="text-sm text-gray-600 mr-2">
+              {selectedIds.size > 0
+                ? `${selectedIds.size}개 선택됨`
+                : '전체 선택'}
+            </span>
+
+            <div className="flex-1" />
+
+            <Button
+              size="sm"
+              className="bg-green-600 hover:bg-green-700"
+              onClick={handleBulkApprove}
+              disabled={selectedIds.size === 0 || bulkProcessing}
+            >
+              <CheckCheck size={16} className="mr-1.5" />
+              일괄 승인 ({selectedIds.size})
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleBulkReject}
+              disabled={selectedIds.size === 0 || bulkProcessing}
+            >
+              <Trash2 size={16} className="mr-1.5" />
+              일괄 거부 ({selectedIds.size})
+            </Button>
+          </div>
+        )}
+
         {/* 항목 목록 */}
         {pendingItems.length === 0 ? (
           <Card>
@@ -163,11 +297,29 @@ export default function RecruitApprovalPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {pendingItems.map((item) => {
               const typeInfo = getTypeInfo(item.type);
-              
+              const isSelected = selectedIds.has(item.id);
+
               return (
-                <Card key={item.id} className="hover:shadow-lg transition-shadow">
+                <Card
+                  key={item.id}
+                  className={`hover:shadow-lg transition-all ${
+                    isSelected ? 'ring-2 ring-green-500 shadow-md' : ''
+                  }`}
+                >
                   <CardHeader>
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start gap-3">
+                      {/* 체크박스 */}
+                      <button
+                        onClick={() => toggleSelect(item.id)}
+                        className={`mt-1 w-5 h-5 rounded border-2 flex-shrink-0 flex items-center justify-center transition-all cursor-pointer ${
+                          isSelected
+                            ? 'bg-green-600 border-green-600 text-white'
+                            : 'border-gray-300 hover:border-green-400'
+                        }`}
+                      >
+                        {isSelected && <Check size={14} strokeWidth={3} />}
+                      </button>
+
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <Badge className={typeInfo.color}>
@@ -184,12 +336,12 @@ export default function RecruitApprovalPage() {
                       </div>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent>
                     <p className="text-sm text-gray-600 mb-4 line-clamp-3">
                       {item.description}
                     </p>
-                    
+
                     <div className="space-y-2 text-sm text-gray-600 mb-4">
                       <div className="flex items-center gap-2">
                         <Calendar size={16} className="text-gray-400" />
@@ -235,7 +387,7 @@ export default function RecruitApprovalPage() {
                       <Button
                         className="flex-1 bg-green-600 hover:bg-green-700"
                         onClick={() => handleApprove(item.id)}
-                        disabled={processing === item.id}
+                        disabled={processing === item.id || bulkProcessing}
                       >
                         <Check size={16} className="mr-1" />
                         승인
@@ -244,7 +396,7 @@ export default function RecruitApprovalPage() {
                         variant="destructive"
                         className="flex-1"
                         onClick={() => handleReject(item.id)}
-                        disabled={processing === item.id}
+                        disabled={processing === item.id || bulkProcessing}
                       >
                         <X size={16} className="mr-1" />
                         거부
