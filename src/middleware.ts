@@ -1,4 +1,3 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
 export async function middleware(request: NextRequest) {
@@ -23,77 +22,14 @@ export async function middleware(request: NextRequest) {
      }
   }
 
-  let response = NextResponse.next({
+  // /admin, /mypage 등 보호 경로: 미들웨어에서 차단하지 않음
+  // Supabase 클라이언트가 localStorage 기반이라 서버 미들웨어에서 세션을 읽을 수 없음
+  // 인증/권한 체크는 클라이언트 사이드 AdminGuard 및 각 페이지에서 전담 처리
+  return NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
-
-  // [Optimization] Fast-path: Only run Supabase logic for specific routes
-  const isProtectedPath = url.pathname.startsWith('/admin') || 
-                           url.pathname.startsWith('/mypage') ||
-                           url.pathname.startsWith('/project/upload');
-
-  if (!isProtectedPath) {
-    return response;
-  }
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return request.cookies.get(name)?.value;
-        },
-        set(name: string, value: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value,
-            ...options,
-          });
-        },
-        remove(name: string, options: CookieOptions) {
-          request.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-          response = NextResponse.next({
-            request: {
-              headers: request.headers,
-            },
-          });
-          response.cookies.set({
-            name,
-            value: '',
-            ...options,
-          });
-        },
-      },
-    }
-  );
-
-  // [Performance] getSession()은 쿠키만 읽으므로 빠름 (네트워크 호출 없음)
-  // getUser()는 Supabase API 호출이므로 느리고 실패할 수 있음
-  const { data: { session } } = await supabase.auth.getSession();
-
-  // Admin protection: 세션 존재 여부만 체크
-  // 상세 권한 체크(관리자 여부)는 클라이언트 사이드 AdminGuard에서 처리
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    if (!session) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
-    // 세션이 있으면 AdminGuard로 넘김 (관리자 여부는 클라이언트에서 판단)
-  }
-
-  return response;
 }
 
 export const config = {
