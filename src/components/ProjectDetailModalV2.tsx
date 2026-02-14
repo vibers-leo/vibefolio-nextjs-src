@@ -240,6 +240,10 @@ export function ProjectDetailModalV2({
   const [evalSubmitting, setEvalSubmitting] = useState(false);
   const [evalSaved, setEvalSaved] = useState(false);
 
+  // [AI Feedback Summary]
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [aiSummaryLoading, setAiSummaryLoading] = useState(false);
+
   // [Growth Mode] Feedback Settings Derived State
   const cData = getSafeCustomData(project);
   const isGrowthRequested = cData?.is_growth_requested === true || (project as any)?.is_growth_requested === true;
@@ -310,6 +314,20 @@ export function ProjectDetailModalV2({
           location_y: c.location_y
         }));
         setComments(mappedComments);
+
+        // AI 피드백 요약 로드 (코멘트 2개+ 시)
+        if (mappedComments.length >= 2) {
+          setAiSummaryLoading(true);
+          fetch('/api/ai/feedback-summary', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ projectId: project.id }),
+          })
+            .then((res) => res.json())
+            .then((data) => { if (data.success && data.summary) setAiSummary(data.summary); })
+            .catch(() => {})
+            .finally(() => setAiSummaryLoading(false));
+        }
       }
 
       // 5. 작성자 Bio 조회 (신규 기능)
@@ -1457,6 +1475,25 @@ export function ProjectDetailModalV2({
                            <h4 className="font-black text-green-900 mb-1">평가가 성공적으로 전달되었습니다!</h4>
                            <p className="text-xs text-green-700 font-medium">소중한 피드백 감사합니다. 분석 리포트에 반영되었습니다.</p>
                        </div>
+                   )}
+
+                   {/* AI 피드백 요약 */}
+                   {aiSummary && (
+                     <div className="mb-4 p-4 bg-gradient-to-r from-violet-50 to-blue-50 rounded-xl border border-violet-100">
+                       <div className="flex items-center gap-2 mb-2">
+                         <FontAwesomeIcon icon={faStar} className="w-3 h-3 text-violet-500" />
+                         <span className="text-[10px] font-black text-violet-500 uppercase tracking-widest">AI Feedback Summary</span>
+                       </div>
+                       <div className="text-xs text-gray-700 leading-relaxed whitespace-pre-line font-medium">
+                         {aiSummary}
+                       </div>
+                     </div>
+                   )}
+                   {aiSummaryLoading && (
+                     <div className="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-100 text-center">
+                       <FontAwesomeIcon icon={faSpinner} className="w-3 h-3 text-violet-400 animate-spin" />
+                       <span className="text-[10px] text-gray-400 ml-2">AI가 피드백을 분석하고 있습니다...</span>
+                     </div>
                    )}
 
                    {/* 댓글 리스트 */}

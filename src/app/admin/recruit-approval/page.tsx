@@ -81,6 +81,20 @@ export default function RecruitApprovalPage() {
 
   const isAllSelected = pendingItems.length > 0 && selectedIds.size === pendingItems.length;
 
+  // === 관심사 기반 추천 알림 트리거 (fire-and-forget) ===
+  const triggerRecommendationMatch = (ids: number[]) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      fetch('/api/recommendations/match', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session?.access_token || ''}`,
+        },
+        body: JSON.stringify({ approvedItemIds: ids }),
+      }).catch((err) => console.error('[Recommendations] Match failed:', err));
+    });
+  };
+
   // === 개별 승인/거부 ===
   const handleApprove = async (id: number) => {
     setProcessing(id);
@@ -100,6 +114,7 @@ export default function RecruitApprovalPage() {
       if (error) throw error;
 
       toast.success('승인되었습니다!');
+      triggerRecommendationMatch([id]);
       loadPendingItems();
     } catch (error) {
       console.error('Approval failed:', error);
@@ -156,6 +171,7 @@ export default function RecruitApprovalPage() {
       if (error) throw error;
 
       toast.success(`${ids.length}개 항목이 승인되었습니다!`);
+      triggerRecommendationMatch(ids);
       loadPendingItems();
     } catch (error) {
       console.error('Bulk approval failed:', error);

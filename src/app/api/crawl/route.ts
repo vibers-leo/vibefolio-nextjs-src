@@ -155,6 +155,17 @@ async function handleCrawl(keyword?: string, type: string = 'all') {
     
     if (!result.success) throw new Error(result.error || 'Crawl logic failed');
 
+    // LLM 마감일 후처리 (date가 '확인 필요'인 항목만)
+    try {
+      const { batchExtractDeadlines } = await import('@/lib/ai/extractDeadline');
+      const llmCount = await batchExtractDeadlines(result.items);
+      if (llmCount > 0) {
+        console.log(`[Crawl API] LLM extracted ${llmCount} deadlines`);
+      }
+    } catch (llmErr) {
+      console.warn('[Crawl API] LLM deadline extraction skipped:', llmErr);
+    }
+
     let addedCount = 0;
     let updatedCount = 0;
     let errorCount = 0;
