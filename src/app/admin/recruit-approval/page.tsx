@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, ExternalLink, Calendar, MapPin, Award, DollarSign, CheckCheck, Trash2 } from "lucide-react";
+import { Check, X, ExternalLink, Calendar, MapPin, Award, DollarSign, CheckCheck, Trash2, Briefcase, PartyPopper } from "lucide-react";
 import { toast } from "sonner";
 
 interface PendingItem {
@@ -32,6 +32,7 @@ export default function RecruitApprovalPage() {
   const [processing, setProcessing] = useState<number | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [bulkProcessing, setBulkProcessing] = useState(false);
+  const [filterType, setFilterType] = useState<"all" | "job" | "contest" | "event">("all");
 
   useEffect(() => {
     loadPendingItems();
@@ -70,16 +71,37 @@ export default function RecruitApprovalPage() {
     });
   }, []);
 
+  // 필터링된 아이템
+  const filteredItems = filterType === "all"
+    ? pendingItems
+    : pendingItems.filter(item => item.type === filterType);
+
+  // 타입별 카운트
+  const typeCounts = {
+    all: pendingItems.length,
+    job: pendingItems.filter(i => i.type === "job").length,
+    contest: pendingItems.filter(i => i.type === "contest").length,
+    event: pendingItems.filter(i => i.type === "event").length,
+  };
+
   const toggleSelectAll = useCallback(() => {
     setSelectedIds(prev => {
-      if (prev.size === pendingItems.length) {
-        return new Set(); // 전체 해제
+      const filteredIds = filteredItems.map(item => item.id);
+      const allFilteredSelected = filteredIds.every(id => prev.has(id));
+      if (allFilteredSelected) {
+        // 현재 필터 항목만 해제
+        const next = new Set(prev);
+        filteredIds.forEach(id => next.delete(id));
+        return next;
       }
-      return new Set(pendingItems.map(item => item.id)); // 전체 선택
+      // 현재 필터 항목 모두 선택
+      const next = new Set(prev);
+      filteredIds.forEach(id => next.add(id));
+      return next;
     });
-  }, [pendingItems]);
+  }, [filteredItems]);
 
-  const isAllSelected = pendingItems.length > 0 && selectedIds.size === pendingItems.length;
+  const isAllSelected = filteredItems.length > 0 && filteredItems.every(item => selectedIds.has(item.id));
 
   // === 관심사 기반 추천 알림 트리거 (fire-and-forget) ===
   const triggerRecommendationMatch = (ids: number[]) => {
@@ -239,17 +261,16 @@ export default function RecruitApprovalPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-6">
         {/* 헤더 */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            크롤링 항목 승인
-          </h1>
-          <p className="text-gray-600">
-            자동 크롤링된 항목을 검토하고 승인하세요.
-          </p>
-          <div className="mt-4 flex items-center gap-4">
-            <Badge variant="outline" className="text-sm">
-              대기 중: {pendingItems.length}개
-            </Badge>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                크롤링 항목 승인
+              </h1>
+              <p className="text-gray-500 text-sm">
+                자동 크롤링된 항목을 검토하고 승인하세요. 총 {pendingItems.length}개 대기 중
+              </p>
+            </div>
             <Button
               variant="outline"
               size="sm"
@@ -258,10 +279,39 @@ export default function RecruitApprovalPage() {
               새로고침
             </Button>
           </div>
+
+          {/* 타입 필터 탭 */}
+          <div className="flex gap-2">
+            {([
+              { key: "all" as const, label: "전체", icon: null, activeClass: "bg-slate-900 text-white" },
+              { key: "job" as const, label: "채용", icon: Briefcase, activeClass: "bg-blue-600 text-white" },
+              { key: "contest" as const, label: "공모전", icon: Award, activeClass: "bg-purple-600 text-white" },
+              { key: "event" as const, label: "이벤트", icon: PartyPopper, activeClass: "bg-green-600 text-white" },
+            ]).map(tab => (
+              <button
+                key={tab.key}
+                onClick={() => { setFilterType(tab.key); setSelectedIds(new Set()); }}
+                className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all flex items-center gap-1.5 ${
+                  filterType === tab.key
+                    ? tab.activeClass + ' shadow-sm'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
+                } ${typeCounts[tab.key] === 0 && tab.key !== 'all' ? 'opacity-40' : ''}`}
+                disabled={typeCounts[tab.key] === 0 && tab.key !== 'all'}
+              >
+                {tab.icon && <tab.icon size={14} />}
+                {tab.label}
+                <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                  filterType === tab.key ? 'bg-white/20' : 'bg-gray-100'
+                }`}>
+                  {typeCounts[tab.key]}
+                </span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* 일괄 액션 바 */}
-        {pendingItems.length > 0 && (
+        {filteredItems.length > 0 && (
           <div className="mb-6 flex items-center gap-3 p-4 bg-white rounded-xl border shadow-sm">
             <button
               onClick={toggleSelectAll}
@@ -303,15 +353,19 @@ export default function RecruitApprovalPage() {
         )}
 
         {/* 항목 목록 */}
-        {pendingItems.length === 0 ? (
+        {filteredItems.length === 0 ? (
           <Card>
             <CardContent className="py-12 text-center">
-              <p className="text-gray-500">승인 대기 중인 항목이 없습니다.</p>
+              <p className="text-gray-500">
+                {pendingItems.length === 0
+                  ? '승인 대기 중인 항목이 없습니다.'
+                  : `${filterType === 'job' ? '채용' : filterType === 'contest' ? '공모전' : '이벤트'} 항목이 없습니다.`}
+              </p>
             </CardContent>
           </Card>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {pendingItems.map((item) => {
+            {filteredItems.map((item) => {
               const typeInfo = getTypeInfo(item.type);
               const isSelected = selectedIds.has(item.id);
 
