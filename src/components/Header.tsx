@@ -105,7 +105,7 @@ export function Header({
 
   const menuItems = [
     { label: "발견하기", path: "/" },
-    { label: "성장하기", path: "/growth" },
+    // 성장하기: v2.0에서 재도입 예정. 직접 URL(/growth)로만 접근 가능
     { label: "연결하기", path: "/recruit" },
   ];
 
@@ -213,7 +213,7 @@ export function Header({
                   <div className="flex items-center gap-2 md:gap-4">
                     <div className="hidden lg:flex items-center gap-2">
                       <Button 
-                        onClick={() => router.push('/project/upload')}
+                        onClick={() => router.push('/project/quick-post')}
                         className="flex items-center gap-2 bg-slate-900 hover:bg-black text-white rounded-full px-4 h-9 text-sm font-medium shadow-sm transition-all"
                       >
                         <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
@@ -256,7 +256,7 @@ export function Header({
                                    <span className="text-xs font-extrabold text-orange-600 font-mono">{userProfile?.points || 0} P</span>
                                </div>
                             </div>
-                           <button onClick={() => router.push('/project/upload')} className="w-full text-left px-2 py-2 rounded-lg cursor-pointer text-green-600 hover:bg-green-50 text-sm font-medium flex items-center">
+                           <button onClick={() => router.push('/project/quick-post')} className="w-full text-left px-2 py-2 rounded-lg cursor-pointer text-green-600 hover:bg-green-50 text-sm font-medium flex items-center">
                              <FontAwesomeIcon icon={faUpload} className="mr-2 h-4 w-4" /> 프로젝트 등록
                            </button>
                            <button onClick={() => router.push('/mypage')} className="w-full text-left px-2 py-2 rounded-lg cursor-pointer text-black hover:bg-gray-100 text-sm font-medium flex items-center">
@@ -331,7 +331,7 @@ export function Header({
                             <span className="text-xs text-gray-500">{user.email}</span>
                          </div>
                      </div>
-                     <Link href="/project/upload" onClick={() => setIsMobileMenuOpen(false)} className="text-black font-bold bg-gray-50 px-3 py-2 rounded-lg inline-flex items-center w-fit">
+                     <Link href="/project/quick-post" onClick={() => setIsMobileMenuOpen(false)} className="text-black font-bold bg-gray-50 px-3 py-2 rounded-lg inline-flex items-center w-fit">
                        <FontAwesomeIcon icon={faPlus} className="mr-2 h-4 w-4" /> 프로젝트 등록
                      </Link>
                       <Link href="/mypage" onClick={() => setIsMobileMenuOpen(false)} className="text-gray-700 font-medium py-1">마이페이지</Link>
