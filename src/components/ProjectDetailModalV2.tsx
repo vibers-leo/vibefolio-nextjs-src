@@ -818,8 +818,8 @@ export function ProjectDetailModalV2({
 
             {/* 이미지 또는 리치 텍스트 영역 - 스크롤 가능 */}
             <div className="flex-1 overflow-y-auto custom-scrollbar">
-              {project.rendering_type === 'rich_text' ? (
-                <div 
+              {project.rendering_type === 'rich_text' && stripHtml(project.description || '').length > 0 ? (
+                <div
                   className="prose prose-sm prose-h1:text-xl max-w-full p-6 mx-auto bg-white whitespace-pre-wrap"
                   dangerouslySetInnerHTML={{ __html: unescapeHtml(project.description || '') }}
                 />
@@ -1192,8 +1192,8 @@ export function ProjectDetailModalV2({
 
               {/* 본문 스크롤 영역 */}
               <div className="flex-1 overflow-y-auto custom-scrollbar bg-white p-8 flex flex-col items-center">
-                  {project.rendering_type === 'rich_text' ? (
-                    <div 
+                  {project.rendering_type === 'rich_text' && stripHtml(project?.description || '').length > 0 ? (
+                    <div
                       className="prose prose-lg prose-h1:text-3xl max-w-4xl w-full bg-white p-4 whitespace-pre-wrap"
                       dangerouslySetInnerHTML={{ __html: unescapeHtml(project?.description || '') }}
                     />
