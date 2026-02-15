@@ -3,21 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FontAwesomeIcon } from "@/components/FaIcon";
-import { 
-  faChartBar, 
-  faImage, 
-  faUsers, 
-  faBriefcase, 
-  faCommentDots, 
-  faFileAlt, 
-  faBullhorn, 
-  faQuestionCircle, 
-  faTachometerAlt, 
-  faBell, 
-  faCog, 
-  faArrowLeft, 
-  faChevronRight, 
-  faTv 
+import {
+  faChartBar,
+  faImage,
+  faUsers,
+  faBriefcase,
+  faCommentDots,
+  faFileAlt,
+  faBullhorn,
+  faQuestionCircle,
+  faTachometerAlt,
+  faBell,
+  faCog,
+  faArrowLeft,
+  faChevronRight,
+  faTv,
+  faCheckDouble
 } from "@fortawesome/free-solid-svg-icons";
 
 const menuItems = [
@@ -44,6 +45,12 @@ const menuItems = [
     path: "/admin/recruit",
     icon: faBriefcase,
     color: "text-green-500"
+  },
+  {
+    title: "크롤링 일괄 승인",
+    path: "/admin/recruit-approval",
+    icon: faCheckDouble,
+    color: "text-emerald-500"
   },
   {
     title: "공지사항 관리",

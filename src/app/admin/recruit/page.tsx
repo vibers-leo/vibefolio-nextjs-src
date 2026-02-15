@@ -412,8 +412,14 @@ export default function AdminRecruitPage() {
               <p className="text-gray-600">채용, 공모전, 이벤트 정보를 관리하세요</p>
             </div>
             <div className="flex gap-2">
-              <Button 
-                variant="outline" 
+              <Link href="/admin/recruit-approval">
+                <Button variant="outline" className="border-emerald-500 text-emerald-600 hover:bg-emerald-50">
+                  <Sparkles size={16} className="mr-2" />
+                  일괄 승인
+                </Button>
+              </Link>
+              <Button
+                variant="outline"
                 onClick={handleManualCrawl}
                 className="border-[#16A34A] text-[#16A34A] hover:bg-[#16A34A]/10"
               >
