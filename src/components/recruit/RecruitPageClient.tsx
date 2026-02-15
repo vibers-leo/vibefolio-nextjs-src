@@ -8,6 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getUserRecruitBookmarks, toggleRecruitBookmark } from "@/lib/recruit-bookmarks";
+import { useAuth } from "@/lib/auth/AuthContext";
+import { ContestCalendar } from "./ContestCalendar";
 import {
   Dialog,
   DialogContent,
@@ -35,7 +38,10 @@ import {
   faXmark,
   faSort,
   faSearch,
-  faWandMagicSparkles
+  faWandMagicSparkles,
+  faBookmark,
+  faCalendarDays,
+  faList
 } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "@/lib/supabase/client";
 import { uploadImage, uploadFile } from "@/lib/supabase/storage";
@@ -81,11 +87,14 @@ interface Item {
 
 export default function RecruitPage() {
   const router = useRouter();
+  const { user } = useAuth();
   const [items, setItems] = useState<Item[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Item | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [banners, setBanners] = useState<number[]>([1, 2, 3]);
+  const [bookmarkedIds, setBookmarkedIds] = useState<Set<number>>(new Set());
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
   const [isExtracting, setIsExtracting] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -129,6 +138,29 @@ export default function RecruitPage() {
     };
     checkAdmin();
   }, []);
+
+  // 찜(북마크) 로드
+  useEffect(() => {
+    if (user?.id) {
+      getUserRecruitBookmarks(user.id).then(ids => {
+        setBookmarkedIds(new Set(ids));
+      });
+    }
+  }, [user?.id]);
+
+  const handleToggleBookmark = async (itemId: number) => {
+    if (!user) {
+      toast.error("로그인이 필요합니다.");
+      return;
+    }
+    const isNowBookmarked = await toggleRecruitBookmark(itemId);
+    setBookmarkedIds(prev => {
+      const next = new Set(prev);
+      if (isNowBookmarked) next.add(itemId);
+      else next.delete(itemId);
+      return next;
+    });
+  };
 
   // 페이지네이션 + 검색 상태
   const [activeTab, setActiveTab] = useState("all");
@@ -1032,43 +1064,77 @@ export default function RecruitPage() {
                   </SelectContent>
                 </Select>
               </div>
+
+              {/* 뷰 토글 (공모전 탭) */}
+              {(activeTab === "contest" || activeTab === "all") && (
+                <div className="flex items-center rounded-xl border border-slate-100 overflow-hidden">
+                  <button
+                    onClick={() => setViewMode("list")}
+                    className={`px-3 h-10 flex items-center gap-1.5 text-xs font-bold transition-colors ${
+                      viewMode === "list" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={faList} className="w-3 h-3" />
+                  </button>
+                  <button
+                    onClick={() => setViewMode("calendar")}
+                    className={`px-3 h-10 flex items-center gap-1.5 text-xs font-bold transition-colors ${
+                      viewMode === "calendar" ? "bg-slate-900 text-white" : "bg-slate-50 text-slate-400 hover:bg-slate-100"
+                    }`}
+                  >
+                    <FontAwesomeIcon icon={faCalendarDays} className="w-3 h-3" />
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        {/* 콘텐츠 그리드 */}
+        {/* 콘텐츠 */}
         <div className="mt-8">
           {loading ? (
             <div className="flex items-center justify-center py-20">
               <FontAwesomeIcon icon={faSpinner} spin className="w-8 h-8 text-slate-300" />
             </div>
+          ) : viewMode === "calendar" ? (
+            /* 캘린더 뷰 */
+            <ContestCalendar
+              items={items.map(it => ({ id: it.id, title: it.title, date: it.date, company: it.company, type: it.type }))}
+              bookmarkedIds={bookmarkedIds}
+              onItemClick={(id) => router.push(`/recruit/${id}`)}
+            />
           ) : items.length === 0 ? (
             <EmptyState />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
-              {items.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  item={item}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onViewDetail={handleViewDetail}
-                  isAdmin={isAdmin}
-                  getDday={getDday}
-                />
-              ))}
-            </div>
-          )}
+            /* 리스트 뷰 */
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
+                {items.map((item) => (
+                  <ItemCard
+                    key={item.id}
+                    item={item}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onViewDetail={handleViewDetail}
+                    isAdmin={isAdmin}
+                    getDday={getDday}
+                    isBookmarked={bookmarkedIds.has(item.id)}
+                    onToggleBookmark={handleToggleBookmark}
+                  />
+                ))}
+              </div>
 
-          {/* 무한스크롤 센티넬 */}
-          <div ref={loadMoreRef} className="py-8 flex justify-center">
-            {loadingMore && (
-              <FontAwesomeIcon icon={faSpinner} spin className="w-6 h-6 text-slate-300" />
-            )}
-            {!hasMore && items.length > 0 && (
-              <p className="text-sm text-slate-400">모든 항목을 불러왔습니다</p>
-            )}
-          </div>
+              {/* 무한스크롤 센티넬 */}
+              <div ref={loadMoreRef} className="py-8 flex justify-center">
+                {loadingMore && (
+                  <FontAwesomeIcon icon={faSpinner} spin className="w-6 h-6 text-slate-300" />
+                )}
+                {!hasMore && items.length > 0 && (
+                  <p className="text-sm text-slate-400">모든 항목을 불러왔습니다</p>
+                )}
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -1095,6 +1161,8 @@ function ItemCard({
   onViewDetail,
   isAdmin,
   getDday,
+  isBookmarked,
+  onToggleBookmark,
 }: {
   item: Item;
   onEdit: (item: Item) => void;
@@ -1102,6 +1170,8 @@ function ItemCard({
   onViewDetail: (item: Item) => void;
   isAdmin: boolean;
   getDday: (date: string) => string;
+  isBookmarked?: boolean;
+  onToggleBookmark?: (id: number) => void;
 }) {
   const getTypeInfo = (type: string) => {
     switch (type) {
@@ -1158,27 +1228,41 @@ function ItemCard({
           </span>
         </div>
 
-        {/* Action Buttons (Overlay for Admin) */}
-        {isAdmin && (
-          <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-            <Button 
-              size="icon" 
-              variant="secondary" 
-              className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-slate-600 shadow-sm" 
-              onClick={(e) => { e.stopPropagation(); onEdit(item); }}
+        {/* 찜 + 관리자 버튼 */}
+        <div className="absolute top-4 right-4 flex gap-1 z-10">
+          {onToggleBookmark && (
+            <button
+              className={`w-8 h-8 rounded-full flex items-center justify-center shadow-sm transition-all ${
+                isBookmarked
+                  ? 'bg-yellow-400 text-white'
+                  : 'bg-white/90 text-slate-400 opacity-0 group-hover:opacity-100 hover:text-yellow-500'
+              }`}
+              onClick={(e) => { e.stopPropagation(); onToggleBookmark(item.id); }}
             >
-              <FontAwesomeIcon icon={faEdit} />
-            </Button>
-            <Button 
-              size="icon" 
-              variant="destructive" 
-              className="w-8 h-8 rounded-full bg-red-500/90 hover:bg-red-500 text-white shadow-sm border-none" 
-              onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
-            >
-              <FontAwesomeIcon icon={faTrash} />
-            </Button>
-          </div>
-        )}
+              <FontAwesomeIcon icon={faBookmark} className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {isAdmin && (
+            <>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="w-8 h-8 rounded-full bg-white/90 hover:bg-white text-slate-600 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => { e.stopPropagation(); onEdit(item); }}
+              >
+                <FontAwesomeIcon icon={faEdit} />
+              </Button>
+              <Button
+                size="icon"
+                variant="destructive"
+                className="w-8 h-8 rounded-full bg-red-500/90 hover:bg-red-500 text-white shadow-sm border-none opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+              >
+                <FontAwesomeIcon icon={faTrash} />
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       <CardHeader className="p-4 pb-1">
