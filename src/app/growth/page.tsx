@@ -64,7 +64,7 @@ function GrowthOnboardingModal({ onAgree }: { onAgree: () => void }) {
              <h2 className="text-2xl font-black text-gray-900 mb-3">성장을 위한 약속</h2>
              <p className="text-gray-500 leading-relaxed text-sm">
                이곳은 더 나은 작품을 위해 용기 낸<br/>
-               크리에이터들의 공간입니다.<br/><br/>
+               모든 사람들의 공간입니다.<br/><br/>
                <span className="font-bold text-gray-800">솔직하지만 따뜻한 피드백</span>으로<br/>
                서로의 성장을 돕겠다고 약속해 주세요.
              </p>
@@ -74,8 +74,8 @@ function GrowthOnboardingModal({ onAgree }: { onAgree: () => void }) {
              <label className="flex items-start gap-3 p-4 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition-colors border border-gray-100">
                 <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} className="mt-1 w-5 h-5 rounded border-gray-300 text-green-600 focus:ring-green-500" />
                 <span className="text-sm font-bold text-gray-700 select-none">
-                   네, 따뜻하고 건설적인 피드백으로<br/> 
-                   동료 크리에이터의 성장을 응원하겠습니다.
+                   네, 따뜻하고 건설적인 피드백으로<br/>
+                   서로의 성장을 응원하겠습니다.
                 </span>
              </label>
 
