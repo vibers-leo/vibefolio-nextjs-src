@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { FcGoogle } from "react-icons/fc";
+import { RiKakaoTalkFill } from "react-icons/ri";
 import { toast } from "sonner"; // 에러 메시지 표시를 위해 toast 사용 추천
 
 function LoginContent() {
@@ -80,13 +81,30 @@ function LoginContent() {
     }
   };
 
+  const handleKakaoLogin = async () => {
+    try {
+      const returnTo = searchParams.get("returnTo") || "/";
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "kakao",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnTo)}`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("카카오 로그인 오류:", error);
+      setError(error.message || "카카오 로그인 중 오류가 발생했습니다.");
+      toast.error("카카오 로그인 실패", { description: error.message });
+    }
+  };
+
   useEffect(() => {
     // 네이버 인앱 브라우저 감지 및 처리
     const userAgent = window.navigator.userAgent.toLowerCase();
-    const isNaverApp = userAgent.includes('naver'); 
-    
+    const isNaverApp = userAgent.includes('naver');
+
     if (isNaverApp) {
-        toast.info("네이버 앱에서는 Google 로그인이 제한될 수 있습니다.", {
+        toast.info("네이버 앱에서는 소셜 로그인이 제한될 수 있습니다.", {
              description: "원활한 로그인을 위해 크롬이나 사파리 등 기본 브라우저를 이용해주세요.",
              duration: 5000
         });
@@ -208,13 +226,21 @@ function LoginContent() {
           </div>
         </div>
 
-        <div>
+        <div className="space-y-3">
           <Button
             onClick={handleGoogleLogin}
             className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
           >
             <FcGoogle className="h-5 w-5 mr-2" />
             Google 계정으로 로그인
+          </Button>
+          <Button
+            onClick={handleKakaoLogin}
+            className="w-full border-0 text-[#191919] hover:brightness-95"
+            style={{ backgroundColor: '#FEE500' }}
+          >
+            <RiKakaoTalkFill className="h-5 w-5 mr-2" />
+            카카오 계정으로 로그인
           </Button>
         </div>
       </div>

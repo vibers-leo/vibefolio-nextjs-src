@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { FcGoogle } from "react-icons/fc";
+import { RiKakaoTalkFill } from "react-icons/ri";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -51,6 +52,26 @@ export function LoginModal({ open, onOpenChange, returnTo, message }: LoginModal
     } catch (error: any) {
       console.error("Google 로그인 오류:", error);
       toast.error("Google 로그인 실패", { description: error.message });
+      setIsLoading(false);
+    }
+  };
+
+  const handleKakaoLogin = async () => {
+    try {
+      setIsLoading(true);
+      const redirectUrl = returnTo || window.location.pathname;
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "kakao",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
+        },
+      });
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("카카오 로그인 오류:", error);
+      toast.error("카카오 로그인 실패", { description: error.message });
       setIsLoading(false);
     }
   };
@@ -111,6 +132,23 @@ export function LoginModal({ open, onOpenChange, returnTo, message }: LoginModal
               <>
                 <FcGoogle className="h-5 w-5 mr-2" />
                 Google 계정으로 3초 만에 시작
+              </>
+            )}
+          </Button>
+
+          {/* 카카오 로그인 버튼 */}
+          <Button
+            onClick={handleKakaoLogin}
+            disabled={isLoading}
+            className="w-full border-0 text-[#191919] hover:brightness-95 h-12 text-base font-medium"
+            style={{ backgroundColor: '#FEE500' }}
+          >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+            ) : (
+              <>
+                <RiKakaoTalkFill className="h-5 w-5 mr-2" />
+                카카오 계정으로 3초 만에 시작
               </>
             )}
           </Button>

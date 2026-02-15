@@ -8,6 +8,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase/client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
+import { RiKakaoTalkFill } from "react-icons/ri";
 import { toast } from "sonner";
 
 export default function SignupPage() {
@@ -24,7 +25,7 @@ export default function SignupPage() {
      const isNaverApp = userAgent.includes('naver'); 
      
      if (isNaverApp) {
-         toast.info("네이버 앱에서는 Google 로그인이 제한될 수 있습니다.", {
+         toast.info("네이버 앱에서는 소셜 로그인이 제한될 수 있습니다.", {
               description: "원활한 로그인을 위해 크롬이나 사파리 등 기본 브라우저를 이용해주세요.",
               duration: 5000
          });
@@ -94,6 +95,23 @@ export default function SignupPage() {
     }
   };
 
+  const handleKakaoSignup = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "kakao",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("[Signup] Kakao Error:", error);
+      setError(error.message);
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-lg">
@@ -131,6 +149,20 @@ export default function SignupPage() {
               <FontAwesomeIcon icon={faGoogle} className="w-5 h-5 text-red-500" />
             )}
             <span className="text-gray-700 font-medium">Google로 계속하기</span>
+          </Button>
+          <Button
+            type="button"
+            onClick={handleKakaoSignup}
+            disabled={loading}
+            className="w-full h-12 flex items-center justify-center gap-3 border-0 rounded-full transition-all hover:shadow-md hover:brightness-95"
+            style={{ backgroundColor: '#FEE500' }}
+          >
+            {loading ? (
+              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+            ) : (
+              <RiKakaoTalkFill className="w-5 h-5 text-[#191919]" />
+            )}
+            <span className="text-[#191919] font-medium">카카오로 계속하기</span>
           </Button>
         </div>
 
