@@ -22,7 +22,7 @@ import {
 } from 'recharts';
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import dayjs from 'dayjs';
 
 export default function AuditReportPage() {

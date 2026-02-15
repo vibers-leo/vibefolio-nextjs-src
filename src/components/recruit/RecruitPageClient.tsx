@@ -2,13 +2,12 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import {
   Dialog,
   DialogContent,
@@ -16,34 +15,26 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
 import { MainBanner } from "@/components/MainBanner";
 import { FontAwesomeIcon } from "@/components/FaIcon";
 import { 
-  faPlus, 
-  faTrash, 
-  faEdit, 
-  faCalendar, 
-  faMapMarkerAlt, 
-  faAward, 
-  faBriefcase, 
-  faDollarSign, 
-  faExternalLinkAlt, 
-  faClock, 
-  faStar, 
-  faSpinner, 
-  faEye, 
-  faChevronRight, 
-  faUpload, 
-  faFileAlt, 
+  faPlus,
+  faTrash,
+  faEdit,
+  faCalendar,
+  faMapMarkerAlt,
+  faAward,
+  faBriefcase,
+  faExternalLinkAlt,
+  faClock,
+  faStar,
+  faSpinner,
+  faEye,
+  faUpload,
+  faFileAlt,
   faXmark,
-  faFilter,
   faSort,
+  faSearch,
   faWandMagicSparkles
 } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "@/lib/supabase/client";
@@ -139,137 +130,110 @@ export default function RecruitPage() {
     checkAdmin();
   }, []);
 
-  // 데이터베이스에서 항목 불러오기
-  useEffect(() => {
-    loadItems();
-  }, []);
+  // 페이지네이션 + 검색 상태
+  const [activeTab, setActiveTab] = useState("all");
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
+  const pageRef = useRef(1);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const searchTimerRef = useRef<NodeJS.Timeout>();
 
-  const loadItems = async () => {
+  // API에서 항목 가져오기 (페이지네이션)
+  const fetchItems = useCallback(async (pageNum: number, append: boolean = false) => {
     try {
-      // Supabase에서 승인되고 활성화된 항목만 가져오기
-      const { data, error } = await supabase
-        .from('recruit_items')
-        .select('*')
-        .eq('is_approved', true)
-        .eq('is_active', true)
-        .order('date', { ascending: true });
+      const params = new URLSearchParams({
+        page: pageNum.toString(),
+        limit: '20',
+        sort: sortBy,
+      });
+      if (activeTab !== 'all') params.set('type', activeTab);
+      if (search) params.set('search', search);
 
-      if (error) {
-        console.error('Failed to load recruit items:', error);
-        // 에러 발생 시 기본 데이터 사용
-        loadDefaultItems();
-        return;
-      }
+      const res = await fetch(`/api/recruit-items?${params}`);
+      const data = await res.json();
 
-      if (data && data.length > 0) {
-        // DB 데이터를 Item 형식으로 변환
-        const formattedItems: Item[] = data.map((item: any) => ({
-          id: item.id,
-          title: item.title,
-          description: item.description,
-          type: item.type as "job" | "contest" | "event",
-          date: item.date,
-          location: item.location || undefined,
-          prize: item.prize || undefined,
-          salary: item.salary || undefined,
-          company: item.company || undefined,
-          employmentType: item.employment_type || undefined,
-          link: item.link || undefined,
-          thumbnail: item.thumbnail || undefined,
-          views_count: item.views_count || 0,
-          // 추가 필드 매핑
-          application_target: item.application_target || undefined,
-          sponsor: item.sponsor || undefined,
-          total_prize: item.total_prize || undefined,
-          first_prize: item.first_prize || undefined,
-          start_date: item.start_date || undefined,
-          category_tags: item.category_tags || undefined,
-          banner_image_url: item.banner_image_url || undefined,
-          attachments: item.attachments || [],
-          created_at: item.created_at,
-        }));
-        setItems(formattedItems);
+      if (!res.ok) throw new Error(data.error);
+
+      const formattedItems: Item[] = (data.items || []).map((item: any) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        type: item.type as "job" | "contest" | "event",
+        date: item.date,
+        location: item.location || undefined,
+        prize: item.prize || undefined,
+        salary: item.salary || undefined,
+        company: item.company || undefined,
+        employmentType: item.employment_type || undefined,
+        link: item.link || undefined,
+        thumbnail: item.thumbnail || undefined,
+        views_count: item.views_count || 0,
+        application_target: item.application_target || undefined,
+        sponsor: item.sponsor || undefined,
+        total_prize: item.total_prize || undefined,
+        first_prize: item.first_prize || undefined,
+        start_date: item.start_date || undefined,
+        category_tags: item.category_tags || undefined,
+        banner_image_url: item.banner_image_url || undefined,
+        attachments: item.attachments || [],
+        created_at: item.created_at,
+      }));
+
+      if (append) {
+        setItems(prev => [...prev, ...formattedItems]);
       } else {
-        // DB에 데이터가 없으면 기본 데이터 사용
-        loadDefaultItems();
+        setItems(formattedItems);
       }
+      setHasMore(data.hasMore);
+      setTotal(data.total);
     } catch (e) {
       console.error('Error loading items:', e);
-      loadDefaultItems();
     }
+  }, [activeTab, search, sortBy]);
+
+  // 탭/검색/정렬 변경 시 처음부터 로드
+  useEffect(() => {
+    pageRef.current = 1;
+    setLoading(true);
+    fetchItems(1, false).finally(() => setLoading(false));
+  }, [fetchItems]);
+
+  // 검색 디바운스
+  const handleSearchChange = (value: string) => {
+    setSearchInput(value);
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setSearch(value);
+    }, 400);
   };
 
-  const loadDefaultItems = () => {
-    // 기본 데이터 (DB가 비어있거나 에러 발생 시)
-    const defaultItems: Item[] = [
-      {
-        id: 1,
-        title: "2025 제1회 퓨리얼 AI 영상 콘테스트",
-        description: "'퓨리얼 정수기와 함께하는 [  ]'을 주제로 한 AI 생성 영상 공모전입니다. 독창적인 아이디어와 AI 기술을 결합하여 도전해보세요!",
-        type: "contest",
-        date: "2025-12-21",
-        company: "퓨리얼(Pureal)",
-        prize: "총상금 500만원 (대상 300만원)",
-        link: "https://www.pureal.co.kr/contest",
-        location: "온라인 접수",
+  // Intersection Observer 무한스크롤
+  useEffect(() => {
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingMore && !loading) {
+          const nextPage = pageRef.current + 1;
+          pageRef.current = nextPage;
+          setLoadingMore(true);
+          fetchItems(nextPage, true).finally(() => setLoadingMore(false));
+        }
       },
-      {
-        id: 2,
-        title: "2025 지역주력산업 영상 콘텐츠 공모전",
-        description: "중소벤처기업부 주최, 지역 주력 산업을 주제로 한 창의적인 영상 콘텐츠를 공모합니다. AI 기반 영상 제작툴 활용 가능.",
-        type: "contest",
-        date: "2025-12-26",
-        company: "중소벤처기업부",
-        prize: "장관상 및 상금 수여",
-        location: "대한민국 전역",
-        link: "https://www.mss.go.kr",
-      },
-      {
-        id: 3,
-        title: "AI for Good Film Festival 2026",
-        description: "AI 기술을 활용하여 글로벌 사회 문제를 해결하거나 긍정적인 영향을 주는 주제의 영화/영상 출품. UN ITU 주관 글로벌 행사.",
-        type: "contest",
-        date: "2026-03-15",
-        location: "Geneva, Switzerland (온라인 출품)",
-        company: "AI for Good (ITU)",
-        prize: "국제 영화제 상영 및 초청",
-        link: "https://aiforgood.itu.int/summit26/",
-      },
-      {
-        id: 4,
-        title: "팀플 기반 AI 워크샵: 10일 집중 영상제작",
-        description: "한국예술종합학교 전문사 영화과 주관. AI 툴을 활용한 단편 영화 제작 워크샵. 팀 프로젝트 기반 실습 진행.",
-        type: "event",
-        date: "2026-01-15",
-        location: "한국예술종합학교 및 온라인",
-        company: "한국예술종합학교",
-        salary: "참가비 무료",
-        link: "https://www.karts.ac.kr",
-      },
-      {
-        id: 5,
-        title: "AI Film & Ads Awards Cannes 2026",
-        description: "칸에서 열리는 AI 영화 및 광고제. 생성형 AI로 제작된 혁신적인 광고 및 단편 영화를 모집합니다.",
-        type: "contest",
-        date: "2026-05-22",
-        location: "Cannes, France",
-        prize: "트로피 및 칸 현지 초청",
-        link: "https://www.waiff.com",
-      },
-      {
-        id: 6,
-        title: "UI/UX 디자이너 채용 (AI/SaaS 스타트업)",
-        description: "생성형 AI 서비스를 함께 만들어갈 프로덕트 디자이너를 모십니다. Figma 능숙자, AI 툴 활용 경험 우대.",
-        type: "job",
-        date: "2026-01-31",
-        location: "서울 강남구 역삼동",
-        company: "바이브코퍼레이션",
-        salary: "연봉 5,000 ~ 8,000만원",
-        employmentType: "정규직",
-        link: "https://vibefolio.com/recruit",
-      }
-    ];
-    setItems(defaultItems);
+      { rootMargin: '200px' }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasMore, loadingMore, loading, fetchItems]);
+
+  // 폼 제출 후 목록 새로고침 헬퍼
+  const loadItems = async () => {
+    pageRef.current = 1;
+    await fetchItems(1, false);
   };
 
   // 항목 추가/수정 (API 사용)
@@ -527,75 +491,7 @@ export default function RecruitPage() {
     return `D-${diff}`;
   };
 
-  const [sortBy, setSortBy] = useState("latest");
-  const [categoryFilter, setCategoryFilter] = useState("all");
-
-  // 데이터 가공 (필터링 및 정렬)
-  const processedItems = useMemo(() => {
-    let result = [...items];
-
-    // 분야 필터링
-    if (categoryFilter !== "all") {
-      result = result.filter(item => 
-        item.category_tags?.split(',').map(t => t.trim()).includes(categoryFilter)
-      );
-    }
-
-    // 정렬
-    if (sortBy === "latest") {
-      const now = new Date();
-      now.setHours(0, 0, 0, 0);
-
-      result.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        
-        // 마감 여부 체크 (오늘 날짜보다 이전이면 마감)
-        // a.date가 '2024-01-01'일 때, new Date('2024-01-01')은 00:00:00이므로
-        // now(오늘 00:00:00)보다 작으면 마감된 것으로 간주 (단, 당일은 마감 아님)
-        // 정확한 비교를 위해 시간 제거 후 비교
-        const isExpiredA = dateA < now;
-        const isExpiredB = dateB < now;
-
-        // 1. 마감 여부가 다르면: 마감 안 된 것(false)이 우선(-1)
-        if (isExpiredA !== isExpiredB) {
-          return isExpiredA ? 1 : -1;
-        }
-
-        // 2. 둘 다 마감 안 되었으면: 마감 임박 순 (날짜 오름차순)
-        if (!isExpiredA) {
-          return dateA.getTime() - dateB.getTime();
-        }
-
-        // 3. 둘 다 마감 되었으면: 최근 마감된 것이 먼저 보이도록 (날짜 내림차순)
-        return dateB.getTime() - dateA.getTime();
-      });
-    } else if (sortBy === "views") {
-      result.sort((a, b) => (b.views_count || 0) - (a.views_count || 0));
-    } else if (sortBy === "created") {
-      // created_at이 있으면 그것으로, 없으면 ID 역순
-      result.sort((a, b) => b.id - a.id);
-    }
-
-    return result;
-  }, [items, sortBy, categoryFilter]);
-
-  const allCategories = useMemo(() => {
-    const cats = new Set<string>();
-    items.forEach(item => {
-      if (item.category_tags) {
-        item.category_tags.split(',').forEach(tag => {
-          const trimmedTag = tag.trim();
-          if (trimmedTag) cats.add(trimmedTag);
-        });
-      }
-    });
-    return Array.from(cats).sort();
-  }, [items]);
-
-  const jobs = processedItems.filter((item) => item.type === "job");
-  const contests = processedItems.filter((item) => item.type === "contest");
-  const events = processedItems.filter((item) => item.type === "event");
+  const [sortBy, setSortBy] = useState("deadline");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -1083,62 +979,54 @@ export default function RecruitPage() {
           </div>
         </div>
 
-        {/* 정렬 및 필터 적용된 탭 */}
-        <Tabs defaultValue="all" className="w-full">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 mt-4">
-            <TabsList className="bg-transparent p-0 h-auto gap-1 border-none flex-wrap justify-start">
-              <TabsTrigger 
-                value="all" 
-                className="rounded-xl px-5 py-2.5 h-auto font-black text-xs uppercase tracking-widest text-slate-400 data-[state=active]:bg-slate-900 data-[state=active]:text-white transition-all shadow-none border border-transparent data-[state=active]:border-slate-900"
-              >
-                전체 ({processedItems.length})
-              </TabsTrigger>
-              <TabsTrigger 
-                value="job" 
-                className="rounded-xl px-5 py-2.5 h-auto font-black text-xs uppercase tracking-widest text-slate-400 data-[state=active]:bg-slate-900 data-[state=active]:text-white transition-all shadow-none border border-transparent data-[state=active]:border-slate-900"
-              >
-                채용 ({jobs.length})
-              </TabsTrigger>
-              <TabsTrigger 
-                value="contest" 
-                className="rounded-xl px-5 py-2.5 h-auto font-black text-xs uppercase tracking-widest text-slate-400 data-[state=active]:bg-slate-900 data-[state=active]:text-white transition-all shadow-none border border-transparent data-[state=active]:border-slate-900"
-              >
-                공모전 ({contests.length})
-              </TabsTrigger>
-              <TabsTrigger 
-                value="event" 
-                className="rounded-xl px-5 py-2.5 h-auto font-black text-xs uppercase tracking-widest text-slate-400 data-[state=active]:bg-slate-900 data-[state=active]:text-white transition-all shadow-none border border-transparent data-[state=active]:border-slate-900"
-              >
-                이벤트 ({events.length})
-              </TabsTrigger>
-            </TabsList>
+        {/* 필터바: 탭 + 검색 + 정렬 */}
+        <div className="sticky top-[56px] z-30 bg-gray-50/95 backdrop-blur-sm pb-4 pt-2 -mx-6 px-6 border-b border-gray-100">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* 타입 탭 */}
+            <div className="flex items-center gap-1 flex-wrap">
+              {[
+                { value: "all", label: "전체" },
+                { value: "contest", label: "공모전" },
+                { value: "job", label: "채용" },
+                { value: "event", label: "이벤트" },
+              ].map((tab) => (
+                <button
+                  key={tab.value}
+                  onClick={() => setActiveTab(tab.value)}
+                  className={`rounded-xl px-5 py-2.5 font-black text-xs uppercase tracking-widest transition-all border ${
+                    activeTab === tab.value
+                      ? "bg-slate-900 text-white border-slate-900"
+                      : "text-slate-400 border-transparent hover:bg-slate-100"
+                  }`}
+                >
+                  {tab.label}
+                  {activeTab === tab.value && ` (${total})`}
+                </button>
+              ))}
+            </div>
 
             <div className="flex items-center gap-3">
-              {/* 분야 필터 */}
-              <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faFilter} />
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-[120px] h-10 rounded-xl border-slate-100 bg-slate-50 text-[11px] font-black uppercase tracking-wider focus:ring-[#16A34A]/20">
-                    <SelectValue placeholder="분야별" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-xl border-slate-100">
-                    <SelectItem value="all" className="text-xs font-bold">전체 분야</SelectItem>
-                    {allCategories.map(cat => (
-                      <SelectItem key={cat} value={cat} className="text-xs font-bold">{cat}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              {/* 검색 */}
+              <div className="relative">
+                <FontAwesomeIcon icon={faSearch} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-3.5 h-3.5" />
+                <input
+                  type="text"
+                  value={searchInput}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="검색..."
+                  className="h-10 w-[180px] pl-9 pr-3 rounded-xl border border-slate-100 bg-slate-50 text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/20 focus:border-[#16A34A]"
+                />
               </div>
 
-              {/* 정렬 필터 */}
+              {/* 정렬 */}
               <div className="flex items-center gap-2">
-                <FontAwesomeIcon icon={faSort} />
+                <FontAwesomeIcon icon={faSort} className="text-slate-400" />
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="w-[120px] h-10 rounded-xl border-slate-100 bg-slate-50 text-[11px] font-black uppercase tracking-wider focus:ring-[#16A34A]/20">
                     <SelectValue placeholder="정렬" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl border-slate-100">
-                    <SelectItem value="latest" className="text-xs font-bold">마감임박순</SelectItem>
+                    <SelectItem value="deadline" className="text-xs font-bold">마감임박순</SelectItem>
                     <SelectItem value="created" className="text-xs font-bold">최신등록순</SelectItem>
                     <SelectItem value="views" className="text-xs font-bold">조회수순</SelectItem>
                   </SelectContent>
@@ -1146,133 +1034,42 @@ export default function RecruitPage() {
               </div>
             </div>
           </div>
+        </div>
 
-          <TabsContent value="all" className="mt-0 space-y-12">
-            {/* 1. 마감 임박 섹션 (D-Day 임박순 상위 4개) */}
-            {processedItems.length > 0 && categoryFilter === 'all' && sortBy === 'latest' ? (
-               // 섹션 구분 뷰
-               <>
-                 {/* 마감 임박 */}
-                 <section>
-                    <div className="flex items-center gap-2 mb-6">
-                      <FontAwesomeIcon icon={faClock} />
-                      <h2 className="text-xl font-bold text-slate-900">마감 임박! 놓치지 마세요</h2>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
-                      {processedItems.slice(0, 4).map((item) => (
-                        <ItemCard
-                          key={item.id}
-                          item={item}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                          onViewDetail={handleViewDetail}
-                          isAdmin={isAdmin}
-                          getDday={getDday}
-                        />
-                      ))}
-                    </div>
-                 </section>
+        {/* 콘텐츠 그리드 */}
+        <div className="mt-8">
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <FontAwesomeIcon icon={faSpinner} spin className="w-8 h-8 text-slate-300" />
+            </div>
+          ) : items.length === 0 ? (
+            <EmptyState />
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
+              {items.map((item) => (
+                <ItemCard
+                  key={item.id}
+                  item={item}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
+                  onViewDetail={handleViewDetail}
+                  isAdmin={isAdmin}
+                  getDday={getDday}
+                />
+              ))}
+            </div>
+          )}
 
-                 <Separator className="bg-slate-100" />
-
-                 {/* 최신 등록 (나머지 또는 전체를 최신순으로) */}
-                 <section>
-                    <div className="flex items-center gap-2 mb-6">
-                      <FontAwesomeIcon icon={faStar} />
-                      <h2 className="text-xl font-bold text-slate-900">따끈따끈한 새 소식</h2>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
-                      {processedItems.slice(4).map((item) => (
-                        <ItemCard
-                          key={item.id}
-                          item={item}
-                          onEdit={handleEdit}
-                          onDelete={handleDelete}
-                          onViewDetail={handleViewDetail}
-                          isAdmin={isAdmin}
-                          getDday={getDday}
-                        />
-                      ))}
-                    </div>
-                    {processedItems.length <= 4 && (
-                      <p className="text-slate-400 text-sm mt-4">새로운 소식이 준비중입니다.</p>
-                    )}
-                 </section>
-               </>
-            ) : (
-              // 기본 그리드 뷰 (필터링 상태거나 다른 정렬일 때)
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-10 gap-x-6">
-                {processedItems.map((item) => (
-                  <ItemCard
-                    key={item.id}
-                    item={item}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                    onViewDetail={handleViewDetail}
-                    isAdmin={isAdmin}
-                    getDday={getDday}
-                  />
-                ))}
-              </div>
+          {/* 무한스크롤 센티넬 */}
+          <div ref={loadMoreRef} className="py-8 flex justify-center">
+            {loadingMore && (
+              <FontAwesomeIcon icon={faSpinner} spin className="w-6 h-6 text-slate-300" />
             )}
-            
-            {processedItems.length === 0 && <EmptyState />}
-          </TabsContent>
-
-          {/* 채용 */}
-          <TabsContent value="job" className="mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {jobs.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  item={item}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onViewDetail={handleViewDetail}
-                  isAdmin={isAdmin}
-                  getDday={getDday}
-                />
-              ))}
-            </div>
-            {jobs.length === 0 && <EmptyState />}
-          </TabsContent>
-
-          {/* 공모전 */}
-          <TabsContent value="contest" className="mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {contests.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  item={item}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onViewDetail={handleViewDetail}
-                  isAdmin={isAdmin}
-                  getDday={getDday}
-                />
-              ))}
-            </div>
-            {contests.length === 0 && <EmptyState />}
-          </TabsContent>
-
-          {/* 이벤트 */}
-          <TabsContent value="event" className="mt-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {events.map((item) => (
-                <ItemCard
-                  key={item.id}
-                  item={item}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                  onViewDetail={handleViewDetail}
-                  isAdmin={isAdmin}
-                  getDday={getDday}
-                />
-              ))}
-            </div>
-            {events.length === 0 && <EmptyState />}
-          </TabsContent>
-        </Tabs>
+            {!hasMore && items.length > 0 && (
+              <p className="text-sm text-slate-400">모든 항목을 불러왔습니다</p>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

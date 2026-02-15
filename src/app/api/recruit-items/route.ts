@@ -13,27 +13,72 @@ const supabaseAdmin = createClient(
   }
 );
 
-// GET: 모든 활성 항목 조회
+// GET: 활성 항목 조회 (페이지네이션 + 검색 + 정렬)
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+    const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') || '20')));
+    const search = searchParams.get('search')?.trim() || '';
+    const sort = searchParams.get('sort') || 'deadline'; // deadline | created | views
 
-    let query = supabaseAdmin
+    const offset = (page - 1) * limit;
+
+    // 공통 필터: 승인됨 + 활성
+    let countQuery = supabaseAdmin
+      .from('recruit_items')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_approved', true)
+      .eq('is_active', true);
+
+    let dataQuery = supabaseAdmin
       .from('recruit_items')
       .select('*')
-      .eq('is_active', true)
-      .order('date', { ascending: true });
+      .eq('is_approved', true)
+      .eq('is_active', true);
 
+    // 타입 필터
     if (type && type !== 'all') {
-      query = query.eq('type', type);
+      countQuery = countQuery.eq('type', type);
+      dataQuery = dataQuery.eq('type', type);
     }
 
-    const { data, error } = await query;
+    // 검색
+    if (search) {
+      const searchFilter = `title.ilike.%${search}%,description.ilike.%${search}%,company.ilike.%${search}%`;
+      countQuery = countQuery.or(searchFilter);
+      dataQuery = dataQuery.or(searchFilter);
+    }
 
-    if (error) throw error;
+    // 정렬
+    if (sort === 'views') {
+      dataQuery = dataQuery.order('views_count', { ascending: false, nullsFirst: false });
+    } else if (sort === 'created') {
+      dataQuery = dataQuery.order('created_at', { ascending: false });
+    } else {
+      // deadline: 마감일 오름차순 (임박한 것 먼저)
+      dataQuery = dataQuery.order('date', { ascending: true });
+    }
 
-    return NextResponse.json({ items: data || [] });
+    // 페이지네이션
+    dataQuery = dataQuery.range(offset, offset + limit - 1);
+
+    // 병렬 실행
+    const [countResult, dataResult] = await Promise.all([countQuery, dataQuery]);
+
+    if (countResult.error) throw countResult.error;
+    if (dataResult.error) throw dataResult.error;
+
+    const total = countResult.count || 0;
+
+    return NextResponse.json({
+      items: dataResult.data || [],
+      total,
+      page,
+      limit,
+      hasMore: offset + limit < total,
+    });
   } catch (error) {
     console.error('Error fetching recruit items:', error);
     return NextResponse.json(

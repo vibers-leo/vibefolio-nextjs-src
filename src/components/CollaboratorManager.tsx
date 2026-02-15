@@ -11,7 +11,7 @@ import {
   faEnvelope, 
   faShieldHalved 
 } from "@fortawesome/free-solid-svg-icons";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 interface Collaborator {
   id?: string; // Relation ID
