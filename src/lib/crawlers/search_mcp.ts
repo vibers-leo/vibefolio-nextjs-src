@@ -106,8 +106,12 @@ async function tavilySearch(
 
     const data = await response.json();
     const results = data.results || [];
+    // Tavily 상위 레벨 이미지 배열 (검색 결과 관련 이미지)
+    const tavilyImages: string[] = (data.images || [])
+      .map((img: any) => typeof img === 'string' ? img : img?.url)
+      .filter(Boolean);
 
-    return results.map((item: any) => {
+    return results.map((item: any, idx: number) => {
       const title = item.title || '';
       const url = item.url || '';
       const description = item.content || '';
@@ -126,6 +130,9 @@ async function tavilySearch(
 
       const aiScore = getAIRelevanceScore(title, description);
 
+      // 이미지: 개별 결과 → Tavily 이미지 풀 → themed placeholder
+      const image = item.image || item.thumbnail || tavilyImages[idx] || getThemedPlaceholder(title, type);
+
       return {
         title: title.replace(/<[^>]*>?/gm, ''),
         description: description.length > 300
@@ -138,7 +145,7 @@ async function tavilySearch(
         location: '온라인/기타',
         type,
         sourceUrl: extractDomain(url),
-        image: getThemedPlaceholder(title, type),
+        image,
         categoryTags: aiScore > 0 ? 'AI, AI검색' : 'AI검색',
         prize,
       } as CrawledItem;

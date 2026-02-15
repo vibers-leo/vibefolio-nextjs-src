@@ -304,6 +304,17 @@ export function getThemedPlaceholder(title: string, type: string): string {
     keyword = "event-concert";
   }
 
-  // Unsplash Source API (Random but keyword-themed)
-  return `https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&q=80&w=800&h=600&sig=${encodeURIComponent(title)}`;
+  // Unsplash Source API (keyword-themed, 각 테마별 고정 이미지)
+  const THEME_PHOTOS: Record<string, string> = {
+    'abstract-art': 'photo-1541701494587-cb58502866ab',
+    'cyber-coding': 'photo-1526374965328-7f61d4dc18c5',
+    'video-production': 'photo-1492619375914-88005aa9e8fb',
+    'creative-brainstorm': 'photo-1552664730-d307ca884978',
+    'premium-banner': 'photo-1557804506-669a67965ba0',
+    'artificial-intelligence': 'photo-1677442136019-21780ecad995',
+    'minimal-office': 'photo-1497366216548-37526070297c',
+    'event-concert': 'photo-1540575467063-178a50c2df87',
+  };
+  const photoId = THEME_PHOTOS[keyword] || THEME_PHOTOS['premium-banner'];
+  return `https://images.unsplash.com/${photoId}?auto=format&fit=crop&q=80&w=800&h=600`;
 }
