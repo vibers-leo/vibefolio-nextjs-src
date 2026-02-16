@@ -12,7 +12,7 @@ import { genreCategories, fieldCategories } from "@/lib/categoryMap";
 import { GENRE_TO_CATEGORY_ID } from "@/lib/constants";
 import {
   Sparkles, Loader2, ExternalLink, Image as ImageIcon,
-  ChevronRight, PenLine, Globe, Check
+  ChevronRight, PenLine, Globe, Check, Github, Code2
 } from "lucide-react";
 import Link from "next/link";
 
@@ -24,6 +24,17 @@ interface ExtractedData {
   sourceUrl: string;
   siteName: string;
   keywords: string[];
+  techStack?: string[];
+  features?: string[];
+  projectType?: string;
+  suggestedGenre?: string;
+  suggestedFields?: string[];
+  isGitHub?: boolean;
+  repoStats?: {
+    stars: number;
+    language: string;
+    topics: string[];
+  };
 }
 
 type Step = "url" | "edit" | "category";
@@ -35,6 +46,7 @@ export default function QuickPostPage() {
   const [step, setStep] = useState<Step>("url");
   const [url, setUrl] = useState("");
   const [extracting, setExtracting] = useState(false);
+  const [extractStage, setExtractStage] = useState("");
   const [publishing, setPublishing] = useState(false);
 
   // 추출된 데이터 (수정 가능)
@@ -43,6 +55,13 @@ export default function QuickPostPage() {
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
   const [siteName, setSiteName] = useState("");
+
+  // AI 분석 결과
+  const [techStack, setTechStack] = useState<string[]>([]);
+  const [features, setFeatures] = useState<string[]>([]);
+  const [projectType, setProjectType] = useState("");
+  const [isGitHub, setIsGitHub] = useState(false);
+  const [repoStats, setRepoStats] = useState<{stars: number; language: string; topics: string[]} | null>(null);
 
   // 카테고리 선택
   const [selectedGenre, setSelectedGenre] = useState("");
@@ -62,6 +81,14 @@ export default function QuickPostPage() {
     }
 
     setExtracting(true);
+    setExtractStage("페이지 접속 중...");
+
+    const stageTimers = [
+      setTimeout(() => setExtractStage("콘텐츠 분석 중..."), 1500),
+      setTimeout(() => setExtractStage("기술 스택 감지 중..."), 3000),
+      setTimeout(() => setExtractStage("AI 소개글 생성 중..."), 5000),
+    ];
+
     try {
       const res = await fetch("/api/projects/extract-url", {
         method: "POST",
@@ -81,18 +108,19 @@ export default function QuickPostPage() {
       setSourceUrl(data.sourceUrl || normalizedUrl);
       setSiteName(data.siteName || "");
 
-      // 키워드 기반 장르 자동 추천
-      if (data.keywords?.length) {
-        const kw = data.keywords.join(" ").toLowerCase();
-        if (kw.includes("app") || kw.includes("web") || kw.includes("saas")) {
-          setSelectedGenre("webapp");
-        } else if (kw.includes("design") || kw.includes("디자인")) {
-          setSelectedGenre("design");
-        } else if (kw.includes("game") || kw.includes("게임")) {
-          setSelectedGenre("game");
-        } else if (kw.includes("video") || kw.includes("영상")) {
-          setSelectedGenre("video");
-        }
+      // AI 분석 결과 설정
+      setTechStack(data.techStack || []);
+      setFeatures(data.features || []);
+      setProjectType(data.projectType || "");
+      setIsGitHub(data.isGitHub || false);
+      setRepoStats(data.repoStats || null);
+
+      // AI 추천 카테고리 설정
+      if (data.suggestedGenre) {
+        setSelectedGenre(data.suggestedGenre);
+      }
+      if (data.suggestedFields?.length) {
+        setSelectedFields(data.suggestedFields);
       }
 
       setStep("edit");
@@ -100,7 +128,9 @@ export default function QuickPostPage() {
     } catch (err: any) {
       toast.error(err.message || "URL 분석에 실패했습니다.");
     } finally {
+      stageTimers.forEach(clearTimeout);
       setExtracting(false);
+      setExtractStage("");
     }
   };
 
@@ -235,7 +265,8 @@ export default function QuickPostPage() {
                 <Globe size={28} className="text-green-600" />
               </div>
               <h2 className="text-xl font-bold text-gray-900 mb-1">프로젝트 URL을 입력하세요</h2>
-              <p className="text-sm text-gray-500">배포된 웹사이트, GitHub 페이지, 노션 등 어디든 OK</p>
+              <p className="text-sm text-gray-500 mb-3">배포된 웹사이트, GitHub 페이지, 노션 등 어디든 OK</p>
+              <p className="text-xs text-gray-400">GitHub, Vercel, Netlify, Notion, 개인 도메인 등 어디든 지원</p>
             </div>
 
             <div className="space-y-4">
@@ -257,7 +288,7 @@ export default function QuickPostPage() {
                 {extracting ? (
                   <>
                     <Loader2 size={18} className="mr-2 animate-spin" />
-                    AI가 분석하는 중...
+                    {extractStage || "분석 중..."}
                   </>
                 ) : (
                   <>
@@ -282,72 +313,142 @@ export default function QuickPostPage() {
 
         {/* === Step 2: 내용 확인/수정 === */}
         {step === "edit" && (
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 space-y-6">
-            <h2 className="text-lg font-bold text-gray-900">AI가 분석한 내용을 확인해주세요</h2>
+          <div className="space-y-6">
+            {/* Analysis Summary Card */}
+            {(techStack.length > 0 || features.length > 0 || projectType || (isGitHub && repoStats)) && (
+              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                <div className="flex items-center gap-2 mb-4">
+                  <Sparkles size={18} className="text-green-600" />
+                  <h2 className="text-lg font-bold text-gray-900">AI 분석 결과</h2>
+                </div>
 
-            {/* 썸네일 미리보기 */}
-            {thumbnailUrl && (
-              <div className="relative rounded-xl overflow-hidden bg-gray-100 aspect-video">
-                <img
-                  src={thumbnailUrl}
-                  alt="프로젝트 썸네일"
-                  className="w-full h-full object-cover"
+                {/* Tech Stack Badges */}
+                {techStack.length > 0 && (
+                  <div className="mb-4">
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                      감지된 기술 스택
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {techStack.map(tech => (
+                        <span key={tech} className="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Features */}
+                {features.length > 0 && (
+                  <div className="mb-4">
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
+                      핵심 특징
+                    </label>
+                    <div className="space-y-1.5">
+                      {features.map((feat, i) => (
+                        <div key={i} className="flex items-start gap-2 text-sm text-gray-700">
+                          <span className="text-green-500 mt-0.5">✓</span>
+                          <span>{feat}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* GitHub Stats (if applicable) */}
+                {isGitHub && repoStats && (
+                  <div className="flex items-center gap-4 text-sm text-gray-500 pt-3 border-t border-gray-100 flex-wrap">
+                    <div className="flex items-center gap-1">
+                      <Github size={14} />
+                      <span>GitHub</span>
+                    </div>
+                    <span>⭐ {repoStats.stars.toLocaleString()}</span>
+                    {repoStats.language && <span>{repoStats.language}</span>}
+                    {repoStats.topics?.slice(0, 5).map(t => (
+                      <span key={t} className="px-2 py-0.5 bg-blue-50 text-blue-600 rounded text-xs">{t}</span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Project Type Badge */}
+                {projectType && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <span className="text-xs text-gray-400">프로젝트 유형: </span>
+                    <span className="text-xs font-bold text-green-600 uppercase">{projectType}</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Editable Content Card */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
+              <h3 className="text-base font-bold text-gray-900">게시 내용</h3>
+
+              {/* 썸네일 미리보기 */}
+              {thumbnailUrl && (
+                <div className="relative rounded-xl overflow-hidden bg-gray-100 aspect-video">
+                  <img
+                    src={thumbnailUrl}
+                    alt="프로젝트 썸네일"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <button
+                      onClick={() => setThumbnailUrl("")}
+                      className="bg-black/50 text-white text-xs px-2 py-1 rounded-md hover:bg-black/70"
+                    >
+                      제거
+                    </button>
+                  </div>
+                </div>
+              )}
+              {!thumbnailUrl && (
+                <div className="rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 aspect-video flex items-center justify-center">
+                  <div className="text-center text-gray-400">
+                    <ImageIcon size={28} className="mx-auto mb-2" />
+                    <p className="text-xs">썸네일 없음 (게시 후 수정 가능)</p>
+                  </div>
+                </div>
+              )}
+
+              {/* 제목 */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  프로젝트 이름
+                </label>
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="프로젝트 이름을 입력해주세요"
+                  className="h-12 text-lg font-bold rounded-xl"
                 />
-                <div className="absolute top-2 right-2">
-                  <button
-                    onClick={() => setThumbnailUrl("")}
-                    className="bg-black/50 text-white text-xs px-2 py-1 rounded-md hover:bg-black/70"
-                  >
-                    제거
-                  </button>
-                </div>
               </div>
-            )}
-            {!thumbnailUrl && (
-              <div className="rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 aspect-video flex items-center justify-center">
-                <div className="text-center text-gray-400">
-                  <ImageIcon size={32} className="mx-auto mb-2" />
-                  <p className="text-sm">썸네일 없음 (게시 후 수정 가능)</p>
-                </div>
-              </div>
-            )}
 
-            {/* 제목 */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                프로젝트 이름
-              </label>
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="프로젝트 이름을 입력해주세요"
-                className="h-12 text-lg font-bold rounded-xl"
-              />
+              {/* 소개글 */}
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  소개글 <span className="text-green-600">(AI 생성 — 자유롭게 수정하세요)</span>
+                </label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={5}
+                  className="rounded-xl resize-none text-sm leading-relaxed"
+                  placeholder="프로젝트를 소개해주세요..."
+                />
+              </div>
+
+              {/* 출처 */}
+              {sourceUrl && (
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <ExternalLink size={14} />
+                  <span className="truncate">{sourceUrl}</span>
+                </div>
+              )}
             </div>
 
-            {/* 소개글 */}
-            <div>
-              <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                소개글 <span className="text-green-600">(AI 생성)</span>
-              </label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={5}
-                className="rounded-xl resize-none text-sm leading-relaxed"
-                placeholder="프로젝트를 소개해주세요..."
-              />
-            </div>
-
-            {/* 출처 */}
-            {sourceUrl && (
-              <div className="flex items-center gap-2 text-sm text-gray-400">
-                <ExternalLink size={14} />
-                <span className="truncate">{sourceUrl}</span>
-              </div>
-            )}
-
-            <div className="flex gap-3 pt-2">
+            {/* Navigation buttons */}
+            <div className="flex gap-3">
               <Button
                 variant="outline"
                 onClick={() => setStep("url")}
@@ -381,13 +482,16 @@ export default function QuickPostPage() {
                   <button
                     key={g.id}
                     onClick={() => setSelectedGenre(g.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all relative ${
                       selectedGenre === g.id
                         ? "bg-green-600 text-white shadow-sm"
                         : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                     }`}
                   >
                     {g.label}
+                    {selectedGenre === g.id && genreCategories.find(cat => cat.id === selectedGenre)?.id === g.id && (
+                      <span className="ml-1.5 text-xs opacity-75">AI 추천</span>
+                    )}
                   </button>
                 ))}
               </div>
