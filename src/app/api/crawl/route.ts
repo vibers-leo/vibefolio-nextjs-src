@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { crawlAll } from '@/lib/crawlers/crawler';
 import { createClient } from '@supabase/supabase-js';
-import { isAdminEmail } from '@/lib/auth/admins';
+import { isAdminEmail, ADMIN_EMAILS } from '@/lib/auth/admins';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -135,6 +135,46 @@ async function getCrawlStatus() {
 }
 
 /**
+ * 크롤링 헬스 알림: 실패 또는 신규 0건이면 관리자 전원에게 시스템 알림
+ */
+async function notifyAdminsOnCrawlIssue(
+  status: 'failed' | 'empty',
+  details: { type: string; error?: string; itemsFound?: number; duration?: string }
+) {
+  try {
+    const { data: adminProfiles } = await supabaseAdmin
+      .from('profiles')
+      .select('id, email')
+      .in('email', ADMIN_EMAILS);
+
+    if (!adminProfiles?.length) return;
+
+    const title = status === 'failed'
+      ? '크롤링 실패 알림'
+      : '크롤링 수확 0건 알림';
+
+    const message = status === 'failed'
+      ? `[${details.type}] 크롤링이 실패했습니다: ${details.error || '알 수 없는 오류'}`
+      : `[${details.type}] 크롤링 성공했지만 신규 항목 0건 (발견: ${details.itemsFound}건, 소요: ${details.duration})`;
+
+    const notifications = adminProfiles.map(admin => ({
+      user_id: admin.id,
+      type: 'system',
+      title,
+      message,
+      link: '/admin/recruit/crawl',
+      action_label: '크롤링 로그 확인',
+      action_url: '/admin/recruit/crawl',
+    }));
+
+    await supabaseAdmin.from('notifications').insert(notifications);
+    console.log(`[Crawl Health] Notified ${adminProfiles.length} admins: ${title}`);
+  } catch (e) {
+    console.error('[Crawl Health] Failed to send admin notification:', e);
+  }
+}
+
+/**
  * 실제 크롤링 실행 및 로그 저장
  */
 async function handleCrawl(keyword?: string, type: string = 'all') {
@@ -227,6 +267,8 @@ async function handleCrawl(keyword?: string, type: string = 'all') {
 
     const duration = Date.now() - startTime;
     
+    const durationStr = `${(duration / 1000).toFixed(1)}s`;
+
     // 로그 저장
     await supabaseAdmin.from('crawl_logs').insert([{
       type: type,
@@ -237,12 +279,21 @@ async function handleCrawl(keyword?: string, type: string = 'all') {
       duration_ms: duration
     }]);
 
+    // 헬스 모니터링: 신규 0건이면 관리자 알림 (키워드 검색이 아닌 자동 크롤링만)
+    if (addedCount === 0 && !keyword) {
+      await notifyAdminsOnCrawlIssue('empty', {
+        type,
+        itemsFound: result.itemsFound,
+        duration: durationStr,
+      });
+    }
+
     return NextResponse.json({
       success: true,
       itemsFound: result.itemsFound,
       itemsAdded: addedCount,
       itemsUpdated: updatedCount,
-      duration: `${(duration / 1000).toFixed(1)}s`
+      duration: durationStr
     });
 
   } catch (error) {
@@ -256,6 +307,9 @@ async function handleCrawl(keyword?: string, type: string = 'all') {
       error_message: errorMessage,
       duration_ms: duration
     }]);
+
+    // 헬스 모니터링: 크롤링 실패 시 관리자 알림
+    await notifyAdminsOnCrawlIssue('failed', { type, error: errorMessage });
 
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }

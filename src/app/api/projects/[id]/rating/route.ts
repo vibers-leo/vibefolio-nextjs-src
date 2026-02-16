@@ -206,7 +206,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             .eq('reason', `심사 평가 보상 (Project ${projectId})`);
           
           if ((count || 0) === 0) {
-              const REWARD = 100;
+              // 미슐랭 평가는 4개 축 + 총평 작성 → 일반 댓글(100P)보다 높은 200P 보상
+              const REWARD = 200;
               // 1. Add Points
               const { data: profile } = await supabaseAdmin.from('profiles').select('points').eq('id', user.id).single();
               await supabaseAdmin.from('profiles').update({ points: (profile?.points || 0) + REWARD }).eq('id', user.id);
