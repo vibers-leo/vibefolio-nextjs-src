@@ -193,7 +193,7 @@ async function runAIAnalysis(
 
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `아래 웹서비스/프로젝트 정보를 분석해서 JSON으로 응답해주세요.
 
@@ -258,7 +258,7 @@ async function generateAIDescription(
 
   try {
     const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
 
     const prompt = `당신은 크리에이터 포트폴리오 플랫폼의 AI 어시스턴트입니다.
 아래 프로젝트 정보를 바탕으로 매력적인 소개글을 작성해주세요.
