@@ -12,9 +12,10 @@ import { genreCategories, fieldCategories } from "@/lib/categoryMap";
 import { GENRE_TO_CATEGORY_ID } from "@/lib/constants";
 import {
   Sparkles, Loader2, ExternalLink, Image as ImageIcon,
-  ChevronRight, PenLine, Globe, Check, Github, Code2
+  ChevronRight, PenLine, Globe, Check, Github, Code2, Upload, AlertCircle
 } from "lucide-react";
 import Link from "next/link";
+import { uploadImage } from "@/lib/supabase/storage";
 
 interface ExtractedData {
   title: string;
@@ -53,6 +54,7 @@ export default function QuickPostPage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
+  const [thumbnailError, setThumbnailError] = useState(false);
   const [sourceUrl, setSourceUrl] = useState("");
   const [siteName, setSiteName] = useState("");
 
@@ -105,6 +107,7 @@ export default function QuickPostPage() {
       setTitle(data.title || "");
       setDescription(data.aiDescription || data.description || "");
       setThumbnailUrl(data.thumbnailUrl || "");
+      setThumbnailError(false);
       setSourceUrl(data.sourceUrl || normalizedUrl);
       setSiteName(data.siteName || "");
 
@@ -385,31 +388,64 @@ export default function QuickPostPage() {
               <h3 className="text-base font-bold text-gray-900">게시 내용</h3>
 
               {/* 썸네일 미리보기 */}
-              {thumbnailUrl && (
+              {thumbnailUrl && !thumbnailError ? (
                 <div className="relative rounded-xl overflow-hidden bg-gray-100 aspect-video">
                   <img
                     src={thumbnailUrl}
                     alt="프로젝트 썸네일"
                     className="w-full h-full object-cover"
+                    onError={() => setThumbnailError(true)}
                   />
                   <div className="absolute top-2 right-2">
                     <button
-                      onClick={() => setThumbnailUrl("")}
+                      onClick={() => { setThumbnailUrl(""); setThumbnailError(false); }}
                       className="bg-black/50 text-white text-xs px-2 py-1 rounded-md hover:bg-black/70"
                     >
                       제거
                     </button>
                   </div>
                 </div>
-              )}
-              {!thumbnailUrl && (
-                <div className="rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 aspect-video flex items-center justify-center">
-                  <div className="text-center text-gray-400">
-                    <ImageIcon size={28} className="mx-auto mb-2" />
-                    <p className="text-xs">썸네일 없음 (게시 후 수정 가능)</p>
+              ) : (
+                <div className="rounded-xl bg-gray-50 border-2 border-dashed border-gray-200 aspect-video flex items-center justify-center cursor-pointer hover:border-green-400 hover:bg-green-50/30 transition-colors"
+                  onClick={() => document.getElementById("quick-thumb-upload")?.click()}
+                >
+                  <div className="text-center text-gray-400 space-y-2 px-4">
+                    {thumbnailError ? (
+                      <>
+                        <AlertCircle size={28} className="mx-auto text-amber-400" />
+                        <p className="text-xs font-bold text-amber-600">오픈그래프 이미지를 불러올 수 없습니다</p>
+                        <p className="text-[11px] text-gray-400">이미지를 직접 업로드해주세요 (클릭 또는 드래그)</p>
+                      </>
+                    ) : (
+                      <>
+                        <Upload size={28} className="mx-auto" />
+                        <p className="text-xs font-bold">오픈그래프 이미지가 설정되지 않았습니다</p>
+                        <p className="text-[11px]">클릭하여 대표 이미지를 직접 업로드하세요</p>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
+              <input
+                type="file"
+                id="quick-thumb-upload"
+                className="hidden"
+                accept="image/*"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  try {
+                    toast.info("이미지 업로드 중...");
+                    const url = await uploadImage(file, "projects");
+                    setThumbnailUrl(url);
+                    setThumbnailError(false);
+                    toast.success("이미지가 업로드되었습니다.");
+                  } catch (err: any) {
+                    toast.error("업로드 실패: " + err.message);
+                  }
+                  e.target.value = "";
+                }}
+              />
 
               {/* 제목 */}
               <div>

@@ -215,7 +215,7 @@ export function MainBanner() {
                       </span>
                     )}
                     
-                    <h2 className="text-xl md:text-3xl font-black text-white leading-tight tracking-tight drop-shadow-lg max-w-2xl break-keep">
+                    <h2 className="text-[clamp(1.05rem,2.4vw,1.65rem)] font-black text-white leading-snug tracking-tight drop-shadow-lg max-w-2xl break-keep">
                       {banner.title}
                     </h2>
                     
