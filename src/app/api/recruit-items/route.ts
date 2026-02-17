@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
       dataQuery = dataQuery.order('created_at', { ascending: false });
     } else {
       // deadline: 마감일 오름차순 (임박한 것 먼저)
-      dataQuery = dataQuery.order('date', { ascending: true });
+      dataQuery = dataQuery.order('date', { ascending: true, nullsFirst: false });
     }
 
     // 페이지네이션
@@ -71,9 +71,22 @@ export async function GET(request: NextRequest) {
     if (dataResult.error) throw dataResult.error;
 
     const total = countResult.count || 0;
+    let items = dataResult.data || [];
+
+    // deadline 정렬: 마감 안 된 항목 먼저, 마감된 항목은 뒤로
+    if (sort === 'deadline') {
+      const today = new Date().toISOString().split('T')[0];
+      items.sort((a: any, b: any) => {
+        const expiredA = !a.date || a.date < today;
+        const expiredB = !b.date || b.date < today;
+        if (expiredA !== expiredB) return expiredA ? 1 : -1;
+        if (!expiredA) return (a.date || '').localeCompare(b.date || '');
+        return (b.date || '').localeCompare(a.date || '');
+      });
+    }
 
     return NextResponse.json({
-      items: dataResult.data || [],
+      items,
       total,
       page,
       limit,
