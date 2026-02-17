@@ -166,6 +166,7 @@ export default function RecruitPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [sortBy, setSortBy] = useState("deadline");
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(false);
@@ -522,8 +523,6 @@ export default function RecruitPage() {
     if (diff === 0) return 'D-Day';
     return `D-${diff}`;
   };
-
-  const [sortBy, setSortBy] = useState("deadline");
 
   return (
     <div className="min-h-screen bg-gray-50">
