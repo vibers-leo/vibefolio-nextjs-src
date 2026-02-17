@@ -108,9 +108,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cakhdvthnufjaxdbgqzg.supabase.co" />
         <link rel="dns-prefetch" href="https://cakhdvthnufjaxdbgqzg.supabase.co" />
         {/* Naver Search Advisor */}
-        {process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION && (
-          <meta name="naver-site-verification" content={process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION} />
-        )}
+        <meta name="naver-site-verification" content="7c7825f1ae23dae926574e405e86fbe1f8479e13" />
       </head>
       <body
         className={`${poppins.variable} ${notoSansKr.variable} font-sans antialiased bg-white min-h-screen custom-scrollbar overscroll-none`}
