@@ -40,6 +40,20 @@ export async function middleware(request: NextRequest) {
      }
   }
 
+  // CORS: 모바일 앱(React Native) 및 웹 기반 Expo에서 API 호출 시 필요
+  if (url.pathname.startsWith('/api/')) {
+    const origin = request.headers.get('origin') || '';
+    const response = request.method === 'OPTIONS'
+      ? new NextResponse(null, { status: 204 })
+      : NextResponse.next({ request: { headers: request.headers } });
+
+    response.headers.set('Access-Control-Allow-Origin', origin || '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    response.headers.set('Access-Control-Max-Age', '86400');
+    return response;
+  }
+
   // /admin, /mypage 등 보호 경로: 미들웨어에서 차단하지 않음
   // Supabase 클라이언트가 localStorage 기반이라 서버 미들웨어에서 세션을 읽을 수 없음
   // 인증/권한 체크는 클라이언트 사이드 AdminGuard 및 각 페이지에서 전담 처리
