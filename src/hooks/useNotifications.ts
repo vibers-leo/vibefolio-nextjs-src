@@ -256,7 +256,8 @@ export function useNotifications(): UseNotificationsReturn {
 }
 
 /**
- * 알림 생성 함수 (서버 사이드에서 호출)
+ * 알림 생성 함수
+ * /api/notifications POST를 호출하여 DB 저장 + 모바일 푸시 전송을 동시에 처리
  */
 export async function createNotification({
   userId,
@@ -278,19 +279,25 @@ export async function createNotification({
   actionUrl?: string;
 }) {
   try {
-    const { error } = await (supabase.from("notifications") as any).insert({
-      user_id: userId,
-      type,
-      title,
-      message,
-      link,
-      action_label: actionLabel,
-      action_url: actionUrl,
-      sender_id: senderId,
-      read: false,
+    const res = await fetch("/api/notifications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        userId,
+        type,
+        title,
+        message,
+        link,
+        senderId,
+        actionLabel,
+        actionUrl,
+      }),
     });
 
-    if (error) throw error;
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      throw new Error(data.error || `HTTP ${res.status}`);
+    }
   } catch (error) {
     console.error("[Notifications] 생성 실패:", error);
   }
