@@ -45,6 +45,36 @@
 - AuthContext에서 `isAdmin = emailCheck || roleCheck`
 - AdminGuard: 클라이언트 사이드 가드 (`src/components/admin/AdminGuard.tsx`)
 
+## AI 활용 패턴 (Gemini API)
+
+### 환경변수
+- `GOOGLE_GENERATIVE_AI_API_KEY` — Google Generative AI (Gemini) API 키
+
+### Quick Post: URL → AI 자동 분석 (extract-url)
+- **모델**: 텍스트 분석 `gemini-2.5-flash`, 이미지 생성 `gemini-2.5-flash-image`
+- **API 라우트**: `src/app/api/projects/extract-url/route.ts`
+- **흐름**:
+  1. axios + cheerio로 URL 페이지 크롤링 (OG 메타데이터, 본문 텍스트, 기술스택 자동 감지)
+  2. GitHub URL일 경우 GitHub API로 stars, language, topics, README 추가 수집
+  3. **Phase 1 (runAIAnalysis)**: features, projectType, suggestedGenre, suggestedFields, targetAudience 구조화 추출
+  4. **Phase 2 (generateAIDescription)**: 4~6문장 마케팅 소개글 생성
+  5. 이미지: `og:image` 메타태그에서 추출 → Supabase Storage 백업
+  6. **Phase 3 (generateAIThumbnail)**: OG 이미지 없으면 `gemini-2.5-flash-image`로 AI 썸네일 자동 생성 → Supabase 업로드
+- **타임아웃**: 페이지 fetch 8초, GitHub API 5초, AI 분석 각 10초, AI 이미지 30초
+- **재사용 패턴**: URL 입력만으로 콘텐츠 자동 채움이 필요한 모든 기능에 동일 패턴 적용 가능
+- **응답 필드**: `isAIThumbnail: boolean` — AI 생성 썸네일 여부 표시
+
+### AI 에이전트 3종 (Gemini 1.5 Flash)
+- **마감일 추출**: `src/lib/ai/extractDeadline.ts` — 채용/공모전 텍스트에서 마감일 LLM 추출
+- **피드백 요약**: 사용자 피드백을 요약
+- **관심사 추천**: 사용자 활동 기반 추천
+
+### 프롬프트 작성 가이드
+- 한국어 우선 프롬프트
+- JSON-only 출력 (마크다운 감싸기 제거 로직 포함)
+- 필드별 제약조건 명시 (0-3개 fields, 정해진 genre 목록 등)
+- 자연스러운 톤, 뻔한 서두 금지
+
 ## 크롤링 시스템
 - 채용: Wanted API (안정적)
 - 공모전: **Tavily AI 검색이 PRIMARY**, Wevity/ThinkContest HTML 파싱은 보조
@@ -74,6 +104,8 @@
 - 인증: `src/lib/auth/AuthContext.tsx`, `src/lib/auth/admins.ts`
 - 관리자: `src/app/admin/`, `src/components/admin/`
 - 크롤러: `src/lib/crawlers/crawler.ts`, `src/lib/crawlers/search_mcp.ts`
+- AI URL 분석: `src/app/api/projects/extract-url/route.ts` (Gemini 2.5 Flash)
+- AI 에이전트: `src/lib/ai/extractDeadline.ts`, `src/lib/ai/client.ts`
 - 홈: `src/app/HomeClient.tsx` (LazyImageCard로 가상화)
 - 알림: `src/hooks/useNotifications.ts` (incremental insert 최적화됨)
 - OKR: `OKR.md` (분기별 목표 및 진행 추적)

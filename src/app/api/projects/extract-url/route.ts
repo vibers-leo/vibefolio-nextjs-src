@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { uploadImageFromUrl } from '@/lib/supabase/storage';
+import { supabase } from '@/lib/supabase/client';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const GEMINI_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+const AI_IMAGE_MODEL = 'gemini-2.5-flash-image';
 
 // ==================== Deep Content Extraction ====================
 function extractPageContent($: cheerio.CheerioAPI): string {
@@ -293,6 +295,85 @@ ${pageContent.slice(0, 1500)}
   }
 }
 
+// ==================== AI Thumbnail Generation ====================
+async function generateAIThumbnail(
+  title: string,
+  siteName: string,
+  projectType: string,
+  features: string[],
+): Promise<string> {
+  if (!GEMINI_API_KEY) return '';
+
+  try {
+    const featureHint = features.length > 0 ? features.slice(0, 3).join(', ') : projectType;
+
+    const prompt = `Generate a modern, visually appealing thumbnail image for a web project.
+
+Project: ${title || siteName}
+Type: ${projectType}
+Key features: ${featureHint}
+
+Requirements:
+- Clean, minimal flat design style
+- Soft gradient background with harmonious colors
+- Include relevant icons or abstract shapes that represent the project type
+- Landscape orientation (16:9 aspect ratio)
+- Do NOT include any text, letters, or words in the image
+- Professional quality suitable for a portfolio platform`;
+
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${AI_IMAGE_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { responseModalities: ['IMAGE'] },
+        }),
+        signal: AbortSignal.timeout(30000),
+      }
+    );
+
+    const data = await res.json();
+    if (data.error || !data.candidates?.[0]?.content?.parts) {
+      console.warn('[extract-url] AI image generation failed:', data.error?.message);
+      return '';
+    }
+
+    const imagePart = data.candidates[0].content.parts.find(
+      (p: any) => p.inlineData
+    );
+    if (!imagePart) return '';
+
+    // Upload to Supabase Storage
+    const buffer = Buffer.from(imagePart.inlineData.data, 'base64');
+    const fileName = `ai-thumb-${Date.now()}-${Math.random().toString(36).substring(7)}.png`;
+    const filePath = `uploads/${fileName}`;
+
+    const { error } = await supabase.storage
+      .from('projects')
+      .upload(filePath, buffer, {
+        contentType: 'image/png',
+        cacheControl: '3600',
+        upsert: false,
+      });
+
+    if (error) {
+      console.warn('[extract-url] AI thumbnail upload failed:', error.message);
+      return '';
+    }
+
+    const { data: publicUrlData } = supabase.storage
+      .from('projects')
+      .getPublicUrl(filePath);
+
+    return publicUrlData.publicUrl;
+  } catch (err: any) {
+    console.warn('[extract-url] AI thumbnail generation failed:', err?.message);
+    return '';
+  }
+}
+
 // ==================== Main Handler ====================
 export async function POST(request: NextRequest) {
   try {
@@ -410,13 +491,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 7.5. AI Thumbnail fallback — OG 이미지가 없으면 AI가 생성
+    if (!thumbnailUrl && aiAnalysis) {
+      thumbnailUrl = await generateAIThumbnail(
+        title,
+        siteName || new URL(url).hostname,
+        aiAnalysis.projectType,
+        aiAnalysis.features,
+      );
+    }
+
     // 8. Build response
+    const isAIThumbnail = !ogImage && !!thumbnailUrl;
     const responseData: any = {
       success: true,
       title,
       description,
       aiDescription,
       thumbnailUrl,
+      isAIThumbnail,
       sourceUrl: url,
       siteName: siteName || new URL(url).hostname,
       keywords: keywords ? keywords.split(',').map(k => k.trim()).filter(Boolean) : [],
