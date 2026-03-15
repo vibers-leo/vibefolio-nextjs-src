@@ -1,6 +1,4 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
-
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_GENERATIVE_AI_API_KEY || '');
+import { generateText, hasAIProvider } from './client';
 
 /**
  * LLM으로 마감일 추출. 실패 시 null 반환 (graceful degradation).
@@ -9,7 +7,7 @@ export async function llmExtractDeadline(
   title: string,
   description: string
 ): Promise<string | null> {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) return null;
+  if (!hasAIProvider()) return null;
 
   const today = new Date().toISOString().split('T')[0];
   const prompt = `오늘 날짜는 ${today}입니다.
@@ -21,19 +19,15 @@ export async function llmExtractDeadline(
 설명: ${description.substring(0, 500)}`;
 
   try {
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      generationConfig: { maxOutputTokens: 64 },
+    const text = await generateText({
+      prompt,
+      maxTokens: 64,
+      temperature: 0.1,
+      timeout: 5000,
     });
-    const result = await Promise.race([
-      model.generateContent(prompt),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 5000)
-      ),
-    ]);
 
-    const text = result.response.text().trim();
-    if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+    const trimmed = text.trim();
+    if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
     return null;
   } catch (err) {
     console.warn('[LLM Deadline] Failed:', (err as Error).message);

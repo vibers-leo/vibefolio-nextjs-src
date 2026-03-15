@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { processUserQuery } from "@/lib/ai/search-service";
 import { checkRateLimit } from "@/lib/ai/rate-limit";
+import { hasAIProvider } from "@/lib/ai/client";
 
 export async function POST(req: NextRequest) {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!hasAIProvider()) {
     return NextResponse.json({
       error: "AI 서비스 점검 중",
       answer: "현재 AI 서비스 안정화를 위해 점검 중입니다.",

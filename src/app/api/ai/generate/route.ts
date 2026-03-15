@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { genAI } from "@/lib/ai/client";
+import { generateText, hasAIProvider } from "@/lib/ai/client";
 import { checkRateLimit } from "@/lib/ai/rate-limit";
 import { createClient } from "@/lib/supabase/server";
 
 // edge runtime 제거 — 인메모리 Rate Limit Map과 호환 안 됨
 
 export async function POST(req: NextRequest) {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!hasAIProvider()) {
     return NextResponse.json({
       error: "AI 서비스 점검 중",
       message: "현재 AI 서비스 점검 중입니다."
@@ -31,41 +31,37 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Topic is required" }, { status: 400 });
     }
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash",
-      generationConfig: { maxOutputTokens: 1024 },
-    });
-
+    let systemPrompt = "";
     let prompt = "";
 
     if (type === 'lean-canvas') {
-      prompt = `You are a Startup Consultant. Generate a Lean Canvas for: "${topic}"
-Language: Korean. Output: JSON only, no markdown code blocks.
-{"problem":"3 key problems","customerSegments":"Target customers","uniqueValueProposition":"Why different","solution":"Top 3 features","channels":"Path to customers","revenueStreams":"Revenue model","costStructure":"Costs","keyMetrics":"Key metrics","unfairAdvantage":"Cannot be copied"}
+      systemPrompt = "You are a Startup Consultant. Generate a Lean Canvas. Language: Korean. Output: JSON only, no markdown code blocks.";
+      prompt = `Topic: "${topic}"
+JSON format: {"problem":"3 key problems","customerSegments":"Target customers","uniqueValueProposition":"Why different","solution":"Top 3 features","channels":"Path to customers","revenueStreams":"Revenue model","costStructure":"Costs","keyMetrics":"Key metrics","unfairAdvantage":"Cannot be copied"}
 Start JSON:`;
     } else if (type === 'persona') {
-      prompt = `You are a UX Researcher. Define a target persona for: "${topic}"
-Language: Korean. Output: JSON only, no markdown code blocks.
-{"name":"Korean Name","age":"e.g. 28세","job":"Job","location":"City","quote":"Pain point quote","bio":"2-3 sentences","goals":[".."],"frustrations":[".."],"brands":[".."],"mbti":"Type","imageKeyword":"english keyword for avatar"}
+      systemPrompt = "You are a UX Researcher. Define a target persona. Language: Korean. Output: JSON only, no markdown code blocks.";
+      prompt = `Topic: "${topic}"
+JSON format: {"name":"Korean Name","age":"e.g. 28세","job":"Job","location":"City","quote":"Pain point quote","bio":"2-3 sentences","goals":[".."],"frustrations":[".."],"brands":[".."],"mbti":"Type","imageKeyword":"english keyword for avatar"}
 Start JSON:`;
     } else if (type === 'assistant') {
-      prompt = `You are a Content Writing Assistant. Write a draft for: "${topic}"
-Language: Korean. Output: JSON only, no markdown code blocks.
-{"title":"Title","content":"Full markdown content with headers and bullet points"}
+      systemPrompt = "You are a Content Writing Assistant. Language: Korean. Output: JSON only, no markdown code blocks.";
+      prompt = `Write a draft for: "${topic}"
+JSON format: {"title":"Title","content":"Full markdown content with headers and bullet points"}
 Start JSON:`;
     } else {
       return NextResponse.json({ error: "Invalid type" }, { status: 400 });
     }
 
-    const result = await Promise.race([
-      model.generateContent(prompt),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 15000)
-      ),
-    ]);
+    const raw = await generateText({
+      systemPrompt,
+      prompt,
+      maxTokens: 1024,
+      jsonMode: true,
+      timeout: 15000,
+    });
 
-    let text = result.response.text();
-    text = text.replace(/```json/g, "").replace(/```/g, "").trim();
+    let text = raw.replace(/```json/g, "").replace(/```/g, "").trim();
 
     try {
       const json = JSON.parse(text);

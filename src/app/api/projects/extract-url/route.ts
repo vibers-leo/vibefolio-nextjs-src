@@ -3,7 +3,7 @@ import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { uploadImageFromUrl } from '@/lib/supabase/storage';
 import { supabase } from '@/lib/supabase/client';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { generateText, hasAIProvider } from '@/lib/ai/client';
 
 const GEMINI_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 const AI_IMAGE_MODEL = 'gemini-2.5-flash-image';
@@ -191,15 +191,9 @@ async function runAIAnalysis(
   techStack: string[],
   pageContent: string
 ): Promise<AIAnalysisResult | null> {
-  if (!GEMINI_API_KEY) return null;
+  if (!hasAIProvider()) return null;
 
   try {
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      generationConfig: { maxOutputTokens: 512 },
-    });
-
     const prompt = `아래 웹서비스/프로젝트 정보를 분석해서 JSON으로 응답해주세요.
 
 프로젝트명: ${title}
@@ -222,19 +216,17 @@ suggestedFields는 0-3개, 선택 가능한 값: finance, healthcare, beauty, pe
 
 순수 JSON만 출력하세요. 마크다운 코드블록 사용하지 마세요.`;
 
-    const result = await Promise.race([
-      model.generateContent(prompt),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('AI analysis timeout')), 10000)
-      ),
-    ]);
-
-    const text = result.response?.text()?.trim() || '';
+    const raw = await generateText({
+      prompt,
+      maxTokens: 512,
+      jsonMode: true,
+      timeout: 10000,
+    });
 
     // Remove markdown code blocks if present
-    let jsonText = text;
-    if (text.startsWith('```')) {
-      jsonText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    let jsonText = raw.trim();
+    if (jsonText.startsWith('```')) {
+      jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     }
 
     const parsed = JSON.parse(jsonText);
@@ -259,49 +251,37 @@ async function generateAIDescription(
   targetAudience: string,
   pageContent: string
 ): Promise<string> {
-  if (!GEMINI_API_KEY) return '';
+  if (!hasAIProvider()) return '';
 
   try {
-    const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      generationConfig: { maxOutputTokens: 512 },
-    });
-
-    const prompt = `당신은 크리에이터 포트폴리오 플랫폼의 AI 어시스턴트입니다.
-아래 프로젝트 정보를 바탕으로 매력적인 소개글을 작성해주세요.
-
-프로젝트명: ${title}
+    const prompt = `프로젝트명: ${title}
 사이트: ${siteName}
 핵심 기능: ${features.join(', ') || '(분석 중)'}
 기술 스택: ${techStack.join(', ') || '(없음)'}
 타겟: ${targetAudience || '(일반 사용자)'}
 페이지 콘텐츠 요약:
-${pageContent.slice(0, 1500)}
+${pageContent.slice(0, 1500)}`;
 
+    return await generateText({
+      systemPrompt: `당신은 크리에이터 포트폴리오 플랫폼의 AI 어시스턴트입니다. 아래 프로젝트 정보를 바탕으로 매력적인 소개글을 작성해주세요.
 작성 규칙:
 - 4~6문장으로 간결하게
 - 이 프로젝트가 어떤 문제를 해결하고, 어떤 가치를 제공하는지 중심으로
 - 기술적 특징이 있으면 자연스럽게 언급
 - 개발자/크리에이터에게 어필하는 톤
 - 마크다운 사용하지 않기 (순수 텍스트)
-- "이 프로젝트는~" 같은 딱딱한 시작 금지`;
-
-    const result = await Promise.race([
-      model.generateContent(prompt),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('AI description timeout')), 10000)
-      ),
-    ]);
-
-    return result.response?.text()?.trim() || '';
+- "이 프로젝트는~" 같은 딱딱한 시작 금지`,
+      prompt,
+      maxTokens: 512,
+      timeout: 10000,
+    });
   } catch (err) {
     console.warn('[extract-url] AI description generation failed:', err);
     return '';
   }
 }
 
-// ==================== AI Thumbnail Generation ====================
+// ==================== AI Thumbnail Generation (Gemini 전용) ====================
 async function generateAIThumbnail(
   title: string,
   siteName: string,

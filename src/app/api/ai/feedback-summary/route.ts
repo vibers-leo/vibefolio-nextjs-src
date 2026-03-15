@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { genAI } from '@/lib/ai/client';
+import { generateText, hasAIProvider } from '@/lib/ai/client';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import { checkRateLimit } from '@/lib/ai/rate-limit';
 
 export async function POST(req: NextRequest) {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!hasAIProvider()) {
     return NextResponse.json({ success: false, summary: null, error: 'API Key missing' });
   }
 
@@ -64,29 +64,20 @@ export async function POST(req: NextRequest) {
       ? proposals.map((p) => `- ${p}`).join('\n')
       : '(없음)';
 
-    const prompt = `피드백 분석 후 핵심 요약:
-
-[댓글 ${commentCount}개]
+    const prompt = `[댓글 ${commentCount}개]
 ${commentLines}
 ${avgScores}
 [제안 ${proposals.length}개]
-${proposalLines}
+${proposalLines}`;
 
-규칙: 반드시 3줄, "• "로 시작, 각 40자 이내, 한국어, 존댓말, 줄 외 텍스트 금지`;
-
-    const model = genAI.getGenerativeModel({
-      model: 'gemini-2.0-flash',
-      generationConfig: { maxOutputTokens: 512 },
+    const text = await generateText({
+      systemPrompt: '피드백을 분석하여 핵심을 요약하세요. 반드시 3줄, "• "로 시작, 각 40자 이내, 한국어, 존댓말, 줄 외 텍스트 금지.',
+      prompt,
+      maxTokens: 256,
+      timeout: 15000,
     });
-    const result = await Promise.race([
-      model.generateContent(prompt),
-      new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 15000)
-      ),
-    ]);
 
-    const text = result.response.text().trim();
-    return NextResponse.json({ success: true, summary: text });
+    return NextResponse.json({ success: true, summary: text.trim() });
   } catch (error: any) {
     console.error('[AI Feedback Summary]', error);
     return NextResponse.json({ success: false, summary: null, error: error.message });
