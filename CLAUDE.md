@@ -51,7 +51,7 @@
 - `GOOGLE_GENERATIVE_AI_API_KEY` — Google Generative AI (Gemini) API 키
 
 ### Quick Post: URL → AI 자동 분석 (extract-url)
-- **모델**: 텍스트 분석 `gemini-2.5-flash`, 이미지 생성 `gemini-2.5-flash-image`
+- **모델**: 텍스트 분석 `gemini-2.0-flash`, 이미지 생성 `gemini-2.5-flash-image`
 - **API 라우트**: `src/app/api/projects/extract-url/route.ts`
 - **흐름**:
   1. axios + cheerio로 URL 페이지 크롤링 (OG 메타데이터, 본문 텍스트, 기술스택 자동 감지)
@@ -64,10 +64,16 @@
 - **재사용 패턴**: URL 입력만으로 콘텐츠 자동 채움이 필요한 모든 기능에 동일 패턴 적용 가능
 - **응답 필드**: `isAIThumbnail: boolean` — AI 생성 썸네일 여부 표시
 
-### AI 에이전트 3종 (Gemini 1.5 Flash)
+### AI 에이전트 3종 (Gemini 2.0 Flash)
 - **마감일 추출**: `src/lib/ai/extractDeadline.ts` — 채용/공모전 텍스트에서 마감일 LLM 추출
 - **피드백 요약**: 사용자 피드백을 요약
 - **관심사 추천**: 사용자 활동 기반 추천
+
+### Rate Limit (인메모리)
+- **파일**: `src/lib/ai/rate-limit.ts`
+- **방식**: IP 기반 비인증 10회/일, 인증 유저 20회/일
+- **적용**: 모든 AI API 라우트 (`/api/ai/*`, `/api/projects/extract-url` 제외)
+- **주의**: Vercel 서버리스 인스턴스 간 상태 비공유 (soft limit)
 
 ### 프롬프트 작성 가이드
 - 한국어 우선 프롬프트
@@ -104,7 +110,7 @@
 - 인증: `src/lib/auth/AuthContext.tsx`, `src/lib/auth/admins.ts`
 - 관리자: `src/app/admin/`, `src/components/admin/`
 - 크롤러: `src/lib/crawlers/crawler.ts`, `src/lib/crawlers/search_mcp.ts`
-- AI URL 분석: `src/app/api/projects/extract-url/route.ts` (Gemini 2.5 Flash)
+- AI URL 분석: `src/app/api/projects/extract-url/route.ts` (Gemini 2.0 Flash)
 - AI 에이전트: `src/lib/ai/extractDeadline.ts`, `src/lib/ai/client.ts`
 - 홈: `src/app/HomeClient.tsx` (LazyImageCard로 가상화)
 - 알림: `src/hooks/useNotifications.ts` (incremental insert 최적화됨)

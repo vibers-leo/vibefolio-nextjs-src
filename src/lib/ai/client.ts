@@ -1,4 +1,3 @@
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
@@ -9,6 +8,13 @@ if (!apiKey) {
 
 export const genAI = new GoogleGenerativeAI(apiKey || "");
 
-export const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+// gemini-2.0-flash: 무료 티어 포함, 비용 절감 (2026-03-15 다운그레이드)
+export const model = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash",
+  generationConfig: { maxOutputTokens: 1024 },
+});
 
-export const visionModel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+export const shortModel = genAI.getGenerativeModel({
+  model: "gemini-2.0-flash",
+  generationConfig: { maxOutputTokens: 512 },
+});

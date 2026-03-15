@@ -21,7 +21,10 @@ export async function llmExtractDeadline(
 설명: ${description.substring(0, 500)}`;
 
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({
+      model: 'gemini-2.0-flash',
+      generationConfig: { maxOutputTokens: 64 },
+    });
     const result = await Promise.race([
       model.generateContent(prompt),
       new Promise<never>((_, reject) =>
