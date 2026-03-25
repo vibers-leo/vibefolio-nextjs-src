@@ -1,3 +1,6 @@
+# Migration backup (contains API keys)
+MIGRATION-BACKUP.md
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -40,6 +43,14 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# turbo
+.turbo
+
 # logs
 dev_server.log
 testsprite_tests/test_credentials.txt
+
+# AI agent artifacts
+.gemini/
+.agent/
+session-logs/
