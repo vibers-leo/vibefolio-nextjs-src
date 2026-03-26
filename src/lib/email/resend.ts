@@ -68,7 +68,7 @@ export async function sendTemplateEmail({
 }: {
   to: string | string[];
   subject: string;
-  template: 'welcome' | 'notification' | 'support';
+  template: 'welcome' | 'notification' | 'support' | 'project-update';
   data: Record<string, any>;
   from?: string;
 }) {
@@ -113,6 +113,29 @@ function renderTemplate(template: string, data: Record<string, any>): string {
         </div>
         <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
         <p style="color: #6b7280; font-size: 12px;">© 2026 Vibefolio. All rights reserved.</p>
+      </div>
+    `,
+    'project-update': `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <div style="background: linear-gradient(135deg, #059669, #10b981); padding: 30px; border-radius: 12px 12px 0 0;">
+          <h2 style="color: white; margin: 0;">프로젝트 변경 감지</h2>
+        </div>
+        <div style="padding: 30px; background: #ffffff; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 12px 12px;">
+          <p style="font-size: 16px; color: #1f2937; margin-top: 0;">
+            <strong>${data.projectTitle || '프로젝트'}</strong>에서 변경사항이 감지되었습니다.
+          </p>
+          <div style="background: #f0fdf4; padding: 16px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #10b981;">
+            <p style="margin: 0; color: #065f46; font-size: 14px;">${data.changesSummary || ''}</p>
+          </div>
+          <a href="${data.updateUrl || '#'}" style="display: inline-block; padding: 14px 28px; background-color: #059669; color: white; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 10px 0;">
+            버전 업데이트하기
+          </a>
+          <p style="color: #6b7280; font-size: 13px; margin-top: 20px;">
+            AI가 분석한 변경사항을 바탕으로 버전 업데이트를 작성할 수 있습니다.
+          </p>
+          <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;">
+          <p style="color: #6b7280; font-size: 12px;">&copy; 2026 Vibefolio. All rights reserved.</p>
+        </div>
       </div>
     `,
   };
