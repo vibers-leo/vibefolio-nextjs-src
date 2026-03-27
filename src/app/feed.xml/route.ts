@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/admin'
 import { BASE_URL } from '@/lib/constants'
 
 export async function GET() {

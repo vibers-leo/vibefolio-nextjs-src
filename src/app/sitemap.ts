@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/lib/supabase/admin'
 import { BASE_URL } from '@/lib/constants'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

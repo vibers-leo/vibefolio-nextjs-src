@@ -1,7 +1,5 @@
 // src/lib/supabase/client.ts — 호환성 프록시 (Supabase → JWT 전환)
-// DB/Auth는 Prisma + JWT로 대체됨. Storage는 유지.
-// 기존 컴포넌트의 supabase.auth.getSession()/getUser() 호출을 위한 프록시
-import { getStorageClient } from '../supabase-storage';
+// DB/Auth는 Prisma + JWT로 대체됨. @supabase/supabase-js 패키지 제거됨.
 
 const TOKEN_KEY = 'vf_token';
 
@@ -95,8 +93,7 @@ const authProxy = {
     }
   },
   async signInWithOAuth({ provider, options }: any) {
-    // OAuth는 현재 지원하지 않음 — 에러 반환
-    console.warn('[Auth Proxy] OAuth 로그인은 현재 지원되지 않습니다. 이메일 로그인을 사용해주세요.');
+    console.warn('[Auth Proxy] OAuth 로그인은 현재 지원되지 않습니다.');
     return { data: { url: null, provider }, error: { message: 'OAuth는 현재 지원되지 않습니다.' } };
   },
   async signUp({ email, password, options }: any) {
@@ -117,15 +114,17 @@ const authProxy = {
     }
   },
   async updateUser(updates: any) {
-    // Profile 업데이트는 /api/users/[id] 사용
     return { data: { user: null }, error: null };
   },
   async refreshSession() {
     return { data: { session: null }, error: null };
   },
   onAuthStateChange(callback: Function) {
-    // JWT 기반이므로 실시간 감지 불필요
     return { data: { subscription: { unsubscribe: () => {} } } };
+  },
+  // exchangeCodeForSession — auth/callback에서 사용하던 메서드 (스텁)
+  async exchangeCodeForSession(_code: string) {
+    return { data: { session: null }, error: { message: 'Supabase Auth 제거됨 — JWT 사용' } };
   },
 };
 
@@ -133,20 +132,23 @@ const authProxy = {
 function fromProxy(table: string) {
   console.warn(`[Supabase Proxy] supabase.from('${table}') 호출됨. Prisma로 마이그레이션하세요.`);
   const chain: any = {
-    select: () => chain,
-    insert: () => chain,
-    update: () => chain,
+    select: (..._args: any[]) => chain,
+    insert: (..._args: any[]) => chain,
+    update: (..._args: any[]) => chain,
     delete: () => chain,
-    eq: () => chain,
-    neq: () => chain,
-    in: () => chain,
-    is: () => chain,
-    not: () => chain,
-    or: () => chain,
-    and: () => chain,
-    order: () => chain,
-    limit: () => chain,
-    range: () => chain,
+    upsert: (..._args: any[]) => chain,
+    eq: (..._args: any[]) => chain,
+    neq: (..._args: any[]) => chain,
+    in: (..._args: any[]) => chain,
+    is: (..._args: any[]) => chain,
+    not: (..._args: any[]) => chain,
+    or: (..._args: any[]) => chain,
+    and: (..._args: any[]) => chain,
+    gte: (..._args: any[]) => chain,
+    lte: (..._args: any[]) => chain,
+    order: (..._args: any[]) => chain,
+    limit: (..._args: any[]) => chain,
+    range: (..._args: any[]) => chain,
     single: () => Promise.resolve({ data: null, error: { message: 'Supabase proxy - use Prisma' } }),
     maybeSingle: () => Promise.resolve({ data: null, error: null }),
     then: (resolve: Function) => resolve({ data: [], error: null, count: 0 }),
@@ -154,13 +156,18 @@ function fromProxy(table: string) {
   return chain;
 }
 
-// Storage 클라이언트 기반 프록시
-const storageBase = getStorageClient();
+const storageStub = {
+  from: () => ({
+    upload: async () => ({ data: null, error: { message: 'Storage 제거됨 — NCP 사용' } }),
+    getPublicUrl: () => ({ data: { publicUrl: '' } }),
+    remove: async () => ({ error: null }),
+  }),
+};
 
 export const supabase: any = {
   auth: authProxy,
   from: fromProxy,
-  storage: storageBase?.storage || { from: () => ({ upload: async () => ({ data: null, error: { message: 'No storage' } }), getPublicUrl: () => ({ data: { publicUrl: '' } }), remove: async () => ({ error: null }) }) },
+  storage: storageStub,
   channel: () => ({
     on: () => ({ subscribe: () => ({ unsubscribe: () => {} }) }),
     subscribe: () => ({}),

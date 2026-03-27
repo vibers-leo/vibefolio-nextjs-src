@@ -1,6 +1,6 @@
 // 기존 크롤링 데이터 중 placeholder 이미지를 가진 항목의 실제 이미지 재수집
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/admin';
 
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,

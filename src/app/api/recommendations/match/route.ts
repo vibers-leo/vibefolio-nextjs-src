@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/admin';
 import { isAdminEmail } from '@/lib/auth/admins';
 import { matchAndNotify } from '@/lib/recommendations/matchInterests';
 

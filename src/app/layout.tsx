@@ -27,7 +27,7 @@ const notoSansKr = Noto_Sans_KR({
   variable: '--font-noto-sans-kr',
 });
 
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/admin';
 
 export async function generateMetadata(): Promise<Metadata> {
   const defaultTitle = "Vibefolio - 크리에이터를 위한 영감 저장소";

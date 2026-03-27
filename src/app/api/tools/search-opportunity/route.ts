@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { crawlByType } from '@/lib/crawlers/crawler';
 import { searchMcp } from '@/lib/crawlers/haebojago';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/admin';
 
 // Supabase Admin Client for logging
 const supabaseAdmin = createClient(

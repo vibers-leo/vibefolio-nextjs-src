@@ -1,19 +1,19 @@
-// src/lib/supabase-storage.ts — Supabase Storage 전용 클라이언트 (DB/Auth 분리)
-import { createClient } from '@supabase/supabase-js';
+// src/lib/supabase-storage.ts — NCP 스토리지 전환 (Supabase Storage 제거)
+// 이미지는 http://49.50.138.93:8090/ 사용
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// 호환성 유지를 위한 스텁 — 기존 getStorageClient() 호출처에서 사용
+const storageStub: any = {
+  storage: {
+    from: () => ({
+      upload: async () => ({ data: null, error: { message: 'Supabase Storage 제거됨 — NCP 사용' } }),
+      getPublicUrl: () => ({ data: { publicUrl: '' } }),
+      remove: async () => ({ error: null }),
+    }),
+  },
+};
 
-// Storage 전용 클라이언트 (Auth/DB는 사용하지 않음)
-export const storageClient = (supabaseUrl && supabaseAnonKey)
-  ? createClient(supabaseUrl, supabaseAnonKey, {
-      auth: { persistSession: false },
-    })
-  : null;
+export const storageClient = storageStub;
 
 export function getStorageClient() {
-  if (!storageClient) {
-    console.warn('[Storage] Supabase Storage 미설정 — NEXT_PUBLIC_SUPABASE_URL 또는 NEXT_PUBLIC_SUPABASE_ANON_KEY 누락');
-  }
-  return storageClient;
+  return storageStub;
 }
