@@ -1,7 +1,5 @@
-// src/lib/supabase/storage.ts — NCP 스토리지 전환 (Supabase Storage 제거)
-// 이미지 업로드는 NCP Object Storage (http://49.50.138.93:8090/) 사용
-
-const NCP_STORAGE_BASE = 'http://49.50.138.93:8090';
+// src/lib/supabase/storage.ts — NCP Storage 업로드 (/api/upload 경유)
+// 이미지는 https://storage.vibers.co.kr 에서 서빙
 
 /**
  * 이미지 압축 및 리사이징 (Client-side)
@@ -61,20 +59,33 @@ async function compressImage(file: File, maxWidth: number = 1920, maxHeight: num
 }
 
 /**
- * 이미지 업로드 — NCP Storage 전환 예정, 현재는 스텁
+ * 이미지 업로드 — /api/upload 를 통해 NCP 서버로 전송
  */
 export async function uploadImage(
   file: File,
   bucket: string = 'projects'
 ): Promise<string> {
-  // TODO: NCP Object Storage API 연동
-  console.warn('[Storage] uploadImage 스텁 — NCP 연동 필요');
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+  // 클라이언트에서 이미지 압축
+  const compressed = file.type.startsWith('image/')
+    ? await compressImage(file)
+    : file;
+
+  const formData = new FormData();
+  formData.append('file', compressed instanceof Blob ? new File([compressed], file.name, { type: compressed.type || file.type }) : compressed);
+  formData.append('category', bucket); // 'projects' | 'profiles'
+
+  const res = await fetch('/api/upload', {
+    method: 'POST',
+    body: formData,
   });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: '업로드 실패' }));
+    throw new Error(err.error || '업로드 실패');
+  }
+
+  const data = await res.json();
+  return data.url;
 }
 
 /**
@@ -105,14 +116,23 @@ export function base64ToFile(base64: string, filename: string): File {
 }
 
 /**
- * 외부 URL 이미지 — 현재는 원본 URL 그대로 반환
+ * 외부 URL 이미지 — fetch 후 NCP에 업로드
  */
 export async function uploadImageFromUrl(
   url: string,
   bucket: string = 'projects'
 ): Promise<string> {
-  // TODO: NCP Storage로 프록시 업로드 구현
-  return url;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return url; // 실패 시 원본 URL 반환
+    const blob = await res.blob();
+    const ext = url.split('.').pop()?.split('?')[0] || 'jpg';
+    const file = new File([blob], `external-${Date.now()}.${ext}`, { type: blob.type || 'image/jpeg' });
+    return await uploadImage(file, bucket);
+  } catch {
+    console.warn('[Storage] 외부 이미지 업로드 실패, 원본 URL 반환:', url.substring(0, 60));
+    return url;
+  }
 }
 
 /**
