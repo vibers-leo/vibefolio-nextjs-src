@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Poppins, Noto_Sans_KR } from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ClientProviders } from "@/components/ClientProviders";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -21,11 +21,7 @@ const poppins = Poppins({
   variable: "--font-poppins",
 });
 
-const notoSansKr = Noto_Sans_KR({
-  weight: ['400', '500', '700'],
-  subsets: ['latin'],
-  variable: '--font-noto-sans-kr',
-});
+// Pretendard loaded via CDN in globals.css (premium Korean font, replaces Noto Sans KR)
 
 import { createClient } from '@/lib/supabase/admin';
 
@@ -111,7 +107,7 @@ export default function RootLayout({
         <meta name="naver-site-verification" content="7c7825f1ae23dae926574e405e86fbe1f8479e13" />
       </head>
       <body
-        className={`${poppins.variable} ${notoSansKr.variable} font-sans antialiased bg-white min-h-screen custom-scrollbar overscroll-none`}
+        className={`${poppins.variable} font-sans antialiased bg-white min-h-[100dvh] custom-scrollbar overscroll-none`}
       >
         <Script
           src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"

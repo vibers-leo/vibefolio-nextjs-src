@@ -80,8 +80,16 @@ const config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         shine: "shine 1.5s infinite",
       },
+      transitionTimingFunction: {
+        'supanova': 'cubic-bezier(0.16, 1, 0.3, 1)',
+      },
+      boxShadow: {
+        'card': '0 4px 24px -4px rgba(16, 24, 40, 0.06), 0 2px 8px -2px rgba(16, 24, 40, 0.03)',
+        'card-hover': '0 20px 60px -15px rgba(16, 24, 40, 0.1), 0 4px 16px -4px rgba(16, 24, 40, 0.06)',
+        'tinted': '0 8px 32px -8px rgba(22, 163, 74, 0.12)',
+      },
       fontFamily: {
-        sans: ["var(--font-poppins)", "Pretendard", "var(--font-noto-sans-kr)", "-apple-system", "BlinkMacSystemFont", "system-ui", "Roboto", "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "sans-serif"],
+        sans: ["Pretendard", "var(--font-poppins)", "-apple-system", "BlinkMacSystemFont", "system-ui", "Apple SD Gothic Neo", "sans-serif"],
         poppins: ["var(--font-poppins)", "sans-serif"],
         pretendard: ["Pretendard", "sans-serif"],
       },

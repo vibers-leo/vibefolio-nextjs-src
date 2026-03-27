@@ -2,6 +2,7 @@
 
 import React, { forwardRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { OptimizedImage } from '@/components/OptimizedImage';
 import { FontAwesomeIcon } from "./FaIcon";
 import { 
@@ -123,15 +124,16 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
     };
 
     return (
-      <div
+      <motion.div
         ref={ref}
         className={`relative group cursor-pointer break-inside-avoid ${className}`}
         onClick={onClick}
+        whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 20 } }}
         {...rest}
       >
         {/* 이미지 영역 - 4:3 비율 고정 */}
           {/* 이미지 영역 - 4:3 비율 고정 */}
-        <div className="relative overflow-hidden rounded-xl aspect-[4/3] bg-gray-100 shadow-sm">
+        <div className="relative overflow-hidden rounded-2xl aspect-[4/3] bg-gray-50 shadow-card group-hover:shadow-card-hover transition-shadow duration-500 ease-supanova">
            {/* Owner Actions Overlay */}
             {isOwner && (
              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px] p-4">
@@ -236,7 +238,7 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
             <OptimizedImage
               src={imageUrl}
               alt={altText}
-              className={`object-cover transition-all duration-500 group-hover:brightness-110 group-hover:scale-105 ${props.scheduled_at && new Date(props.scheduled_at) > new Date() ? 'grayscale-[0.8]' : ''}`}
+              className={`object-cover transition-transform duration-500 ease-supanova group-hover:scale-105 ${props.scheduled_at && new Date(props.scheduled_at) > new Date() ? 'grayscale-[0.8]' : ''}`}
               fill
               priority={priority}
             />
@@ -245,7 +247,7 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
 
         {/* 하단 정보 영역 */}
         <div className="pt-3 px-1">
-          <h3 className="font-bold text-gray-900 text-[15px] mb-2 truncate group-hover:text-green-600 transition-colors">
+          <h3 className="font-bold text-gray-900 text-[15px] mb-2 truncate break-keep group-hover:text-green-600 transition-colors duration-300 ease-supanova">
             {props.title || "제목 없음"}
           </h3>
           
@@ -323,7 +325,7 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
           message="좋아요를 누르려면 로그인이 필요해요!"
           returnTo={typeof window !== 'undefined' ? window.location.pathname : '/'}
         />
-      </div>
+      </motion.div>
     );
   }
 ));

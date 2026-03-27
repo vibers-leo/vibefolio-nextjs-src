@@ -415,7 +415,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
   }, [loading, hasMore, page, loadProjects]);
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-[100dvh] bg-white">
       <main className="w-full">
         {/* 메인 배너 - 헤더와 밀착 */}
         <section className="w-full">
@@ -452,10 +452,10 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
                                    </div>
                                    <span className="text-orange-600 font-black text-[10px] tracking-[0.2em] uppercase">Special Mission</span>
                                 </div>
-                                <h2 className="text-4xl font-black text-slate-950 tracking-tighter leading-tight mt-1">
+                                <h2 className="text-4xl font-black text-slate-950 tracking-tighter leading-snug break-keep mt-1">
                                     제 평가는요? <span className="text-orange-600">전문 진단</span> 프로젝트
                                 </h2>
-                                <p className="text-slate-500 text-[16px] font-medium max-w-lg leading-relaxed">
+                                <p className="text-slate-500 text-[16px] font-medium max-w-lg leading-relaxed break-keep">
                                     창작자의 치열한 고민이 담긴 작품들입니다.<br/>
                                     여러분의 냉철한 시선으로 미슐랭 평점을 매겨주세요.
                                 </p>
@@ -463,7 +463,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
                             <Button 
                               variant="outline"
                               onClick={() => router.push('/growth')}
-                              className="rounded-2xl border-slate-200 font-bold h-12 px-8 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition-all text-sm shadow-xl shadow-slate-100/50"
+                              className="rounded-full border-slate-200 font-bold h-12 px-8 hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition-all duration-500 ease-supanova text-sm shadow-card hover:shadow-card-hover hover:scale-[1.02] active:scale-[0.98]"
                             >
                                 가이드 보기
                             </Button>
@@ -471,7 +471,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
                         
                         <div className="flex gap-8 overflow-x-auto pb-6 no-scrollbar -mx-4 px-4 h-[440px] items-center">
                             {projects.filter(p => p.is_growth_requested || p.is_feedback_requested).slice(0, 8).map(project => (
-                                 <div key={project.id} className="min-w-[320px] md:min-w-[400px] transition-all duration-500 hover:scale-[1.02]">
+                                 <div key={project.id} className="min-w-[320px] md:min-w-[400px] transition-all duration-500 ease-supanova hover:scale-[1.02]">
                                     <ImageCard 
                                         props={project} 
                                         onClick={() => handleProjectClick(project)} 
@@ -502,10 +502,10 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
             {/* 검색어 표시 */}
             {searchQuery && (
               <div className="pt-10 mb-10 flex items-center justify-between border-b border-gray-100 pb-6 transition-all animate-in fade-in slide-in-from-top-2">
-                <h2 className="text-2xl font-bold text-slate-800">
+                <h2 className="text-2xl font-bold text-slate-800 break-keep">
                   '<span className="text-green-600">{searchQuery}</span>' 검색 결과: <span className="text-slate-400 font-medium ml-1">{filtered.length}건</span>
                 </h2>
-                <Button variant="ghost" size="sm" onClick={() => router.push('/')} className="hover:bg-red-50 hover:text-red-500 rounded-full px-4">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/')} className="hover:bg-red-50 hover:text-red-500 rounded-full px-4 transition-all duration-300 ease-supanova hover:scale-[1.02] active:scale-[0.98]">
                   <FontAwesomeIcon icon={faXmark} className="mr-2" />
                   검색 취소
                 </Button>
@@ -583,7 +583,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
 // Searchparams를 사용하는 컴포넌트를 Suspense로 감싸기
 export default function HomeClient({ initialProjects }: HomeClientProps) {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<div className="min-h-[100dvh] bg-white" />}>
       <HomeContentInner initialProjects={initialProjects} />
     </Suspense>
   );
