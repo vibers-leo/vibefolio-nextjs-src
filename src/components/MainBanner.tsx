@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
-import { getBlurDataURL } from "@/lib/utils/imageOptimization";
 import {
   Card,
   CardContent,
@@ -18,23 +16,37 @@ import Link from "next/link";
 import Image from "next/image";
 
 interface Banner {
-  id: number;
+  id: string;
   title: string;
   subtitle: string | null;
-  description: string | null;
-  description_one_line?: string | null;
-  button_text: string | null;
   image_url: string;
   link_url: string | null;
-  bg_color: string;
-  text_color: string;
-  priority: number;
+  display_order: number;
 }
+
+// 폴백 배너 (DB에 데이터 없을 때)
+const FALLBACK_BANNERS: Banner[] = [
+  {
+    id: "fallback-0",
+    title: "2024 Generative AI Hackathon",
+    subtitle: "PREMIUM CONTEST",
+    image_url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=2670",
+    link_url: "/recruit",
+    display_order: 0,
+  },
+  {
+    id: "fallback-1",
+    title: "Creative Tech",
+    subtitle: "EVENT",
+    image_url: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2664&auto=format&fit=crop",
+    link_url: "/recruit",
+    display_order: 1,
+  },
+];
 
 export function MainBanner() {
   const [banners, setBanners] = useState<Banner[]>([]);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     let isMounted = true;
@@ -59,105 +71,41 @@ export function MainBanner() {
     };
 
     const loadBanners = async () => {
-      // 캐시가 있으면 먼저 보여줌 (백그라운드에서 최신 데이터 갱신)
       const hasCache = checkCache();
-      
+
       try {
-        const [bnRes, prRes] = await Promise.all([
-          supabase.from("banners").select("*").eq("is_active", true),
-          supabase.from("recruit_items").select("*").eq("show_as_banner", true).eq("is_active", true).eq("is_approved", true)
-        ]);
-        const { data: dedicatedBanners, error: dbError } = bnRes;
-        const { data: promotedRecruits, error: prError } = prRes;
+        // Prisma 기반 API 호출 (self-hosted PostgreSQL)
+        const res = await fetch("/api/banners?activeOnly=true");
+        if (!res.ok) throw new Error(`API 응답 오류: ${res.status}`);
+        const { banners: data } = await res.json();
 
-        if (dbError) throw dbError;
-        if (prError) throw prError;
-
-        // 데이터 통합
-        const mergedBanners: Banner[] = [
-          ...((dedicatedBanners || []) as any[]).map(b => ({
-            id: b.id,
-            title: b.title,
-            subtitle: b.subtitle,
-            description: b.description,
-            button_text: b.button_text,
-            image_url: b.image_url,
-            link_url: b.link_url,
-            bg_color: b.bg_color || "#000000",
-            text_color: b.text_color || "#ffffff",
-            priority: b.display_order || 999
-          })),
-          ...((promotedRecruits || []) as any[]).map(r => ({
-            id: r.id + 10000, // ID 충돌 방지
-            title: r.title,
-            subtitle: r.type?.toUpperCase() || "EVENT",
-            description: r.description,
-            button_text: "자세히 보기",
-            image_url: r.banner_image_url || r.thumbnail || "",
-            link_url: `/recruit/${r.id}`,
-            bg_color: "#000000",
-            text_color: "#ffffff",
-            priority: r.banner_priority || 999
-          }))
-        ].sort((a, b) => a.priority - b.priority);
-
-        if (isMounted) {
-          if (mergedBanners.length > 0) {
-            setBanners(mergedBanners);
-            // 캐시 저장
-            localStorage.setItem("main_banners_cache", JSON.stringify({
-              data: mergedBanners,
-              timestamp: Date.now()
-            }));
-          } else {
-             if (!hasCache) throw new Error("No banners found");
-          }
+        if (isMounted && data && data.length > 0) {
+          setBanners(data);
+          localStorage.setItem("main_banners_cache", JSON.stringify({
+            data,
+            timestamp: Date.now(),
+          }));
+        } else if (isMounted && !hasCache) {
+          // DB에 데이터 없으면 폴백
+          setBanners(FALLBACK_BANNERS);
         }
       } catch (error) {
-        console.warn('배너 로드 실패 (샘플/캐시 데이터 사용):', error);
-        
+        console.warn("배너 로드 실패 (캐시/폴백 사용):", error);
         if (isMounted && !hasCache) {
-          // Fallback ... (기존과 동일)
-          setBanners([
-            {
-              id: 0,
-              title: "2024 Generative AI Hackathon",
-              subtitle: "PREMIUM CONTEST",
-              description: "생성형 AI의 무한한 가능성, 당신의 아이디어로 실현하세요",
-              button_text: "공모전 확인하기",
-              image_url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=2670",
-              link_url: "/recruit",
-              priority: 0,
-              bg_color: "#0f172a",
-              text_color: "#ffffff"
-            },
-            {
-              id: 1,
-              title: "Creative Tech",
-              subtitle: "EVENT",
-              description: "기술과 예술이 만나는 지점",
-              button_text: "이벤트 참여하기",
-              image_url: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2664&auto=format&fit=crop",
-              link_url: "/recruit",
-              priority: 1,
-              bg_color: "#2a2a2a",
-              text_color: "#ffffff"
-            }
-          ]);
+          setBanners(FALLBACK_BANNERS);
         }
       } finally {
         if (isMounted) setLoading(false);
       }
     };
-    
-    // 캐시가 없으면 로딩 상태로 시작, 있으면 로딩 false 상태로 시작
+
     if (!checkCache()) {
-       loadBanners();
+      loadBanners();
     } else {
-       // 캐시가 있어도 최신 데이터 확인을 위해 백그라운드 실행
-       loadBanners();
+      // 캐시가 있어도 백그라운드에서 최신 데이터 갱신
+      loadBanners();
     }
-    
+
     return () => { isMounted = false; };
   }, []);
 
