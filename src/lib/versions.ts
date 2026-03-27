@@ -1,5 +1,5 @@
-import { supabase } from "./supabase/client";
-import dayjs from "dayjs";
+// src/lib/versions.ts — API 기반 (클라이언트에서 사용 가능)
+import { getToken } from './auth/AuthContext';
 
 export interface ProjectVersion {
   id: number;
@@ -13,16 +13,17 @@ export interface ProjectVersion {
 }
 
 export async function getProjectVersions(projectId: string | number): Promise<ProjectVersion[]> {
-  const { data, error } = await supabase
-    .from("ProjectVersion" as any)
-    .select("*")
-    .eq("project_id", Number(projectId))
-    .order("created_at", { ascending: false }); // 최신순 정렬
+  try {
+    const token = getToken();
+    const headers: Record<string, string> = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
 
-  if (error) {
+    const res = await fetch(`/api/projects/${projectId}/versions`, { headers });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.versions || [];
+  } catch (error) {
     console.error("Error fetching project versions:", error);
     return [];
   }
-
-  return (data || []) as unknown as ProjectVersion[];
 }

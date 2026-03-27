@@ -1,7 +1,10 @@
 // src/lib/supabase/storage.ts
 // Supabase Storage 이미지 업로드 유틸리티
 
-import { supabase } from './client';
+import { getStorageClient } from '../supabase-storage';
+
+// Storage 전용 클라이언트 사용 (DB/Auth는 Prisma/JWT로 분리됨)
+const supabase = getStorageClient()!;
 
 /**
  * 이미지를 Supabase Storage에 업로드

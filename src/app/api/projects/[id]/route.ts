@@ -1,13 +1,9 @@
 // src/app/api/projects/[id]/route.ts
-// 개별 프로젝트 조회, 수정, 삭제 API
+// 개별 프로젝트 조회, 수정, 삭제 API — Prisma
 
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase as supabaseAnon } from '@/lib/supabase/client';
-import { supabaseAdmin } from '@/lib/supabase/admin';
-import { createClient } from '@/lib/supabase/server';
-import { GENRE_TO_CATEGORY_ID } from '@/lib/constants';
-
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import prisma from '@/lib/db';
+import { validateUser } from '@/lib/auth/validate';
 import { isAdminEmail } from '@/lib/auth/admins';
 
 export async function GET(
@@ -16,91 +12,51 @@ export async function GET(
 ) {
   const { id } = await params;
   try {
-    // [Application-Level Security]
-    // RLS Context issues in Next.js API Routes can cause "load failed" errors even for owners.
-    // We solve this by implementing strict Application-Level Authorization:
-    // 1. Verify User Identity (via Token or Cookie)
-    // 2. Fetch Data (via Admin Client, ensuring availability)
-    // 3. Verify Ownership/Visibility explicitly in code before returning
+    const authUser = await validateUser(request);
 
-    let user = null;
-    const authHeader = request.headers.get('Authorization');
+    const data = await prisma.vf_projects.findUnique({
+      where: { project_id: parseInt(id) },
+    });
 
-    // 1. Identify User
-    if (authHeader) {
-        const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-        // Try getting user from Auth (JWT Verification)
-        const { data: { user: authUser }, error } = await supabaseAdmin.auth.getUser(token);
-        user = authUser;
-    } 
-    
-    if (!user) {
-        // Fallback to Cookie Session
-        const supabase = createClient();
-        const { data: { user: cookieUser } } = await supabase.auth.getUser();
-        user = cookieUser;
+    if (!data) {
+      return NextResponse.json({ error: '프로젝트를 찾을 수 없습니다.' }, { status: 404 });
     }
 
-    // 2. Fetch Data (Securely via Admin)
-    const { data, error } = await (supabaseAdmin as any)
-      .from('Project')
-      .select('*')
-      .eq('project_id', id)
-      .single();
-
-    if (error || !data) {
-      console.error('프로젝트 조회 실패 (App-Level):', error);
-      return NextResponse.json(
-        { error: '프로젝트를 찾을 수 없습니다.', details: error?.message },
-        { status: 404 }
-      );
-    }
-
-    // 3. Authorization Check (Strict)
-    const isOwner = user && user.id === data.user_id;
-    const isPublic = !data.visibility || data.visibility === 'public'; // Default to public if null for legacy compatibility
-
-    // If not public AND not owner, deny access
+    // 권한 확인
+    const isOwner = authUser && authUser.id === data.user_id;
+    const isPublic = !data.visibility || data.visibility === 'public';
     if (!isPublic && !isOwner) {
-        return NextResponse.json(
-            { error: '접근 권한이 없습니다. (비공개 프로젝트)' },
-            { status: 403 }
-        );
+      return NextResponse.json({ error: '접근 권한이 없습니다. (비공개 프로젝트)' }, { status: 403 });
     }
 
-    // 4. Populate User Info (If accessible)
+    // 유저 정보 병합
+    const project = data as any;
     if (data.user_id) {
-      try {
-        const { data: authData, error: authError } = await supabaseAdmin.auth.admin.getUserById(data.user_id);
-        if (!authError && authData.user) {
-          data.User = {
-            user_id: authData.user.id,
-            username: authData.user.user_metadata?.nickname || authData.user.email?.split('@')[0] || 'Unknown',
-            profile_image_url: authData.user.user_metadata?.profile_image_url || '/globe.svg'
-          };
-        }
-      } catch (e) {
-        data.User = null;
+      const userInfo = await prisma.vf_users.findUnique({
+        where: { id: data.user_id },
+        select: { id: true, username: true, nickname: true, profile_image_url: true },
+      });
+      if (userInfo) {
+        project.User = {
+          user_id: userInfo.id,
+          username: userInfo.username || userInfo.nickname || 'Unknown',
+          profile_image_url: userInfo.profile_image_url || '/globe.svg',
+        };
       }
     }
 
-    // 5. Update Views (Admin)
-    await supabaseAdmin
-      .from('Project')
-      .update({ views_count: (data.views_count || 0) + 1 })
-      .eq('project_id', id);
+    // 조회수 증가
+    await prisma.vf_projects.update({
+      where: { project_id: parseInt(id) },
+      data: { views_count: (data.views_count || 0) + 1 },
+    });
 
-    return NextResponse.json({ project: data });
+    return NextResponse.json({ project });
   } catch (error: any) {
     console.error('서버 오류:', error);
-    return NextResponse.json(
-      { error: '서버 오류가 발생했습니다.', details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: '서버 오류가 발생했습니다.', details: error.message }, { status: 500 });
   }
 }
-
-// ADMIN_EMAILS handled by isAdminEmail utility
 
 export async function PUT(
   request: NextRequest,
@@ -108,217 +64,75 @@ export async function PUT(
 ) {
   const { id } = await params;
   try {
-    // [Strict Auth] 1. Identify User (API Key OR Session)
-    let authenticatedUser: { id: string, email?: string } | null = null;
-    const authHeader = request.headers.get('authorization');
-
-    if (authHeader) {
-        const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-        if (token.startsWith('vf_')) {
-             // API Key
-             const { data: keyRecord } = await supabaseAdmin
-                .from('api_keys')
-                .select('user_id')
-                .eq('api_key', token)
-                .eq('is_active', true)
-                .single();
-             if (keyRecord) {
-                 // Fetch email for Admin check
-                 const { data: userData } = await supabaseAdmin.auth.admin.getUserById(keyRecord.user_id);
-                 authenticatedUser = { 
-                     id: keyRecord.user_id, 
-                     email: userData.user?.email 
-                 };
-             }
-        } else {
-             // [Fix] Support JWT Token for Client-side requests
-             const { data: { user } } = await supabaseAdmin.auth.getUser(token);
-             if (user) {
-                 authenticatedUser = { id: user.id, email: user.email };
-             }
-        }
-    } 
-    
-    if (!authenticatedUser) {
-        // Session Fallback
-        const supabase = createClient();
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            authenticatedUser = { id: user.id, email: user.email };
-        }
+    const authUser = await validateUser(request);
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized', code: 'AUTH_REQUIRED' }, { status: 401 });
     }
 
-    if (!authenticatedUser) {
-        return NextResponse.json({ error: 'Unauthorized', code: 'AUTH_REQUIRED' }, { status: 401 });
-    }
+    // 관리자 확인
+    const isAdmin = isAdminEmail(authUser.email);
 
-    // 2. 권한 확인 (관리자 또는 프로젝트 소유자)
-    const isAdminEmailUser = isAdminEmail(authenticatedUser.email);
-    let isDbAdmin = false;
-    
-    if (!isAdminEmailUser) {
-      const { data: profile } = await supabaseAdmin
-        .from('profiles')
-        .select('role')
-        .eq('id', authenticatedUser.id)
-        .single();
-      isDbAdmin = profile?.role === 'admin';
-    }
-
-    const isAuthorizedAdmin = isAdminEmailUser || isDbAdmin;
-
-    // 프로젝트 소유자 확인 및 기존 데이터 조회 (Merge용)
-    const { data: existingProject, error: fetchError } = await (supabaseAdmin as any)
-      .from('Project')
-      .select('user_id, custom_data')
-      .eq('project_id', id)
-      .single();
-
-    if (fetchError || !existingProject) {
+    // 기존 프로젝트 조회
+    const existing = await prisma.vf_projects.findUnique({
+      where: { project_id: parseInt(id) },
+      select: { user_id: true, custom_data: true },
+    });
+    if (!existing) {
       return NextResponse.json({ error: '프로젝트를 찾을 수 없습니다.' }, { status: 404 });
     }
-
-    if (!isAuthorizedAdmin && existingProject.user_id !== authenticatedUser.id) {
-       return NextResponse.json({ error: '수정 권한이 없습니다.' }, { status: 403 });
+    if (!isAdmin && existing.user_id !== authUser.id) {
+      return NextResponse.json({ error: '수정 권한이 없습니다.' }, { status: 403 });
     }
 
-    // 3. 업데이트 수행
     const body = await request.json();
-    let { 
-        title, content_text, content, body: bodyContent, text, // Content variants
-        description, summary, alt_description, 
-        thumbnail_url, category_id, rendering_type, custom_data,
-        allow_michelin_rating, allow_stickers, allow_secret_comments,
-        scheduled_at, visibility, assets
+    const {
+      title, content_text, content, body: bodyContent, text,
+      description, summary, alt_description,
+      thumbnail_url, category_id, rendering_type, custom_data,
+      allow_michelin_rating, allow_stickers, allow_secret_comments,
+      scheduled_at, visibility, assets
     } = body;
 
-    // [Robustness] Normalize Content
-    let finalContent = content_text || content || bodyContent || text; 
+    let finalContent = content_text || content || bodyContent || text;
 
-    // Assets & Custom Data Handling (Smart Merge)
-    let finalCustomData: any = undefined; // Keep as Object for JSONB
-    
-    // [Fix] Robust category_id parsing
-    if (category_id !== undefined) {
-         if (typeof category_id === 'string') {
-             const parsedNum = Number(category_id);
-             if (!isNaN(parsedNum)) {
-                category_id = parsedNum;
-             } else {
-                category_id = GENRE_TO_CATEGORY_ID[category_id.toLowerCase()] || 1;
-             }
-         }
+    // custom_data 머지
+    let finalCustomData: any = undefined;
+    if (custom_data !== undefined || assets !== undefined || summary !== undefined || alt_description !== undefined) {
+      try {
+        let baseData = (existing.custom_data && typeof existing.custom_data === 'object') ? existing.custom_data as any : {};
+        let newCustom: any = {};
+        if (custom_data) {
+          newCustom = typeof custom_data === 'string' ? JSON.parse(custom_data) : custom_data;
+        }
+        finalCustomData = { ...baseData, ...newCustom };
+        if (assets) finalCustomData.assets = assets;
+        if (summary !== undefined) finalCustomData.summary = summary;
+        if (alt_description !== undefined) finalCustomData.alt_description = alt_description;
+      } catch (e) {
+        console.error('[API] PUT Custom Data Merge Error:', e);
+      }
     }
 
-    // [Fix] Handle extended fields in custom_data
-    if (custom_data !== undefined || assets !== undefined || summary !== undefined || alt_description !== undefined || body.audit_deadline !== undefined || body.is_growth_requested !== undefined) {
-         try {
-            let baseData = existingProject.custom_data && typeof existingProject.custom_data === 'string' 
-                ? JSON.parse(existingProject.custom_data) 
-                : (existingProject.custom_data || {});
-
-            let newCustom = {};
-            if (custom_data) {
-                newCustom = typeof custom_data === 'string' ? JSON.parse(custom_data) : custom_data;
-            }
-
-            finalCustomData = { ...baseData, ...newCustom };
-
-            if (assets) finalCustomData.assets = assets;
-            if (summary !== undefined) finalCustomData.summary = summary;
-            if (alt_description !== undefined) finalCustomData.alt_description = alt_description;
-            if (body.audit_deadline !== undefined) finalCustomData.audit_deadline = body.audit_deadline;
-            if (body.is_growth_requested !== undefined) finalCustomData.is_growth_requested = body.is_growth_requested;
-         } catch (e) {
-             console.error('[API] PUT Custom Data Merge Error:', e);
-         }
-    }
-
-    // Build Update Object dynamically
-    const updatePayload: any = {
-        updated_at: new Date().toISOString()
-    };
-
+    const updatePayload: any = { updated_at: new Date() };
     if (title !== undefined) updatePayload.title = title;
     if (finalContent !== undefined) updatePayload.content_text = finalContent;
     if (description !== undefined) updatePayload.description = description;
-    
-    // Note: summary, alt_description removed from top-level update as they are in custom_data now
-    
     if (thumbnail_url !== undefined) updatePayload.thumbnail_url = thumbnail_url;
-    if (category_id !== undefined) updatePayload.category_id = category_id;
+    if (category_id !== undefined) updatePayload.category_id = typeof category_id === 'number' ? category_id : parseInt(category_id);
     if (rendering_type !== undefined) updatePayload.rendering_type = rendering_type;
-    
     if (finalCustomData !== undefined) updatePayload.custom_data = finalCustomData;
-
     if (allow_michelin_rating !== undefined) updatePayload.allow_michelin_rating = allow_michelin_rating;
     if (allow_stickers !== undefined) updatePayload.allow_stickers = allow_stickers;
     if (allow_secret_comments !== undefined) updatePayload.allow_secret_comments = allow_secret_comments;
-    if (scheduled_at !== undefined) updatePayload.scheduled_at = scheduled_at ? new Date(scheduled_at).toISOString() : null;
+    if (scheduled_at !== undefined) updatePayload.scheduled_at = scheduled_at ? new Date(scheduled_at) : null;
     if (visibility !== undefined) updatePayload.visibility = visibility;
 
-    let { data, error } = await (supabaseAdmin as any)
-      .from('Project')
-      .update(updatePayload)
-      .eq('project_id', id)
-      .select('*')
-      .single();
+    const updatedProject = await prisma.vf_projects.update({
+      where: { project_id: parseInt(id) },
+      data: updatePayload,
+    });
 
-    if (error) {
-      console.error('프로젝트 수정 실패:', error);
-      return NextResponse.json({ error: `수정 실패: ${error.message}` }, { status: 500 });
-    }
-
-    // [New] Fields 매핑 동기화
-    // custom_data가 변경되었을 때만 수행 (finalCustomData가 있으면)
-    if (finalCustomData) { 
-        try {
-             // finalCustomData is already an Object
-             const fieldSlugs = finalCustomData.fields; 
-
-            // 기존 매핑 삭제
-            await (supabaseAdmin as any).from('project_fields').delete().eq('project_id', id);
-
-            if (Array.isArray(fieldSlugs) && fieldSlugs.length > 0) {
-                const { data: fieldRecords } = await (supabaseAdmin as any)
-                    .from('fields').select('id, slug').in('slug', fieldSlugs);
-
-                if (fieldRecords && fieldRecords.length > 0) {
-                    const mappings = fieldRecords.map((f: any) => ({
-                        project_id: id,
-                        field_id: f.id,
-                    }));
-                    await (supabaseAdmin as any).from('project_fields').insert(mappings);
-                }
-            }
-        } catch (e) {
-            console.error('[API] Syncing fields failed:', e);
-        }
-    }
-    
-    // [New] Category 매핑 동기화
-    if (finalCustomData) { 
-        try {
-            const genres = finalCustomData.genres || [];
-            
-            await (supabaseAdmin as any).from('project_categories').delete().eq('project_id', id);
-
-            if (Array.isArray(genres) && genres.length > 0) {
-                const categoryMappings = genres.map((genreSlug: string) => {
-                        const catId = GENRE_TO_CATEGORY_ID[genreSlug];
-                        return catId ? { project_id: parseInt(id), category_id: catId, category_type: 'genre' } : null;
-                    }).filter(Boolean);
-                
-                if (categoryMappings.length > 0) {
-                    await (supabaseAdmin as any).from('project_categories').insert(categoryMappings);
-                }
-            }
-        } catch (e) {
-            console.error('[API] Syncing categories failed:', e);
-        }
-    }
-
-    return NextResponse.json({ message: '프로젝트가 수정되었습니다.', data });
+    return NextResponse.json({ message: '프로젝트가 수정되었습니다.', data: updatedProject });
   } catch (error: any) {
     console.error('서버 오류:', error);
     return NextResponse.json({ error: '서버 오류', details: error.message }, { status: 500 });
@@ -331,63 +145,26 @@ export async function DELETE(
 ) {
   const { id } = await params;
   try {
-     // [Strict Auth] 1. Identify User
-    let authenticatedUser: { id: string, email?: string } | null = null;
-    const authHeader = request.headers.get('authorization');
-
-    if (authHeader) {
-        const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-        if (token.startsWith('vf_')) {
-             const { data: keyRecord } = await supabaseAdmin.from('api_keys').select('user_id').eq('api_key', token).eq('is_active', true).single();
-             if (keyRecord) {
-                 const { data: userData } = await supabaseAdmin.auth.admin.getUserById(keyRecord.user_id);
-                 authenticatedUser = { id: keyRecord.user_id, email: userData.user?.email };
-                 // isApiContext = true; // Mark as API Context - Not needed for DELETE
-             }
-        } else {
-             // [Fix] Support JWT Token for Client-side requests
-             const { data: { user } } = await supabaseAdmin.auth.getUser(token);
-             if (user) {
-                 authenticatedUser = { id: user.id, email: user.email };
-             }
-        }
-    } 
-    
-    // The following block is removed as the JWT handling is now part of the 'if (authHeader)' block
-    // if (!authenticatedUser) {
-    //     const supabase = createClient();
-    //     const { data: { user } } = await supabase.auth.getUser();
-    //     if (user) authenticatedUser = { id: user.id, email: user.email };
-    // }
-
-    if (!authenticatedUser) {
-        return NextResponse.json({ error: 'Unauthorized', code: 'AUTH_REQUIRED' }, { status: 401 });
+    const authUser = await validateUser(request);
+    if (!authUser) {
+      return NextResponse.json({ error: 'Unauthorized', code: 'AUTH_REQUIRED' }, { status: 401 });
     }
 
-    // 2. 권한 확인
-    const isAdminEmailUser = isAdminEmail(authenticatedUser.email);
-    let isDbAdmin = false;
-    if (!isAdminEmailUser) {
-      const { data: profile } = await supabaseAdmin.from('profiles').select('role').eq('id', authenticatedUser.id).single();
-      isDbAdmin = profile?.role === 'admin';
-    }
-    const isAuthorizedAdmin = isAdminEmailUser || isDbAdmin;
-
-    // 프로젝트 조회
-    const { data: project, error: fetchError } = await (supabaseAdmin as any)
-      .from('Project').select('user_id').eq('project_id', id).single();
-
-    if (fetchError || !project) return NextResponse.json({ error: '프로젝트를 찾을 수 없습니다.' }, { status: 404 });
-
-    if (!isAuthorizedAdmin && project.user_id !== authenticatedUser.id) {
-       return NextResponse.json({ error: '삭제 권한이 없습니다.' }, { status: 403 });
+    const isAdmin = isAdminEmail(authUser.email);
+    const project = await prisma.vf_projects.findUnique({
+      where: { project_id: parseInt(id) },
+      select: { user_id: true },
+    });
+    if (!project) return NextResponse.json({ error: '프로젝트를 찾을 수 없습니다.' }, { status: 404 });
+    if (!isAdmin && project.user_id !== authUser.id) {
+      return NextResponse.json({ error: '삭제 권한이 없습니다.' }, { status: 403 });
     }
 
-    // 삭제 (Soft Delete)
-    const { error } = await (supabaseAdmin as any)
-      .from('Project').update({ deleted_at: new Date().toISOString() }).eq('project_id', id);
-
-    if (error) return NextResponse.json({ error: '삭제 실패', details: error.message }, { status: 500 });
+    // Soft Delete
+    await prisma.vf_projects.update({
+      where: { project_id: parseInt(id) },
+      data: { deleted_at: new Date() },
+    });
 
     return NextResponse.json({ message: '프로젝트가 삭제되었습니다.' });
   } catch (error: any) {

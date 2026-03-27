@@ -1,6 +1,5 @@
-// src/lib/inquiries.ts
-import { supabase } from "./supabase/client";
-import { PostgrestError } from "@supabase/supabase-js";
+// src/lib/inquiries.ts — API 기반 (Supabase 제거)
+import { getToken } from './auth/AuthContext';
 
 export interface Inquiry {
   id: number;
@@ -18,136 +17,75 @@ export interface Inquiry {
   };
 }
 
-/**
- * Get all inquiries for a specific user.
- */
-export async function getUserInquiries(userId: string): Promise<Inquiry[]> {
-  const { data, error } = await supabase
-    .from("inquiries")
-    .select(`
-      id,
-      project_id,
-      creator_id,
-      user_id,
-      message,
-      created_at,
-      status,
-      Project (
-        title,
-        users (
-          username
-        )
-      )
-    `)
-    .eq("user_id", userId)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching inquiries:", error);
-    return [];
-  }
-  
-  // Map 'Project' from DB to 'projects' in Interface
-  return (data || []).map((item: any) => ({
-    ...item,
-    projects: Array.isArray(item.Project) ? item.Project[0] : item.Project
-  })) as any; // Temporary cast to avoid interface mismatch
+function authHeaders() {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
 }
 
-/**
- * Add an inquiry for a project.
- */
+export async function getUserInquiries(userId: string): Promise<Inquiry[]> {
+  try {
+    const res = await fetch(`/api/inquiries?userId=${userId}`, { headers: authHeaders() });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.inquiries || [];
+  } catch {
+    return [];
+  }
+}
+
 export async function addInquiry(
   projectId: string,
   creatorId: string,
   userId: string,
   message: string
 ): Promise<Inquiry | null> {
-  const { data, error } = await supabase
-    .from("inquiries")
-    .insert({
-      project_id: Number(projectId),
-      creator_id: creatorId,
-      user_id: userId,
-      message,
-      status: "pending",
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error adding inquiry:", error);
+  try {
+    const res = await fetch('/api/inquiries', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ projectId, creatorId, userId, message }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.inquiry || null;
+  } catch {
     return null;
   }
-  return data as unknown as Inquiry;
 }
 
-/**
- * Delete an inquiry.
- */
-export async function deleteInquiry(inquiryId: number, userId: string): Promise<{ data: null; error: PostgrestError | null }> {
-  let query = supabase.from("inquiries").delete().eq("id", inquiryId);
-  // If userId is provided, it's a user deleting their own. Otherwise, it's an admin.
-  if (userId) {
-    query = query.eq("user_id", userId);
-  }
-  const { error } = await query;
-
-  return { data: null, error };
+export async function deleteInquiry(inquiryId: number, userId: string) {
+  await fetch(`/api/inquiries?inquiryId=${inquiryId}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
+  return { data: null, error: null };
 }
 
-/**
- * (Admin) Get all inquiries.
- */
 export async function getAllInquiries(): Promise<Inquiry[]> {
-  const { data, error } = await supabase
-    .from("inquiries")
-    .select(`
-      id,
-      project_id,
-      creator_id,
-      user_id,
-      message,
-      created_at,
-      status,
-      Project (
-        title,
-        users (
-          username
-        )
-      )
-    `)
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching all inquiries:", error);
+  try {
+    const res = await fetch('/api/inquiries?all=true', { headers: authHeaders() });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.inquiries || [];
+  } catch {
     return [];
   }
-  
-  // Map 'Project' from DB to 'projects' in Interface
-  return (data || []).map((item: any) => ({
-    ...item,
-    projects: Array.isArray(item.Project) ? item.Project[0] : item.Project
-  })) as any; // Temporary cast to avoid interface mismatch
 }
 
-/**
- * (Admin) Update inquiry status.
- */
 export async function updateInquiryStatus(
   inquiryId: number,
   status: "pending" | "answered"
 ): Promise<Inquiry | null> {
-  const { data, error } = await supabase
-    .from("inquiries")
-    .update({ status })
-    .eq("id", inquiryId)
-    .select()
-    .single();
-
-  if (error) {
-    console.error("Error updating inquiry status:", error);
+  try {
+    const res = await fetch('/api/inquiries', {
+      method: 'PUT',
+      headers: authHeaders(),
+      body: JSON.stringify({ inquiryId, status }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.inquiry || null;
+  } catch {
     return null;
   }
-  return data as unknown as Inquiry;
 }

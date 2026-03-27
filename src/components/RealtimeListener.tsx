@@ -1,13 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/AuthContext";
-import { useAdmin } from "@/hooks/useAdmin";
 
-// 알림 설정 인터페이스 (전역 관리를 위해 localStorage 사용)
+// 알림 설정 인터페이스
 export interface NotificationSettings {
   projects: boolean;
   recruit: boolean;
@@ -29,12 +26,11 @@ export const DEFAULT_NOTIFICATION_SETTINGS: NotificationSettings = {
 };
 
 /**
- * 실시간 DB 알림 리스너 (UI 없음)
+ * 실시간 DB 알림 리스너 — Supabase Realtime 제거, 폴링 기반
+ * (실시간 알림은 useNotifications 훅에서 60초 폴링으로 대체)
  */
 export default function RealtimeListener() {
-  const router = useRouter();
-  const { user, userProfile } = useAuth();
-  const { isAdmin } = useAdmin();
+  const { user } = useAuth();
   const [settings, setSettings] = useState<NotificationSettings>(DEFAULT_NOTIFICATION_SETTINGS);
 
   // 설정 로드
@@ -51,64 +47,15 @@ export default function RealtimeListener() {
     };
 
     loadSettings();
-    // 설정 변경 감지를 위해 storage 이벤트 리스너 추가
     window.addEventListener("storage", loadSettings);
-    // 커스텀 이벤트 감지 (동일 탭 내 변경)
     window.addEventListener("notificationSettingsChanged", loadSettings);
-    
+
     return () => {
       window.removeEventListener("storage", loadSettings);
       window.removeEventListener("notificationSettingsChanged", loadSettings);
     };
   }, []);
 
-  useEffect(() => {
-    if (!user) return;
-
-    const channel = supabase
-      .channel('vibefolio_user_notifications')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'notices' },
-        (payload) => {
-          if (!settings.notices) return;
-          toast.info("📢 신규 공지", {
-            description: payload.new.title,
-            action: { label: "보기", onClick: () => router.push('/notices') }
-          });
-        }
-      );
-
-    // 6. 관리자 알림
-    if (isAdmin) {
-      channel
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'inquiries' },
-          (payload) => {
-            if (!settings.adminInquiries) return;
-            toast("✉️ [Admin] 새 문의", {
-              description: payload.new.message?.substring(0, 20),
-              action: { label: "이동", onClick: () => router.push('/admin/inquiries') }
-            });
-          }
-        )
-        .on(
-          'postgres_changes',
-          { event: 'INSERT', schema: 'public', table: 'profiles' },
-          (payload) => {
-            if (!settings.adminSignups) return;
-            toast("👤 [Admin] 신규 가입", {
-              description: `${payload.new.username}님`,
-              action: { label: "관리", onClick: () => router.push('/admin/users') }
-            });
-          }
-        );
-    }
-
-    channel.subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [router, user, userProfile, isAdmin, settings]);
-
-  return null; // UI는 NotificationBell로 통합
+  // Realtime 구독 제거됨 — useNotifications 훅에서 폴링으로 대체
+  return null;
 }

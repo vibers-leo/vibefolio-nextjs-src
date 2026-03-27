@@ -1,36 +1,17 @@
-// src/app/api/crawl/route.ts
-// 공개 크롤링 API 엔드포인트 (Vercel Cron 및 GitHub Actions용)
-
+// src/app/api/crawl/route.ts — Prisma
 import { NextRequest, NextResponse } from 'next/server';
 import { crawlAll } from '@/lib/crawlers/crawler';
-import { createClient } from '@supabase/supabase-js';
+import prisma from '@/lib/db';
 import { isAdminEmail, ADMIN_EMAILS } from '@/lib/auth/admins';
+import { validateUser } from '@/lib/auth/validate';
 
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  }
-);
-
-/**
- * GET 요청 처리
- * - Vercel Cron: CRON_SECRET 헤더와 함께 호출하여 크롤링 실행
- * - Admin UI: 세션과 함께 호출하여 상태(로그/통계) 조회
- */
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
-  
   const searchParams = request.nextUrl.searchParams;
   const keyword = searchParams.get('keyword') || undefined;
   const force = searchParams.get('force') === 'true';
 
-  // 1. 크롤링 트리거 조건 확인 (Cron 또는 강제 실행)
   const isCronRequest = cronSecret && authHeader === `Bearer ${cronSecret}`;
   const isForceRequest = force;
 
@@ -38,29 +19,22 @@ export async function GET(request: NextRequest) {
     return handleCrawl(keyword);
   }
 
-  // 2. 관리자 권한 확인 (세션 체크)
-  const { data: { user } } = await supabaseAdmin.auth.getUser(authHeader?.replace('Bearer ', '') || '');
-  
-  const isAdmin = isAdminEmail(user?.email);
-
-  if (isAdmin) {
+  // 관리자 확인
+  const authUser = await validateUser(request);
+  if (authUser && isAdminEmail(authUser.email)) {
     return getCrawlStatus();
   }
 
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 
-/**
- * POST 요청 처리 (수동 실행용)
- */
 export async function POST(request: NextRequest) {
   const authHeader = request.headers.get('authorization');
   const cronSecret = process.env.CRON_SECRET;
 
-  // 권한 확인
   const isCronRequest = cronSecret && authHeader === `Bearer ${cronSecret}`;
-  const { data: { user } } = await supabaseAdmin.auth.getUser(authHeader?.replace('Bearer ', '') || '');
-  const isAdmin = isAdminEmail(user?.email);
+  const authUser = await validateUser(request);
+  const isAdmin = authUser && isAdminEmail(authUser.email);
 
   if (!isCronRequest && !isAdmin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -68,140 +42,91 @@ export async function POST(request: NextRequest) {
 
   let keyword: string | undefined;
   let type: string = 'all';
-
   try {
     const body = await request.json();
     keyword = body.keyword;
     type = body.type || 'all';
-  } catch (e) {
-    // Body parsing error
-  }
-  
+  } catch {}
+
   return handleCrawl(keyword, type);
 }
 
-/**
- * 크롤링 상태 조회 (로그 및 통계)
- */
 async function getCrawlStatus() {
   try {
-    // 1. 최근 로그 20개 가져오기
-    const { data: logs, error: logsError } = await supabaseAdmin
-      .from('crawl_logs')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(20);
+    const logs = await prisma.vf_crawl_logs.findMany({
+      orderBy: { created_at: 'desc' },
+      take: 20,
+    });
 
-    if (logsError) throw logsError;
+    const totalCount = await prisma.vf_recruit_items.count();
+    const crawledCount = await prisma.vf_recruit_items.count({
+      where: { crawled_at: { not: null } },
+    });
 
-    // 2. 통계 계산
-    // 전체 항목 수
-    const { count: totalCount } = await supabaseAdmin
-      .from('recruit_items')
-      .select('*', { count: 'exact', head: true });
-
-    // 크롤링된 항목 수 (is_crawled = true 또는 crawled_at is not null)
-    const { count: crawledCount } = await supabaseAdmin
-      .from('recruit_items')
-      .select('*', { count: 'exact', head: true })
-      .not('crawled_at', 'is', null);
-
-    // 카테고리별 통계
-    const { data: typeStats } = await supabaseAdmin
-      .from('recruit_items')
-      .select('type');
-
+    const items = await prisma.vf_recruit_items.findMany({ select: { type: true } });
     const byType = {
-      job: typeStats?.filter(i => i.type === 'job').length || 0,
-      contest: typeStats?.filter(i => i.type === 'contest').length || 0,
-      event: typeStats?.filter(i => i.type === 'event').length || 0,
+      job: items.filter((i) => i.type === 'job').length,
+      contest: items.filter((i) => i.type === 'contest').length,
+      event: items.filter((i) => i.type === 'event').length,
     };
 
     return NextResponse.json({
       success: true,
-      logs: logs || [],
-      statistics: {
-        total: totalCount || 0,
-        crawled: crawledCount || 0,
-        manual: (totalCount || 0) - (crawledCount || 0),
-        byType
-      }
+      logs,
+      statistics: { total: totalCount, crawled: crawledCount, manual: totalCount - crawledCount, byType },
     });
-
   } catch (error) {
     console.error('[Crawl Status API] Error:', error);
     return NextResponse.json({ success: false, error: 'Failed to fetch status' }, { status: 500 });
   }
 }
 
-/**
- * 크롤링 헬스 알림: 실패 또는 신규 0건이면 관리자 전원에게 시스템 알림
- */
 async function notifyAdminsOnCrawlIssue(
   status: 'failed' | 'empty',
   details: { type: string; error?: string; itemsFound?: number; duration?: string }
 ) {
   try {
-    const { data: adminProfiles } = await supabaseAdmin
-      .from('profiles')
-      .select('id, email')
-      .in('email', ADMIN_EMAILS);
+    const adminUsers = await prisma.vf_users.findMany({
+      where: { email: { in: ADMIN_EMAILS } },
+      select: { id: true },
+    });
+    if (!adminUsers.length) return;
 
-    if (!adminProfiles?.length) return;
-
-    const title = status === 'failed'
-      ? '크롤링 실패 알림'
-      : '크롤링 수확 0건 알림';
-
+    const title = status === 'failed' ? '크롤링 실패 알림' : '크롤링 수확 0건 알림';
     const message = status === 'failed'
       ? `[${details.type}] 크롤링이 실패했습니다: ${details.error || '알 수 없는 오류'}`
       : `[${details.type}] 크롤링 성공했지만 신규 항목 0건 (발견: ${details.itemsFound}건, 소요: ${details.duration})`;
 
-    const notifications = adminProfiles.map(admin => ({
-      user_id: admin.id,
-      type: 'system',
-      title,
-      message,
-      link: '/admin/recruit/crawl',
-      action_label: '크롤링 로그 확인',
-      action_url: '/admin/recruit/crawl',
-    }));
-
-    await supabaseAdmin.from('notifications').insert(notifications);
-    console.log(`[Crawl Health] Notified ${adminProfiles.length} admins: ${title}`);
+    await prisma.vf_notifications.createMany({
+      data: adminUsers.map((admin) => ({
+        user_id: admin.id,
+        type: 'system',
+        title,
+        message,
+        link: '/admin/recruit/crawl',
+        action_label: '크롤링 로그 확인',
+        action_url: '/admin/recruit/crawl',
+      })),
+    });
   } catch (e) {
     console.error('[Crawl Health] Failed to send admin notification:', e);
   }
 }
 
-/**
- * 실제 크롤링 실행 및 로그 저장
- */
 async function handleCrawl(keyword?: string, type: string = 'all') {
   const startTime = Date.now();
-  console.log(`🚀 [Crawl API] Starting ${type} crawl... ${keyword ? `(Keyword: ${keyword})` : ''}`);
-  
+  console.log(`[Crawl API] Starting ${type} crawl... ${keyword ? `(Keyword: ${keyword})` : ''}`);
+
   let result;
   try {
-    // 키워드가 있으면 검색 크롤링, 없으면 전체 크롤링
-    if (keyword) {
-      result = await crawlAll(keyword);
-    } else if (type !== 'all') {
-      // @ts-ignore
-      result = await crawlByType(type as any);
-    } else {
-      result = await crawlAll();
-    }
-    
+    result = keyword ? await crawlAll(keyword) : await crawlAll();
     if (!result.success) throw new Error(result.error || 'Crawl logic failed');
 
-    // LLM 마감일 후처리 (date가 '확인 필요'인 항목만)
+    // LLM 마감일 후처리
     try {
       const { batchExtractDeadlines } = await import('@/lib/ai/extractDeadline');
       const llmCount = await batchExtractDeadlines(result.items);
-      if (llmCount > 0) {
-        console.log(`[Crawl API] LLM extracted ${llmCount} deadlines`);
-      }
+      if (llmCount > 0) console.log(`[Crawl API] LLM extracted ${llmCount} deadlines`);
     } catch (llmErr) {
       console.warn('[Crawl API] LLM deadline extraction skipped:', llmErr);
     }
@@ -212,16 +137,17 @@ async function handleCrawl(keyword?: string, type: string = 'all') {
 
     for (const item of result.items) {
       try {
-        // 중복 체크: 제목 또는 링크 기준 (유연하게)
-        // .or() 필터의 따옴표 사용 주의: 값에 따옴표가 있을 경우 에러 발생 가능
-        // 제목은 eq로, 링크는 정확히 일치하는지 확인
-        const { data: existing } = await supabaseAdmin
-          .from('recruit_items')
-          .select('id, is_approved, is_active')
-          .or(`title.eq."${item.title.replace(/"/g, '')}",link.eq.${item.link}`)
-          .maybeSingle();
+        const existing = await prisma.vf_recruit_items.findFirst({
+          where: {
+            OR: [
+              { title: item.title },
+              { link: item.link },
+            ],
+          },
+          select: { id: true },
+        });
 
-        const itemData = {
+        const itemData: any = {
           title: item.title,
           description: item.description,
           type: item.type,
@@ -238,80 +164,55 @@ async function handleCrawl(keyword?: string, type: string = 'all') {
           total_prize: item.totalPrize,
           first_prize: item.firstPrize,
           start_date: item.startDate,
-          category_tags: item.categoryTags,
-          crawled_at: new Date().toISOString()
+          category_tags: item.categoryTags || [],
+          crawled_at: new Date(),
         };
 
         if (!existing) {
-          const { error: insertError } = await supabaseAdmin
-            .from('recruit_items')
-            .insert([{
-              ...itemData,
-              is_approved: false,
-              is_active: false,
-            }]);
-          if (!insertError) addedCount++;
-          else console.error(`Insert error [${item.title}]:`, insertError.message);
+          await prisma.vf_recruit_items.create({
+            data: { ...itemData, is_approved: false, is_active: false },
+          });
+          addedCount++;
         } else {
-          // 기존 항목 업데이트 (이미 활성화된 상태면 정보만 갱신)
-          const { error: updateError } = await supabaseAdmin
-            .from('recruit_items')
-            .update(itemData)
-            .eq('id', existing.id);
-          if (!updateError) updatedCount++;
+          await prisma.vf_recruit_items.update({
+            where: { id: existing.id },
+            data: itemData,
+          });
+          updatedCount++;
         }
-      } catch (e) {
+      } catch {
         errorCount++;
       }
     }
 
     const duration = Date.now() - startTime;
-    
     const durationStr = `${(duration / 1000).toFixed(1)}s`;
 
-    // 로그 저장
-    await supabaseAdmin.from('crawl_logs').insert([{
-      type: type,
-      status: 'success',
-      items_found: result.itemsFound,
-      items_added: addedCount,
-      items_updated: updatedCount,
-      duration_ms: duration
-    }]);
-
-    // 헬스 모니터링: 신규 0건이면 관리자 알림 (키워드 검색이 아닌 자동 크롤링만)
-    if (addedCount === 0 && !keyword) {
-      await notifyAdminsOnCrawlIssue('empty', {
+    await prisma.vf_crawl_logs.create({
+      data: {
         type,
-        itemsFound: result.itemsFound,
-        duration: durationStr,
-      });
-    }
-
-    return NextResponse.json({
-      success: true,
-      itemsFound: result.itemsFound,
-      itemsAdded: addedCount,
-      itemsUpdated: updatedCount,
-      duration: durationStr
+        status: 'success',
+        items_found: result.itemsFound,
+        items_added: addedCount,
+        items_updated: updatedCount,
+        duration_ms: duration,
+      },
     });
 
+    if (addedCount === 0 && !keyword) {
+      await notifyAdminsOnCrawlIssue('empty', { type, itemsFound: result.itemsFound, duration: durationStr });
+    }
+
+    return NextResponse.json({ success: true, itemsFound: result.itemsFound, itemsAdded: addedCount, itemsUpdated: updatedCount, duration: durationStr });
   } catch (error) {
     const duration = Date.now() - startTime;
     const errorMessage = error instanceof Error ? error.message : 'Unknown fatal error';
-    
-    // 실패 로그 저장
-    await supabaseAdmin.from('crawl_logs').insert([{
-      type: type,
-      status: 'failed',
-      error_message: errorMessage,
-      duration_ms: duration
-    }]);
 
-    // 헬스 모니터링: 크롤링 실패 시 관리자 알림
+    await prisma.vf_crawl_logs.create({
+      data: { type, status: 'failed', error_message: errorMessage, duration_ms: duration },
+    });
+
     await notifyAdminsOnCrawlIssue('failed', { type, error: errorMessage });
-
     return NextResponse.json({ success: false, error: errorMessage }, { status: 500 });
   }
 }
-

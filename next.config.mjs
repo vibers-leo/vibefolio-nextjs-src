@@ -2,7 +2,7 @@
 const nextConfig = {
   // 서버 전용 외부 패키지 설정 (Next.js 14 특정 버전 대응)
   experimental: {
-    serverComponentsExternalPackages: ['cheerio', 'undici'],
+    serverComponentsExternalPackages: ['cheerio', 'undici', 'pg', '@prisma/adapter-pg', 'bcryptjs', 'jsonwebtoken'],
     optimizePackageImports: ['lucide-react', '@fortawesome/react-fontawesome', 'dayjs'],
   },
 

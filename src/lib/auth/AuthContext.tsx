@@ -1,12 +1,23 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from "react";
-import { User, Session } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { isAdminEmail } from "./admins";
 
 const IS_DEV = process.env.NODE_ENV === 'development';
+const TOKEN_KEY = 'vf_token';
+
+interface UserData {
+  id: string;
+  email: string;
+  nickname?: string;
+  username?: string;
+  profile_image_url?: string;
+  role?: string;
+  points?: number;
+  interests?: any;
+  expertise?: any;
+}
 
 interface UserProfile {
   username: string;
@@ -23,8 +34,8 @@ interface UserProfile {
 }
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: UserData | null;
+  session: { access_token: string } | null;
   loading: boolean;
   isAuthenticated: boolean;
   userProfile: UserProfile | null;
@@ -36,161 +47,89 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const initializedRef = useRef(false);
   const router = useRouter();
 
-  // ====== Supabase Metadata에서 프로필 로드 ======
-  const loadProfileFromMetadata = useCallback((currentUser: User): UserProfile => {
-    // Supabase Auth 자체 메타데이터 우선 사용
-    const metadata = currentUser.user_metadata || {};
-    
-    return {
-      username: metadata.full_name || metadata.name || metadata.nickname || currentUser.email?.split("@")[0] || "User",
-      profile_image_url: metadata.avatar_url || metadata.picture || "/globe.svg",
-      role: currentUser.app_metadata?.role || metadata.role || "user",
-      interests: metadata.interests || undefined,
-      expertise: metadata.expertise || undefined,
-    };
+  // ====== 토큰으로 유저 정보 조회 ======
+  const fetchMe = useCallback(async (t: string): Promise<UserData | null> => {
+    try {
+      const res = await fetch('/api/auth/me', {
+        headers: { Authorization: `Bearer ${t}` },
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data.user || null;
+    } catch {
+      return null;
+    }
   }, []);
 
-  // ====== 상태 업데이트 통합 관리 (권한 분리 및 최적화) ======
-  const updateState = useCallback(async (s: Session | null, u: User | null) => {
-    // 1. [Optimistic] 즉시 상태 업데이트 (UI 블로킹 해제)
-    setSession(s);
+  // ====== 상태 업데이트 ======
+  const updateState = useCallback((u: UserData | null, t: string | null) => {
     setUser(u);
+    setToken(t);
 
     if (u) {
-      // 2. 메타데이터 기반으로 기초 프로필 즉시 생성 (DB 조회 전 표시)
-      const base = loadProfileFromMetadata(u);
-      
-      // 일단 메타데이터 프로필로 설정하고 로딩 해제 -> 로그인 체감 속도 0초
-      setUserProfile(base);
-      setLoading(false); // <--- Key Performance Optimization
-
-      try {
-        // 3. [Background] DB 상세 프로필 비동기 조회
-        const { data: db, error } = await supabase
-          .from('profiles')
-          .select('*') // Using * is actually safer against "column not found" in some cases if table exists, but can be heavy. However, let's select only what we use.
-          .eq('id', u.id)
-          .maybeSingle();
-
-        if (db && !error) {
-          // 서비스 내부에서 설정한 이미지가 있는지 우선 확인
-          const customImage = (db as any).profile_image_url || (db as any).avatar_url;
-          
-          const finalProfile = {
-            username: (db as any).username || base.username,
-            // 우선순위: Vibefolio 커스텀 이미지 > 구글/소셜 이미지 > 기본 로고
-            profile_image_url: customImage || base.profile_image_url,
-            role: (db as any).role || base.role,
-            points: (db as any).points || 0,
-            interests: (db as any).interests || base.interests,
-            expertise: (db as any).expertise || base.expertise,
-          };
-          
-          // 상세 정보로 업데이트 (Silent Update)
-          setUserProfile(prev => {
-             // 변경사항이 있을 때만 업데이트하여 불필요한 리렌더링 방지
-             if (JSON.stringify(prev) !== JSON.stringify(finalProfile)) {
-                 return finalProfile;
-             }
-             return prev;
-          });
-        }
-      } catch (e) {
-        // DB 조회 실패시 메타데이터 프로필 유지 (Silent Fail)
-        console.warn('Background profile fetch failed', e);
-      }
+      const profile: UserProfile = {
+        username: u.username || u.nickname || u.email?.split("@")[0] || "User",
+        profile_image_url: u.profile_image_url || "/globe.svg",
+        role: u.role || "user",
+        points: u.points || 0,
+        interests: u.interests || undefined,
+        expertise: u.expertise || undefined,
+      };
+      setUserProfile(profile);
     } else {
       setUserProfile(null);
-      setLoading(false);
     }
-  }, [loadProfileFromMetadata]);
 
-  // ====== 초기화 및 관찰자 설정 ======
+    setLoading(false);
+  }, []);
+
+  // ====== 초기화 ======
   useEffect(() => {
     if (initializedRef.current) return;
     initializedRef.current = true;
 
-    // 초기 세션 확인
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      updateState(session, session?.user || null);
-    });
+    const savedToken = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
+    if (!savedToken) {
+      setLoading(false);
+      return;
+    }
 
-    // 상태 변경 리스너
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (['SIGNED_IN', 'TOKEN_REFRESHED', 'INITIAL_SESSION'].includes(event)) {
-        updateState(session, session?.user || null);
-      } else if (event === "SIGNED_OUT") {
-        updateState(null, null);
+    fetchMe(savedToken).then((u) => {
+      if (u) {
+        updateState(u, savedToken);
+      } else {
+        // 토큰 만료 또는 무효
+        localStorage.removeItem(TOKEN_KEY);
+        setLoading(false);
       }
     });
+  }, [fetchMe, updateState]);
 
-    return () => subscription.unsubscribe();
-  }, [updateState]);
-
-  // [New] Realtime Point Update Listener
-  useEffect(() => {
-    if (!user) return;
-
-    const profileChannel = supabase
-      .channel(`profile:${user.id}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'profiles',
-          filter: `id=eq.${user.id}`,
-        },
-        (payload) => {
-          const newProfile = payload.new as any;
-          if (newProfile) {
-            setUserProfile((prev) => {
-               if(!prev) return null;
-               // Only update if points changed (or other critical fields)
-               if(newProfile.points !== prev.points) {
-                   return { ...prev, points: newProfile.points };
-               }
-               return prev;
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(profileChannel);
-    };
-  }, [user]);
-
-  // ====== 자동 로그아웃 로직 (user 변경 시 실행) ======
-  // Note: AutoLogoutProvider가 별도로 존재하므로 여기서는 제거하거나, 
-  // AuthContext가 중심이라면 여기서 관리해야 합니다. 
-  
   const signOut = useCallback(async () => {
+    localStorage.removeItem(TOKEN_KEY);
     setUser(null);
-    setSession(null);
+    setToken(null);
     setUserProfile(null);
-    await supabase.auth.signOut();
     router.push("/login");
   }, [router]);
 
   const refreshUserProfile = useCallback(async () => {
-    if (!user) return;
-    const { data: { user: u } } = await supabase.auth.getUser();
-    updateState(session, u);
-  }, [user, session, updateState]);
+    const savedToken = localStorage.getItem(TOKEN_KEY);
+    if (!savedToken) return;
+    const u = await fetchMe(savedToken);
+    if (u) updateState(u, savedToken);
+  }, [fetchMe, updateState]);
 
-  // ====== 권한 체크 & 메모이제이션 ======
+  // ====== 권한 체크 ======
   const isAdminUser = React.useMemo(() => {
-    // 이메일 체크와 role 체크 분리하여 로깅
-    const emailCheck = isAdminEmail(user);
+    const emailCheck = isAdminEmail(user?.email);
     const roleCheck = userProfile?.role === "admin";
     const isMatched = emailCheck || roleCheck;
 
@@ -199,13 +138,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
          email: user.email,
          emailInWhitelist: emailCheck,
          profileRole: userProfile?.role,
-         roleIsAdmin: roleCheck,
-         finalResult: isMatched ? 'ADMIN ✅' : 'USER ❌'
+         finalResult: isMatched ? 'ADMIN' : 'USER'
        });
     }
 
     return isMatched;
   }, [user, userProfile]);
+
+  const session = React.useMemo(() => {
+    return token ? { access_token: token } : null;
+  }, [token]);
 
   const authValue = React.useMemo(() => ({
     user,
@@ -225,4 +167,19 @@ export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) throw new Error("useAuth must be used within an AuthProvider");
   return context;
+}
+
+/**
+ * 토큰 저장 (로그인/회원가입 시 호출)
+ */
+export function saveToken(token: string) {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+/**
+ * 저장된 토큰 가져오기
+ */
+export function getToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem(TOKEN_KEY);
 }

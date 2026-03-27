@@ -1,14 +1,8 @@
 /**
- * Expo Push Notification 전송 모듈
- *
- * 알림 생성 시 대상 유저의 모바일 앱에 푸시 알림을 전송한다.
- * Expo Push API (https://exp.host/--/api/v2/push/send) 사용.
- *
- * [주의] 이 모듈은 서버 사이드(API Routes)에서만 사용할 것.
- * supabaseAdmin을 사용하므로 클라이언트에서 import하면 안 됨.
+ * Expo Push Notification 전송 모듈 — Prisma
  */
 
-import { supabaseAdmin } from '@/lib/supabase/admin';
+import prisma from '@/lib/db';
 
 const EXPO_PUSH_URL = 'https://exp.host/--/api/v2/push/send';
 
@@ -31,7 +25,6 @@ interface PushTicket {
 
 /**
  * 특정 유저에게 푸시 알림 전송
- * push_tokens 테이블에서 유저의 모든 디바이스 토큰을 조회하고 전송
  */
 export async function sendPushToUser({
   userId,
@@ -45,13 +38,12 @@ export async function sendPushToUser({
   data?: Record<string, string>;
 }): Promise<{ sent: number; failed: number }> {
   try {
-    // 유저의 푸시 토큰 조회
-    const { data: tokens, error } = await supabaseAdmin
-      .from('push_tokens')
-      .select('expo_push_token')
-      .eq('user_id', userId);
+    const tokens = await prisma.vf_push_tokens.findMany({
+      where: { user_id: userId },
+      select: { expo_push_token: true },
+    });
 
-    if (error || !tokens || tokens.length === 0) {
+    if (!tokens || tokens.length === 0) {
       return { sent: 0, failed: 0 };
     }
 
@@ -64,8 +56,7 @@ export async function sendPushToUser({
       channelId: 'default',
     }));
 
-    const result = await sendExpoPush(messages);
-    return result;
+    return await sendExpoPush(messages);
   } catch (e) {
     console.error('[Push] sendPushToUser failed:', e);
     return { sent: 0, failed: 0 };
@@ -89,12 +80,12 @@ export async function sendPushToUsers({
   if (userIds.length === 0) return { sent: 0, failed: 0 };
 
   try {
-    const { data: tokens, error } = await supabaseAdmin
-      .from('push_tokens')
-      .select('expo_push_token')
-      .in('user_id', userIds);
+    const tokens = await prisma.vf_push_tokens.findMany({
+      where: { user_id: { in: userIds } },
+      select: { expo_push_token: true },
+    });
 
-    if (error || !tokens || tokens.length === 0) {
+    if (!tokens || tokens.length === 0) {
       return { sent: 0, failed: 0 };
     }
 
@@ -114,17 +105,10 @@ export async function sendPushToUsers({
   }
 }
 
-/**
- * Expo Push API 직접 호출
- * 최대 100개씩 배치 전송 (Expo 제한)
- */
-async function sendExpoPush(
-  messages: PushMessage[]
-): Promise<{ sent: number; failed: number }> {
+async function sendExpoPush(messages: PushMessage[]): Promise<{ sent: number; failed: number }> {
   let sent = 0;
   let failed = 0;
 
-  // Expo는 한 번에 최대 100개 메시지
   const BATCH_SIZE = 100;
   for (let i = 0; i < messages.length; i += BATCH_SIZE) {
     const batch = messages.slice(i, i + BATCH_SIZE);
@@ -154,7 +138,6 @@ async function sendExpoPush(
           sent++;
         } else {
           failed++;
-          // DeviceNotRegistered → 토큰 삭제
           if (ticket.details?.error === 'DeviceNotRegistered') {
             const badToken = batch[tickets.indexOf(ticket)]?.to;
             if (badToken) {
@@ -172,15 +155,11 @@ async function sendExpoPush(
   return { sent, failed };
 }
 
-/**
- * 유효하지 않은 토큰 자동 정리
- */
 async function cleanupInvalidToken(token: string): Promise<void> {
   try {
-    await supabaseAdmin
-      .from('push_tokens')
-      .delete()
-      .eq('expo_push_token', token);
+    await prisma.vf_push_tokens.deleteMany({
+      where: { expo_push_token: token },
+    });
     console.log('[Push] Cleaned up invalid token:', token.slice(0, 20) + '...');
   } catch (e) {
     console.error('[Push] Token cleanup failed:', e);

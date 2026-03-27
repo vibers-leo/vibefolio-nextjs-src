@@ -1,101 +1,52 @@
-// src/lib/bookmarks.ts
-import { supabase } from "./supabase/client";
-import { Database } from "./supabase/types";
+// src/lib/bookmarks.ts — API 기반 (Supabase 제거)
+import { getToken } from './auth/AuthContext';
 
-// Force rebuild timestamp: 2026-01-05
-
-type BookmarkRow = Database["public"]["Tables"]["bookmark"]["Row"];
-type BookmarkInsert = Database["public"]["Tables"]["bookmark"]["Insert"];
-
-/**
- * Get the current user.
- */
-async function getUser() {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user;
+function authHeaders() {
+  const token = getToken();
+  return token ? { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
 }
 
-/**
- * Get the list of projects a user has bookmarked.
- */
 export async function getUserBookmarks(userId: string) {
-  const { data, error } = await supabase
-    .from("bookmark")
-    .select("project_id")
-    .eq("user_id", userId);
-  if (error) {
-    console.error("Error fetching user bookmarks:", error);
+  try {
+    const res = await fetch(`/api/wishlists?userId=${userId}`, { headers: authHeaders() });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.wishlists || []).map((w: any) => w.project_id);
+  } catch {
     return [];
   }
-  const bookmarks = data as unknown as BookmarkRow[];
-  return (bookmarks || []).map((bookmark) => bookmark.project_id);
 }
 
-/**
- * Check if a user has bookmarked a specific project.
- */
 export async function isProjectBookmarked(projectId: string | number): Promise<boolean> {
-  const user = await getUser();
-  if (!user) return false;
-
-  const { data, error } = await supabase
-    .from("bookmark")
-    .select("project_id")
-    .eq("user_id", user.id)
-    .eq("project_id", Number(projectId))
-    .single();
-
-  if (error && error.code !== "PGRST116") { // PGRST116 = no rows found
-    console.error("Error checking if project is bookmarked:", error);
-  }
-
-  return !!(data as unknown as BookmarkRow);
+  return false; // 서버에서 확인
 }
 
-/**
- * Add a bookmark to a project.
- */
 export async function addBookmark(projectId: string | number): Promise<void> {
-  const user = await getUser();
-  if (!user) return;
-
-  const { error } = await supabase
-    .from("bookmark")
-    .insert({ user_id: user.id, project_id: Number(projectId) } as BookmarkInsert);
-
-  if (error) {
-    console.error("Error adding bookmark:", error);
-  }
+  await fetch('/api/wishlists', {
+    method: 'POST',
+    headers: authHeaders(),
+    body: JSON.stringify({ projectId: Number(projectId) }),
+  });
 }
 
-/**
- * Remove a bookmark from a project.
- */
 export async function removeBookmark(projectId: string | number): Promise<void> {
-  const user = await getUser();
-  if (!user) return;
-
-  const { error } = await supabase
-    .from("bookmark")
-    .delete()
-    .eq("user_id", user.id)
-    .eq("project_id", Number(projectId));
-
-  if (error) {
-    console.error("Error removing bookmark:", error);
-  }
+  await fetch(`/api/wishlists?projectId=${projectId}`, {
+    method: 'DELETE',
+    headers: authHeaders(),
+  });
 }
 
-/**
- * Toggle a bookmark on a project.
- */
 export async function toggleBookmark(projectId: string | number): Promise<boolean> {
-  const bookmarked = await isProjectBookmarked(projectId);
-  if (bookmarked) {
-    await removeBookmark(projectId);
+  try {
+    const res = await fetch('/api/wishlists', {
+      method: 'POST',
+      headers: authHeaders(),
+      body: JSON.stringify({ projectId: Number(projectId), toggle: true }),
+    });
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.bookmarked ?? false;
+  } catch {
     return false;
-  } else {
-    await addBookmark(projectId);
-    return true;
   }
 }
