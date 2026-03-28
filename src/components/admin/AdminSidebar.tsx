@@ -18,7 +18,8 @@ import {
   faArrowLeft,
   faChevronRight,
   faTv,
-  faCheckDouble
+  faCheckDouble,
+  faSearch
 } from "@fortawesome/free-solid-svg-icons";
 
 const menuItems = [
@@ -81,6 +82,12 @@ const menuItems = [
     path: "/admin/stats",
     icon: faChartBar,
     color: "text-indigo-500"
+  },
+  {
+    title: "SEO 관리",
+    path: "/admin/seo",
+    icon: faSearch,
+    color: "text-teal-500"
   },
   {
     title: "설정 관리",
