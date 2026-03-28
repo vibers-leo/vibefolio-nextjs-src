@@ -20,42 +20,47 @@
     /* 트렌디한 Vibe 테마 (Clean & Modern Ver.) */
     --background: 0 0% 100%;       /* Pure White */
     --foreground: 222 47% 11%;     /* Dark Navy Black (#0F172A) */
-    
+
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
-    
+
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
-    
+
     /* Primary: Vibrant Green (#16A34A) */
     --primary: 142 76% 36%;
     --primary-foreground: 0 0% 100%;
-    
+
     --secondary: 210 40% 96.1%;    /* Cool Gray (#F1F5F9) */
     --secondary-foreground: 222 47% 11%;
-    
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
-    
+
     /* Accent: Lime Green (#84CC16) */
     --accent: 84 81% 44%;
     --accent-foreground: 0 0% 100%;
-    
+
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    
+
     --border: 214 32% 91%;         /* Light Gray (#E2E8F0) */
     --input: 214 32% 91%;
     --ring: 142 76% 36%;
-    
+
     --radius: 0.25rem; /* Reduced rounding (~4px) */
 
     /* Vibe 전용 변수 (Green Theme) */
     --vibe-green: 142 76% 36%;
     --vibe-mint: 84 81% 44%;
     --vibe-hover: 210 40% 96.1%;
-    
+
     --divider: 214 32% 91%;
+
+    /* Supanova 프리미엄 변수 */
+    --spring-easing: cubic-bezier(0.16, 1, 0.3, 1);
+    --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --premium-shadow-color: 142 76% 36%;
   }
 
   .dark {
@@ -95,7 +100,7 @@
   body {
     @apply bg-white text-foreground;
     scrollbar-gutter: stable;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
       "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
       "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -532,5 +537,331 @@ input:-webkit-autofill:active {
 .dark .behance-card {
   background: #111827;
   border-color: #374151;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SUPANOVA PREMIUM DESIGN SYSTEM
+   에이전시급 프리미엄 UI 유틸리티
+   ═══════════════════════════════════════════════════════════════ */
+
+/* 노이즈 텍스처 오버레이 — 프리미엄 질감 */
+.noise-overlay::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.018;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n' x='0' y='0'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* 더블 베젤 카드 아키텍처 */
+.card-bezel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(249,250,251,0.95));
+  border: 1px solid rgba(0,0,0,0.04);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.8) inset,
+    0 2px 8px -2px rgba(0,0,0,0.04),
+    0 8px 32px -8px rgba(0,0,0,0.06);
+  border-radius: 1.25rem;
+  transition: all 0.5s var(--spring-easing);
+}
+
+.card-bezel:hover {
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,1) inset,
+    0 4px 16px -4px rgba(22, 163, 74, 0.08),
+    0 24px 64px -16px rgba(22, 163, 74, 0.12);
+  transform: translateY(-6px);
+}
+
+/* 프리미엄 글래스 모피즘 */
+.glass-premium {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.glass-dark {
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* 커스텀 스크롤바 — Supanova 스타일 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(22, 163, 74, 0.3);
+  background-clip: content-box;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+}
+
+/* 프리미엄 그라데이션 텍스트 */
+.text-gradient-premium {
+  background: linear-gradient(135deg, #16A34A 0%, #10B981 30%, #059669 70%, #047857 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-dark {
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Spring 물리 애니메이션 */
+@keyframes spring-up {
+  0% { transform: translateY(40px); opacity: 0; }
+  60% { transform: translateY(-4px); opacity: 1; }
+  80% { transform: translateY(2px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.2); }
+  50% { box-shadow: 0 0 24px 4px rgba(22, 163, 74, 0.15); }
+}
+
+.animate-spring-up {
+  animation: spring-up 0.7s var(--spring-easing) forwards;
+}
+
+.animate-float {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* 프리미엄 포커스 링 */
+.focus-ring-premium:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px white, 0 0 0 4px rgba(22, 163, 74, 0.5);
+}
+
+/* 그라디언트 보더 */
+.border-gradient {
+  position: relative;
+  background: white;
+  border-radius: 1rem;
+}
+
+.border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(22,163,74,0.3), rgba(16,185,129,0.1), rgba(22,163,74,0.3));
+  z-index: -1;
+}
+
+/* 프리미엄 배지 */
+.badge-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 9999px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 2px 8px -2px rgba(0,0,0,0.15);
+}
+
+/* 프리미엄 필 카테고리 */
+.pill-premium {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  transition: all 0.4s var(--spring-easing);
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.pill-premium::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  background: linear-gradient(135deg, rgba(22,163,74,0.08), rgba(16,185,129,0.04));
+  transition: opacity 0.4s var(--spring-easing);
+}
+
+.pill-premium:hover::before,
+.pill-premium.active::before {
+  opacity: 1;
+}
+
+.pill-premium.active {
+  border-color: rgba(22, 163, 74, 0.2);
+  background: rgba(22, 163, 74, 0.05);
+  color: #16A34A;
+  box-shadow: 0 2px 12px -4px rgba(22, 163, 74, 0.15);
+}
+
+/* 인터렉티브 엘레먼트 bounce */
+.interactive-bounce {
+  transition: transform 0.4s var(--spring-bounce);
+}
+
+.interactive-bounce:hover {
+  transform: scale(1.03);
+}
+
+.interactive-bounce:active {
+  transform: scale(0.97);
+}
+
+/* Supanova 프리미엄 스크롤바 — 글로벌 */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(22, 163, 74, 0.15) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(22, 163, 74, 0.15);
+  border-radius: 99px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(22, 163, 74, 0.35);
+}
+
+/* Supanova 프리미엄 Hero 그라데이션 텍스트 */
+.text-hero-gradient {
+  background: linear-gradient(135deg, #0f172a 0%, #16A34A 50%, #10B981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 프리미엄 카테고리 필 — 호버 광택 */
+.pill-glow {
+  position: relative;
+  overflow: hidden;
+}
+
+.pill-glow::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  transition: left 0.6s var(--spring-easing);
+}
+
+.pill-glow:hover::after {
+  left: 100%;
+}
+
+/* Supanova 프리미엄 Fade-in-up 애니메이션 */
+@keyframes supanova-fade-in-up {
+  from { opacity: 0; transform: translateY(2rem); filter: blur(4px); }
+  to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.animate-supanova-in {
+  animation: supanova-fade-in-up 0.7s var(--spring-easing) forwards;
+}
+
+/* 더블 베젤 카드 V2 — 프리미엄 외부 쉘 */
+.card-double-bezel {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px;
+  border-radius: 2rem;
+  ring: 1px;
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.5) inset,
+    0 2px 8px -2px rgba(0,0,0,0.04);
+  transition: all 0.5s var(--spring-easing);
+}
+
+.card-double-bezel:hover {
+  border-color: rgba(22, 163, 74, 0.15);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.8) inset,
+    0 8px 40px -12px rgba(22, 163, 74, 0.12),
+    0 24px 64px -16px rgba(16, 24, 40, 0.08);
+}
+
+/* Korean 타이포 최적화 */
+.korean-text {
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+/* Supanova 프리미엄 트랜지션 — CSS 유틸리티 */
+.transition-supanova {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 프리미엄 스크롤바 — 호버 시 그린 틴트 */
+::-webkit-scrollbar-thumb:active {
+  background: rgba(22, 163, 74, 0.5);
+  background-clip: content-box;
+}
+
+/* Supanova Glass Input — 프리미엄 인풋 포커스 */
+.input-glass:focus {
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow:
+    0 0 0 2px white,
+    0 0 0 4px rgba(22, 163, 74, 0.15),
+    0 4px 24px -8px rgba(22, 163, 74, 0.08);
 }
 

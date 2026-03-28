@@ -113,15 +113,22 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-lg">
-        <div>
-          <h2 className="mt-2 text-center text-3xl font-bold tracking-tight text-gray-900">
-            반가워요! 👋
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50/80 via-white to-emerald-50/20 relative overflow-hidden noise-overlay">
+      {/* 배경 데코레이션 — Supanova 프리미엄 */}
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] bg-gradient-to-br from-green-100/20 to-transparent rounded-full blur-[120px] -ml-56 -mt-56" />
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-gradient-to-tl from-emerald-50/30 to-transparent rounded-full blur-[100px] -mr-40 -mb-40" />
+      <div className="absolute top-1/3 right-1/4 w-[300px] h-[300px] bg-gradient-radial from-green-100/10 to-transparent rounded-full blur-[80px]" />
+
+      {/* 프리미엄 글래스 카드 */}
+      <div className="w-full max-w-md space-y-7 bg-white/75 backdrop-blur-2xl backdrop-saturate-[1.6] p-8 md:p-10 rounded-[2rem] shadow-[0_8px_60px_-16px_rgba(22,163,74,0.08),0_24px_80px_-24px_rgba(0,0,0,0.06)] ring-1 ring-white/70 relative z-10">
+        <div className="text-center">
+          <span className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-medium bg-green-500/10 text-green-600 inline-block mb-4">Get Started</span>
+          <h2 className="text-3xl font-black tracking-tighter text-slate-900 leading-snug break-keep">
+            크리에이터로 시작하기
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-3 text-sm text-slate-500">
             이미 계정이 있으신가요?{" "}
-            <Link href="/login" className="font-medium text-green-600 hover:text-green-500 hover:underline">
+            <Link href="/login" className="font-bold text-green-600 hover:text-green-700 transition-all duration-300 ease-supanova">
               로그인하기
             </Link>
           </p>
@@ -129,8 +136,8 @@ export default function SignupPage() {
 
         {/* 에러 메시지 */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm font-medium">
-            ⚠️ {error}
+          <div className="bg-red-50/80 border border-red-200/60 text-red-600 px-4 py-3 rounded-xl text-sm font-medium backdrop-blur-sm">
+            {error}
           </div>
         )}
 
@@ -141,24 +148,24 @@ export default function SignupPage() {
             onClick={handleGoogleSignup}
             disabled={loading}
             variant="outline"
-            className="w-full h-12 flex items-center justify-center gap-3 border-gray-300 hover:bg-gray-50 rounded-full transition-all hover:shadow-md"
+            className="w-full h-12 flex items-center justify-center gap-3 border-slate-200/80 hover:bg-slate-50 rounded-full transition-all duration-300 ease-supanova hover:shadow-md hover:scale-[1.01]"
           >
             {loading ? (
-              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
             ) : (
               <FontAwesomeIcon icon={faGoogle} className="w-5 h-5 text-red-500" />
             )}
-            <span className="text-gray-700 font-medium">Google로 계속하기</span>
+            <span className="text-slate-700 font-medium">Google로 계속하기</span>
           </Button>
           <Button
             type="button"
             onClick={handleKakaoSignup}
             disabled={loading}
-            className="w-full h-12 flex items-center justify-center gap-3 border-0 rounded-full transition-all hover:shadow-md hover:brightness-95"
+            className="w-full h-12 flex items-center justify-center gap-3 border-0 rounded-full transition-all duration-300 ease-supanova hover:shadow-md hover:brightness-95 hover:scale-[1.01]"
             style={{ backgroundColor: '#FEE500' }}
           >
             {loading ? (
-              <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+              <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
             ) : (
               <RiKakaoTalkFill className="w-5 h-5 text-[#191919]" />
             )}
@@ -168,16 +175,16 @@ export default function SignupPage() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200" />
+            <div className="w-full border-t border-slate-200/60" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-4 text-gray-500">또는</span>
+            <span className="bg-white/80 px-4 text-slate-400 font-medium">또는</span>
           </div>
         </div>
 
-        <form className="space-y-5" onSubmit={handleEmailSignup}>
+        <form className="space-y-4" onSubmit={handleEmailSignup}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-semibold text-slate-700 mb-1.5">
               이메일
             </label>
             <Input
@@ -187,13 +194,13 @@ export default function SignupPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="h-11 rounded-lg"
+              className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
               disabled={loading}
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-semibold text-slate-700 mb-1.5">
               비밀번호
             </label>
             <Input
@@ -203,13 +210,13 @@ export default function SignupPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="최소 6자 이상"
-              className="h-11 rounded-lg"
+              className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
               disabled={loading}
             />
           </div>
 
           <div>
-            <label htmlFor="password-confirm" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password-confirm" className="block text-sm font-semibold text-slate-700 mb-1.5">
               비밀번호 확인
             </label>
             <Input
@@ -219,7 +226,7 @@ export default function SignupPage() {
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
               placeholder="비밀번호 다시 입력"
-              className="h-11 rounded-lg"
+              className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
               disabled={loading}
             />
           </div>
@@ -227,17 +234,17 @@ export default function SignupPage() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-12 rounded-full text-base font-bold bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-100 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="w-full h-13 rounded-full text-base font-bold bg-slate-900 hover:bg-black text-white shadow-[0_4px_20px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.35)] transition-all duration-500 ease-supanova hover:scale-[1.02] active:scale-[0.98]"
           >
             {loading ? "가입 중..." : "3초만에 가입하기"}
           </Button>
         </form>
 
-        <div className="text-center text-xs text-gray-400">
+        <div className="text-center text-xs text-slate-400">
           <p>
             가입 시{" "}
-            <Link href="/policy/terms" className="underline">이용약관</Link> 및{" "}
-            <Link href="/policy/privacy" className="underline">개인정보처리방침</Link>에 동의하게 됩니다.
+            <Link href="/policy/terms" className="underline hover:text-slate-600 transition-colors">이용약관</Link> 및{" "}
+            <Link href="/policy/privacy" className="underline hover:text-slate-600 transition-colors">개인정보처리방침</Link>에 동의하게 됩니다.
           </p>
         </div>
       </div>

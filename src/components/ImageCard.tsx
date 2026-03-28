@@ -128,12 +128,12 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
         ref={ref}
         className={`relative group cursor-pointer break-inside-avoid ${className}`}
         onClick={onClick}
-        whileHover={{ y: -4, transition: { type: "spring", stiffness: 300, damping: 20 } }}
+        whileHover={{ y: -6, scale: 1.015, transition: { type: "spring", stiffness: 300, damping: 22, mass: 0.6 } }}
         {...rest}
       >
-        {/* 이미지 영역 - 4:3 비율 고정 */}
-          {/* 이미지 영역 - 4:3 비율 고정 */}
-        <div className="relative overflow-hidden rounded-2xl aspect-[4/3] bg-gray-50 shadow-card group-hover:shadow-card-hover transition-shadow duration-500 ease-supanova">
+        {/* 더블 베젤 카드 — 외부 쉘 (Supanova Premium) */}
+        <div className="bg-white/5 ring-1 ring-black/5 p-1 rounded-2xl transition-all duration-500 ease-supanova group-hover:ring-green-200/30 group-hover:shadow-[0_12px_40px_-12px_rgba(22,163,74,0.12),0_24px_64px_-16px_rgba(16,24,40,0.08)]">
+        <div className="relative overflow-hidden rounded-[calc(1rem-4px)] aspect-[4/3] bg-gradient-to-br from-white to-slate-50/80 shadow-[0_2px_12px_-4px_rgba(22,163,74,0.06),0_8px_32px_-8px_rgba(16,24,40,0.04)] transition-all duration-500 ease-supanova">
            {/* Owner Actions Overlay */}
             {isOwner && (
              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex flex-col items-center justify-center gap-2 backdrop-blur-[2px] p-4">
@@ -205,27 +205,27 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
                 )}
              </div>
            )}
-          {/* Badges Container */}
-          <div className="absolute top-3 left-3 z-10 flex flex-col gap-2 items-start pointer-events-none">
+          {/* Badges Container — Supanova 프리미엄 배지 */}
+          <div className="absolute top-3 left-3 z-10 flex flex-col gap-1.5 items-start pointer-events-none">
               {(props.custom_data?.audit_config || props.audit_deadline) && (
-                <div className="bg-orange-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1 backdrop-blur-md">
-                   <FontAwesomeIcon icon={faBolt} className="w-3 h-3" /> <span>피드백 진행 중</span>
+                <div className="badge-premium bg-orange-600/90 text-white backdrop-blur-xl shadow-[0_2px_8px_-2px_rgba(234,88,12,0.4)]">
+                   <FontAwesomeIcon icon={faBolt} className="w-2.5 h-2.5" /> <span>피드백 진행 중</span>
                 </div>
               )}
               {props.scheduled_at && new Date(props.scheduled_at) > new Date() && (
-                 <div className="bg-yellow-400 text-yellow-900 text-[10px] font-black px-2 py-1 rounded-full shadow-md flex items-center gap-1 animate-pulse">
-                   <FontAwesomeIcon icon={faClock} className="w-3 h-3" />
+                 <div className="badge-premium bg-amber-400/90 text-amber-950 animate-pulse shadow-[0_2px_8px_-2px_rgba(245,158,11,0.3)]">
+                   <FontAwesomeIcon icon={faClock} className="w-2.5 h-2.5" />
                    <span>{new Date(props.scheduled_at).toLocaleDateString()}</span>
                  </div>
               )}
               {likes >= 100 && (
-                <div className="bg-yellow-400 text-yellow-950 text-[10px] font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
-                   <span>🏆</span> <span>POPULAR</span>
+                <div className="badge-premium bg-gradient-to-r from-amber-400 to-yellow-300 text-amber-950 shadow-[0_2px_8px_-2px_rgba(245,158,11,0.3)]">
+                   <span className="text-[9px]">POPULAR</span>
                 </div>
               )}
               {isRecentlyUpdated && (
-                <div className="bg-indigo-600 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-md flex items-center gap-1">
-                   <span>✨</span> <span>NEW RELEASE</span>
+                <div className="badge-premium bg-gradient-to-r from-indigo-600 to-violet-500 text-white shadow-[0_2px_8px_-2px_rgba(99,102,241,0.4)]">
+                   <span className="text-[9px]">NEW RELEASE</span>
                 </div>
               )}
           </div>
@@ -238,45 +238,46 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
             <OptimizedImage
               src={imageUrl}
               alt={altText}
-              className={`object-cover transition-transform duration-500 ease-supanova group-hover:scale-105 ${props.scheduled_at && new Date(props.scheduled_at) > new Date() ? 'grayscale-[0.8]' : ''}`}
+              className={`object-cover transition-all duration-700 ease-supanova group-hover:scale-[1.06] ${props.scheduled_at && new Date(props.scheduled_at) > new Date() ? 'grayscale-[0.8]' : ''}`}
               fill
               priority={priority}
             />
           )}
         </div>
+        </div>{/* /더블 베젤 외부 쉘 */}
 
-        {/* 하단 정보 영역 */}
-        <div className="pt-3 px-1">
-          <h3 className="font-bold text-gray-900 text-[15px] mb-2 truncate break-keep group-hover:text-green-600 transition-colors duration-300 ease-supanova">
+        {/* 하단 정보 영역 — Supanova 프리미엄 */}
+        <div className="pt-3.5 px-1">
+          <h3 className="font-bold text-slate-900 text-[15px] mb-2.5 truncate break-keep group-hover:text-green-600 transition-colors duration-500 ease-supanova tracking-[-0.01em]">
             {props.title || "제목 없음"}
           </h3>
-          
+
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 min-w-0">
-               <div className="relative w-5 h-5 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-100">
-                  <OptimizedImage 
-                    src={props.user?.profile_image?.small || FALLBACK_AVATAR} 
+            <div className="flex items-center gap-2 min-w-0">
+               <div className="relative w-[22px] h-[22px] rounded-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-50 flex-shrink-0 ring-1 ring-black/[0.06] shadow-[0_1px_3px_-1px_rgba(0,0,0,0.08)]">
+                  <OptimizedImage
+                    src={props.user?.profile_image?.small || FALLBACK_AVATAR}
                     alt={props.user?.username || 'user'}
                     fill
                     className="object-cover"
                   />
                </div>
-               <span className="text-xs text-gray-500 truncate flex items-center gap-1">
+               <span className="text-xs text-slate-500 truncate flex items-center gap-1 font-medium">
                  {props.user?.username || 'Unknown'}
                  {props.user?.expertise?.fields && props.user.expertise.fields.length > 0 && (
-                   <span 
-                     className="inline-flex items-center justify-center w-3.5 h-3.5 bg-blue-100 text-blue-600 rounded-full"
+                   <span
+                     className="inline-flex items-center justify-center w-3.5 h-3.5 bg-blue-50 text-blue-500 rounded-full ring-1 ring-blue-100"
                      title={`전문가: ${props.user.expertise.fields.join(', ')}`}
                    >
-                      <FontAwesomeIcon icon={faRocket} className="w-2.5 h-2.5" />
+                      <FontAwesomeIcon icon={faRocket} className="w-2 h-2" />
                    </span>
                  )}
                </span>
             </div>
-            
-            <div className="flex items-center gap-3 text-xs text-gray-400 flex-shrink-0">
+
+            <div className="flex items-center gap-2.5 text-xs text-slate-400 flex-shrink-0">
                <div
-                  className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 p-1 rounded-full px-2 transition-colors"
+                  className="flex items-center gap-1 cursor-pointer hover:bg-slate-50 p-1 rounded-full px-2 transition-all duration-300 ease-supanova"
                   title={`좋아요 ${displayLikes}`}
                   onClick={(e) => {
                       e.stopPropagation();
@@ -287,12 +288,12 @@ export const ImageCard = React.memo(forwardRef<HTMLDivElement, ImageCardProps>(
                       toggleLike();
                   }}
                >
-                  <FontAwesomeIcon icon={isLiked ? faHeart : faHeartRegular} className={`w-3.5 h-3.5 transition-colors ${isLiked ? "text-red-500" : "group-hover:text-red-400"}`} />
-                  <span className={isLiked ? "text-red-500 font-bold" : ""}>{addCommas(displayLikes)}</span>
+                  <FontAwesomeIcon icon={isLiked ? faHeart : faHeartRegular} className={`w-3.5 h-3.5 transition-all duration-300 ${isLiked ? "text-red-500 scale-110" : "group-hover:text-red-400"}`} />
+                  <span className={`tabular-nums ${isLiked ? "text-red-500 font-bold" : ""}`}>{addCommas(displayLikes)}</span>
                </div>
                <div className="flex items-center gap-1" title={`조회수 ${views}`}>
                   <FontAwesomeIcon icon={faChartSimple} className="w-3.5 h-3.5" />
-                  <span>{addCommas(views || 0)}</span>
+                  <span className="tabular-nums">{addCommas(views || 0)}</span>
                </div>
             </div>
           </div>

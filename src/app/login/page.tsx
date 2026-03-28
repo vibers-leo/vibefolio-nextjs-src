@@ -112,26 +112,33 @@ function LoginContent() {
   }, []);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-lg shadow-lg">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            로그인
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50/80 via-white to-green-50/20 relative overflow-hidden noise-overlay">
+      {/* 배경 데코레이션 — Supanova 프리미엄 */}
+      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-bl from-green-100/25 to-transparent rounded-full blur-[140px] -mr-72 -mt-72" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-emerald-50/30 to-transparent rounded-full blur-[100px] -ml-40 -mb-40" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-radial from-green-100/10 to-transparent rounded-full blur-[80px]" />
+
+      {/* 프리미엄 글래스 카드 */}
+      <div className="w-full max-w-md space-y-8 bg-white/75 backdrop-blur-2xl backdrop-saturate-[1.6] p-8 md:p-10 rounded-[2rem] shadow-[0_8px_60px_-16px_rgba(22,163,74,0.08),0_24px_80px_-24px_rgba(0,0,0,0.06)] ring-1 ring-white/70 relative z-10">
+        <div className="text-center">
+          <span className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-medium bg-green-500/10 text-green-600 inline-block mb-4">Welcome Back</span>
+          <h2 className="text-3xl font-black tracking-tighter text-slate-900 leading-snug break-keep">
+            다시 만나서 반가워요
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-3 text-sm text-slate-500">
             계정이 없으신가요?{" "}
             <Link
               href="/signup"
-              className="font-medium text-green-600 hover:text-green-700"
+              className="font-bold text-green-600 hover:text-green-700 transition-all duration-300 ease-supanova"
             >
               회원가입
             </Link>
           </p>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded text-sm break-words">
+            <div className="bg-red-50/80 border border-red-200/60 text-red-700 px-4 py-3 rounded-xl text-sm break-words backdrop-blur-sm">
               {error}
             </div>
           )}
@@ -140,7 +147,7 @@ function LoginContent() {
             <div>
               <label
                 htmlFor="email-address"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-semibold text-slate-700 mb-1.5"
               >
                 이메일 주소
               </label>
@@ -155,13 +162,14 @@ function LoginContent() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="example@email.com"
+                className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
               />
             </div>
 
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-1"
+                className="block text-sm font-semibold text-slate-700 mb-1.5"
               >
                 비밀번호
               </label>
@@ -176,6 +184,7 @@ function LoginContent() {
                   setFormData({ ...formData, password: e.target.value })
                 }
                 placeholder="비밀번호"
+                className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -186,11 +195,11 @@ function LoginContent() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-600"
+                className="h-4 w-4 rounded-md border-slate-300 text-green-600 focus:ring-green-500 transition-colors"
               />
               <label
                 htmlFor="remember-me"
-                className="ml-2 block text-sm text-gray-900"
+                className="ml-2 block text-sm text-slate-600"
               >
                 로그인 상태 유지
               </label>
@@ -199,7 +208,7 @@ function LoginContent() {
             <div className="text-sm">
               <Link
                 href="/forgot-password"
-                className="font-medium text-green-600 hover:text-green-700"
+                className="font-medium text-green-600 hover:text-green-700 transition-colors"
               >
                 비밀번호 찾기
               </Link>
@@ -210,7 +219,7 @@ function LoginContent() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white"
+              className="w-full h-13 rounded-full bg-slate-900 hover:bg-black text-white font-bold text-[15px] shadow-[0_4px_20px_-6px_rgba(0,0,0,0.25)] hover:shadow-[0_8px_30px_-8px_rgba(0,0,0,0.35)] transition-all duration-500 ease-supanova hover:scale-[1.02] active:scale-[0.98]"
             >
               {loading ? "로그인 중..." : "로그인"}
             </Button>
@@ -219,27 +228,27 @@ function LoginContent() {
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+            <div className="w-full border-t border-slate-200/60" />
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="bg-white px-2 text-gray-500">또는</span>
+            <span className="bg-white/80 px-4 text-slate-400 font-medium">또는</span>
           </div>
         </div>
 
         <div className="space-y-3">
           <Button
             onClick={handleGoogleLogin}
-            className="w-full bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+            className="w-full h-12 bg-white border border-slate-200/80 text-slate-700 hover:bg-slate-50 rounded-full font-medium shadow-sm hover:shadow-md transition-all duration-300 ease-supanova hover:scale-[1.01]"
           >
-            <FcGoogle className="h-5 w-5 mr-2" />
+            <FcGoogle className="h-5 w-5 mr-2.5" />
             Google 계정으로 로그인
           </Button>
           <Button
             onClick={handleKakaoLogin}
-            className="w-full border-0 text-[#191919] hover:brightness-95"
+            className="w-full h-12 border-0 text-[#191919] hover:brightness-95 rounded-full font-medium shadow-sm hover:shadow-md transition-all duration-300 ease-supanova hover:scale-[1.01]"
             style={{ backgroundColor: '#FEE500' }}
           >
-            <RiKakaoTalkFill className="h-5 w-5 mr-2" />
+            <RiKakaoTalkFill className="h-5 w-5 mr-2.5" />
             카카오 계정으로 로그인
           </Button>
         </div>

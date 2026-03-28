@@ -110,9 +110,11 @@ export function Header({
   ];
 
   return (
-    <header 
-      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 ${
-        scrolled ? "bg-white/90 backdrop-blur-md h-[56px] border-b border-gray-50" : "bg-white h-[68px]"
+    <header
+      className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ease-supanova ${
+        scrolled
+          ? "bg-white/80 backdrop-blur-2xl backdrop-saturate-[1.8] h-[56px] border-b border-black/[0.04] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_4px_24px_-8px_rgba(22,163,74,0.06)]"
+          : "bg-white/90 backdrop-blur-2xl h-[68px] border-b border-transparent"
       }`}
     >
       <div className="max-w-[1920px] mx-auto px-6 md:px-10 flex items-center justify-between h-full w-full">
@@ -131,10 +133,10 @@ export function Header({
                       e.preventDefault();
                    }
                 }}
-                className={`text-[15px] font-medium transition-colors font-poppins relative group flex items-center ${
-                   item.label === "AI 도구" && !isAdmin 
-                     ? "text-gray-400 cursor-not-allowed hover:text-gray-400" 
-                     : "text-gray-900 hover:text-black/60"
+                className={`text-[15px] font-semibold transition-all duration-500 ease-supanova font-poppins relative group flex items-center ${
+                   item.label === "AI 도구" && !isAdmin
+                     ? "text-gray-400 cursor-not-allowed hover:text-gray-400"
+                     : "text-gray-900 hover:text-green-600"
                 }`}
               >
                 {item.label}
@@ -148,7 +150,7 @@ export function Header({
                   <span className="bg-gray-100 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-full ml-1.2 align-middle tracking-tighter shadow-inner">준비중</span>
                 )}
                 {item.label !== "AI 도구" && (
-                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-black transition-all group-hover:w-full" />
+                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 rounded-full transition-all duration-500 ease-supanova group-hover:w-full" />
                 )}
               </Link>
             ))}
@@ -157,18 +159,18 @@ export function Header({
 
         <div className="flex items-center gap-5">
            <div className="hidden lg:flex items-center relative">
-              <div className={`flex items-center transition-all duration-300 ${isSearchOpen ? 'w-80 bg-gray-100 px-4 py-2.5 opacity-100 shadow-inner' : 'w-10 opacity-70'} rounded-full`}>
-                 <button 
-                    className="p-1 outline-none hover:scale-110 transition-transform"
+              <div className={`flex items-center transition-all duration-500 ease-supanova ${isSearchOpen ? 'w-[340px] bg-white/90 backdrop-blur-2xl px-5 py-3 opacity-100 ring-1 ring-green-300/50 shadow-[0_4px_32px_-8px_rgba(22,163,74,0.12)]' : 'w-10 opacity-70 hover:opacity-100'} rounded-full`}>
+                 <button
+                    className="p-1 outline-none hover:scale-110 transition-all duration-300 ease-supanova"
                     onClick={() => setIsSearchOpen(!isSearchOpen)}
                  >
-                    <FontAwesomeIcon icon={faSearch} className={isSearchOpen ? "text-green-600" : "text-gray-900"} />
+                    <FontAwesomeIcon icon={faSearch} className={`transition-colors duration-300 ${isSearchOpen ? "text-green-600" : "text-gray-900"}`} />
                   </button>
                   {isSearchOpen && (
-                     <input 
+                     <input
                         autoFocus
                         type="text"
-                        className="bg-transparent border-none outline-none text-sm w-full font-pretendard placeholder:text-gray-400 ml-2"
+                        className="bg-transparent border-none outline-none text-sm w-full font-pretendard placeholder:text-slate-400 ml-3 tracking-tight"
                         placeholder="어떤 영감을 찾으시나요?"
                         onKeyDown={handleSearchKeyDown}
                      />
@@ -176,7 +178,7 @@ export function Header({
                </div>
 
                {isSearchOpen && (
-                  <div className="absolute top-full mt-3 right-0 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 p-5 animate-in fade-in slide-in-from-top-2 duration-200 z-[101]">
+                  <div className="absolute top-full mt-3 right-0 w-80 bg-white/90 backdrop-blur-2xl rounded-2xl shadow-[0_8px_40px_-12px_rgba(0,0,0,0.12)] border border-white/60 ring-1 ring-black/[0.03] p-5 animate-in fade-in slide-in-from-top-2 duration-200 z-[101]">
                      <div className="flex items-center justify-between mb-4">
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                            <FontAwesomeIcon icon={faBolt} className="text-green-500" />
@@ -212,9 +214,9 @@ export function Header({
                ) : isAuthenticated && user ? (
                   <div className="flex items-center gap-2 md:gap-4">
                     <div className="hidden lg:flex items-center gap-2">
-                      <Button 
+                      <Button
                         onClick={() => router.push('/project/quick-post')}
-                        className="flex items-center gap-2 bg-slate-900 hover:bg-black text-white rounded-full px-4 h-9 text-sm font-medium shadow-sm transition-all"
+                        className="flex items-center gap-2 bg-slate-900 hover:bg-black text-white rounded-full px-5 h-9 text-sm font-semibold shadow-[0_2px_8px_-2px_rgba(0,0,0,0.2)] hover:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.3)] transition-all duration-300 ease-supanova hover:scale-[1.03] active:scale-[0.97]"
                       >
                         <FontAwesomeIcon icon={faPlus} className="w-4 h-4" />
                         프로젝트 등록
@@ -238,10 +240,10 @@ export function Header({
                           </Avatar>
                         </button>
 
-                        <div 
-                          className={`absolute top-full right-0 mt-2 w-60 bg-white rounded-xl border border-gray-100 shadow-xl p-2 transition-all duration-200 origin-top-right z-[100] ${
-                            isAvatarMenuOpen 
-                              ? "opacity-100 scale-100 translate-y-0 visible" 
+                        <div
+                          className={`absolute top-full right-0 mt-2 w-64 bg-white/90 backdrop-blur-2xl rounded-2xl border border-white/60 ring-1 ring-black/[0.03] shadow-[0_12px_48px_-12px_rgba(0,0,0,0.15)] p-2.5 transition-all duration-300 ease-supanova origin-top-right z-[100] ${
+                            isAvatarMenuOpen
+                              ? "opacity-100 scale-100 translate-y-0 visible"
                               : "opacity-0 scale-95 -translate-y-2 invisible"
                           }`}
                         >
@@ -302,7 +304,7 @@ export function Header({
       </div>
 
       {isMobileMenuOpen && (
-         <div className="xl:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-100 shadow-xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-2">
+         <div className="xl:hidden absolute top-full left-0 right-0 bg-white/90 backdrop-blur-2xl border-b border-white/40 shadow-[0_12px_48px_-12px_rgba(0,0,0,0.1)] p-6 flex flex-col gap-6 animate-in slide-in-from-top-2">
             <nav className="flex flex-col gap-4">
                {menuItems.map((item) => (
                   <Link 

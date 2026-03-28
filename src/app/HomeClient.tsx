@@ -416,10 +416,23 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
   }, [loading, hasMore, page, loadProjects]);
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-white via-slate-50/30 to-white noise-overlay">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-white via-slate-50/20 to-white noise-overlay">
       <main className="w-full">
-        {/* 메인 배너 - 헤더와 밀착 */}
-        <section className="w-full">
+        {/* 메인 배너 — Supanova 프리미엄 히어로 */}
+        <section className="w-full pt-4 pb-2">
+          <div className="max-w-[1800px] mx-auto px-3 md:px-8 mb-6">
+            <div className="flex flex-col gap-1.5">
+              <span className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-medium bg-green-500/10 text-green-600 w-fit">Creative Portfolio Platform</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[1.1] break-keep">
+                <span className="text-hero-gradient">당신의 작품</span>이<br className="hidden md:block" />
+                <span className="text-slate-900">세상과 만나는 순간</span>
+              </h1>
+              <p className="text-slate-500 text-base md:text-lg font-medium max-w-lg leading-relaxed mt-2 break-keep">
+                크리에이터들의 포트폴리오를 발견하고,<br className="hidden md:block" />
+                영감을 주고받는 프리미엄 공간.
+              </p>
+            </div>
+          </div>
           <MainBanner />
         </section>
 
@@ -436,7 +449,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
           currentFields={selectedFields}
         />
         
-        <div className="max-w-[1800px] mx-auto px-3 md:px-8 pb-20 pt-10">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-8 pb-20 md:pb-32 pt-10 md:pt-16">
             {/* [New] Growth Mode Highlighting - Only show in 'growth' category tab */}
             {!searchQuery && selectedCategory === 'growth' && projects.some(p => p.is_growth_requested || p.is_feedback_requested) && (
                  <div className="mb-20 relative px-8 py-10 bg-gradient-to-br from-orange-50/80 via-white to-white rounded-[2rem] ring-1 ring-orange-100/40 shadow-[0_4px_32px_-12px_rgba(234,88,12,0.08)] overflow-hidden group">
