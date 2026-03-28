@@ -115,6 +115,13 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} font-sans antialiased bg-white min-h-[100dvh] custom-scrollbar overscroll-none`}
       >
+        {/* Google AdSense Auto Ads */}
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7704550771011130"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <Script
           src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
           strategy="lazyOnload"
