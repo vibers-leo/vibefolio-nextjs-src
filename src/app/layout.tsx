@@ -115,6 +115,26 @@ export default function RootLayout({
       <body
         className={`${poppins.variable} font-sans antialiased bg-white min-h-[100dvh] custom-scrollbar overscroll-none`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "Vibefolio",
+              "url": "https://vibefolio.net",
+              "description": "크리에이터를 위한 영감 저장소. 디자이너, 개발자, 기획자를 위한 프로젝트 아카이빙 및 레퍼런스 공유 플랫폼",
+              "applicationCategory": "DesignApplication",
+              "operatingSystem": "Web",
+              "creator": {
+                "@type": "Organization",
+                "name": "계발자들 (Vibers)",
+                "url": "https://vibers.co.kr"
+              },
+              "inLanguage": "ko"
+            })
+          }}
+        />
         {/* Google AdSense Auto Ads */}
         <Script
           async
