@@ -82,6 +82,12 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       images: ogImage ? [{ url: ogImage }] : [],
     },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description: description,
+      images: ogImage ? [ogImage] : [],
+    },
     icons: {
       icon: favicon,
       shortcut: favicon,
