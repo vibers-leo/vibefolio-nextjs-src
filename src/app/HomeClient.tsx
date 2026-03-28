@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton"; // skeleton for cards
 import { ProjectGridSkeleton } from "@/components/ui/ProjectSkeleton";
 import { MainBanner } from "@/components/MainBanner";
+import VibersBanner from "@/components/VibersBanner";
 import { ImageCard } from "@/components/ImageCard";
 import { LazyImageCard } from "@/components/LazyImageCard";
 import { StickyMenu } from "@/components/StickyMenu";
@@ -415,7 +416,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
   }, [loading, hasMore, page, loadProjects]);
 
   return (
-    <div className="min-h-[100dvh] bg-white">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-white via-slate-50/30 to-white noise-overlay">
       <main className="w-full">
         {/* 메인 배너 - 헤더와 밀착 */}
         <section className="w-full">
@@ -435,13 +436,13 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
           currentFields={selectedFields}
         />
         
-        <div className="max-w-[1800px] mx-auto px-2 md:px-8 pb-20 pt-8">
+        <div className="max-w-[1800px] mx-auto px-3 md:px-8 pb-20 pt-10">
             {/* [New] Growth Mode Highlighting - Only show in 'growth' category tab */}
             {!searchQuery && selectedCategory === 'growth' && projects.some(p => p.is_growth_requested || p.is_feedback_requested) && (
-                 <div className="mb-20 relative px-8 py-10 bg-gradient-to-br from-orange-50 via-white to-white rounded-[3rem] border border-orange-100/50 shadow-sm overflow-hidden group">
-                    {/* Background Decor */}
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-orange-100/30 rounded-full blur-[80px] -mr-32 -mt-32 animate-pulse" />
-                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-orange-50/50 rounded-full blur-[40px] -ml-16 -mb-16" />
+                 <div className="mb-20 relative px-8 py-10 bg-gradient-to-br from-orange-50/80 via-white to-white rounded-[2rem] ring-1 ring-orange-100/40 shadow-[0_4px_32px_-12px_rgba(234,88,12,0.08)] overflow-hidden group">
+                    {/* Background Decor — 프리미엄 블러 */}
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-bl from-orange-200/20 to-amber-100/10 rounded-full blur-[100px] -mr-32 -mt-32" />
+                    <div className="absolute bottom-0 left-0 w-48 h-48 bg-orange-50/40 rounded-full blur-[60px] -ml-16 -mb-16" />
                     
                     <div className="relative z-10">
                         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
@@ -501,11 +502,11 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
 
             {/* 검색어 표시 */}
             {searchQuery && (
-              <div className="pt-10 mb-10 flex items-center justify-between border-b border-gray-100 pb-6 transition-all animate-in fade-in slide-in-from-top-2">
-                <h2 className="text-2xl font-bold text-slate-800 break-keep">
-                  '<span className="text-green-600">{searchQuery}</span>' 검색 결과: <span className="text-slate-400 font-medium ml-1">{filtered.length}건</span>
+              <div className="pt-10 mb-10 flex items-center justify-between border-b border-slate-100/60 pb-6 transition-all animate-in fade-in slide-in-from-top-2">
+                <h2 className="text-2xl font-bold text-slate-900 break-keep tracking-tight">
+                  '<span className="text-gradient-premium">{searchQuery}</span>' 검색 결과 <span className="text-slate-300 font-medium ml-2 text-lg">{filtered.length}건</span>
                 </h2>
-                <Button variant="ghost" size="sm" onClick={() => router.push('/')} className="hover:bg-red-50 hover:text-red-500 rounded-full px-4 transition-all duration-300 ease-supanova hover:scale-[1.02] active:scale-[0.98]">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/')} className="hover:bg-red-50 hover:text-red-500 rounded-full px-4 transition-all duration-300 ease-supanova hover:scale-[1.02] active:scale-[0.97]">
                   <FontAwesomeIcon icon={faXmark} className="mr-2" />
                   검색 취소
                 </Button>
@@ -515,7 +516,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
             {/* 프로젝트 리스트 (Grid Layout) - 한 줄에 최대 4개 */}
             {sortedProjects.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-12 gap-x-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-y-14 gap-x-7">
                   {sortedProjects.map((project, index) => (
                     <LazyImageCard
                       key={project.id}
@@ -527,15 +528,18 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
                 </div>
 
                 {/* 무한 스크롤 센티넬 & 로딩 스피너 */}
-                <div ref={sentinelRef} className="w-full py-12 flex items-center justify-center">
+                <div ref={sentinelRef} className="w-full py-16 flex items-center justify-center">
                   {loadingMore && (
-                    <div className="flex flex-col items-center gap-3">
-                      <div className="w-8 h-8 border-3 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
-                      <p className="text-sm text-gray-500 font-medium">더 많은 프로젝트 불러오는 중...</p>
+                    <div className="flex flex-col items-center gap-4">
+                      <div className="w-8 h-8 border-2 border-green-200/60 border-t-green-600 rounded-full animate-spin"></div>
+                      <p className="text-sm text-slate-400 font-medium tracking-tight">더 불러오는 중...</p>
                     </div>
                   )}
                   {!hasMore && sortedProjects.length > 0 && (
-                    <p className="text-sm text-gray-400">모든 프로젝트를 불러왔습니다 ✨</p>
+                    <div className="flex flex-col items-center gap-2">
+                      <div className="w-12 h-[1px] bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                      <p className="text-sm text-slate-300 font-medium">모든 프로젝트를 불러왔습니다</p>
+                    </div>
                   )}
                 </div>
               </>
@@ -565,6 +569,11 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
         />
       )}
       
+      {/* Vibers 크로스 프로모션 */}
+      <div className="flex justify-center py-6">
+        <VibersBanner size="leaderboard" currentProject="vibefolio-nextjs" />
+      </div>
+
       {/* 관심사 설정 모달 */}
       <OnboardingModal
         open={showOnboarding}
