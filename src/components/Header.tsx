@@ -36,19 +36,23 @@ export function Header({
   onSetCategory?: (value: string) => void;
 }) {
   const pathname = usePathname();
-  const isReviewUrl = typeof window !== 'undefined' && 
-    (window.location.host.includes('review') || window.location.pathname.includes('review')) && 
-    !window.location.pathname.startsWith('/growth');
-  
   const { user, userProfile, isAdmin, signOut, isAuthenticated, loading } = useAuth();
-  
-  if (isReviewUrl) return null;
+
   const [scrolled, setScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAvatarMenuOpen, setIsAvatarMenuOpen] = useState(false);
   const [trends, setTrends] = useState<{ query: string; count: number }[]>([]);
+  const [isReviewUrl, setIsReviewUrl] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const isReview = window.location.host.includes('review') || window.location.pathname.includes('review');
+    const isGrowth = window.location.pathname.startsWith('/growth');
+    setIsReviewUrl(isReview && !isGrowth);
+  }, []);
+
+  if (isReviewUrl) return null;
 
   useEffect(() => {
     if (isSearchOpen) {
