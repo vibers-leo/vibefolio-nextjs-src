@@ -104,8 +104,10 @@ export default function PrivacyPolicyPage() {
             <div>
               <h4 className="font-bold text-blue-900 mb-2">개인정보 보호 책임자</h4>
               <p className="text-blue-700 text-sm">
-                담당: 바이브폴리오 운영팀 <br />
-                연락처: support@vibefolio.kr
+                회사명: 주식회사 디어스 <br />
+                대표: 이준호 <br />
+                사업자등록번호: 449-81-02594 <br />
+                연락처: 010-9249-3872
               </p>
             </div>
           </div>
