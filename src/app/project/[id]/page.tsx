@@ -326,43 +326,43 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
   }
 
   return (
-    <div className="w-full min-h-screen bg-gray-50">
-      {/* 상단 네비게이션 */}
-      <div className="w-full bg-white border-b border-gray-200 sticky top-14 md:top-16 z-10">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div className="w-full min-h-screen bg-gradient-to-b from-white via-slate-50/20 to-white">
+      {/* 상단 네비게이션 — 글래스 모피즘 */}
+      <div className="w-full bg-white/70 backdrop-blur-2xl backdrop-saturate-[1.8] border-b border-white/40 shadow-[0_1px_3px_rgba(0,0,0,0.03)] sticky top-14 md:top-16 z-10">
+        <div className="max-w-7xl mx-auto px-6 py-3.5 flex items-center justify-between">
           <Button
             variant="ghost"
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-secondary hover:text-primary"
+            className="flex items-center gap-2 text-slate-500 hover:text-slate-900 rounded-full transition-all duration-300 ease-supanova hover:bg-slate-50"
           >
-            <ArrowLeft size={20} />
-            <span className="hidden md:inline">뒤로 가기</span>
+            <ArrowLeft size={18} />
+            <span className="hidden md:inline text-sm font-medium">뒤로 가기</span>
           </Button>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="icon"
               onClick={handleLike}
-              className={isLiked ? "text-red-500" : "text-secondary"}
+              className={`rounded-full transition-all duration-300 ease-supanova ${isLiked ? "text-red-500 bg-red-50/50" : "text-slate-400 hover:text-red-500 hover:bg-red-50/50"}`}
             >
-              <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
+              <Heart size={18} fill={isLiked ? "currentColor" : "none"} />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleBookmark}
-              className={isBookmarked ? "text-blue-500" : "text-secondary"}
+              className={`rounded-full transition-all duration-300 ease-supanova ${isBookmarked ? "text-blue-500 bg-blue-50/50" : "text-slate-400 hover:text-blue-500 hover:bg-blue-50/50"}`}
             >
-              <Bookmark size={20} fill={isBookmarked ? "currentColor" : "none"} />
+              <Bookmark size={18} fill={isBookmarked ? "currentColor" : "none"} />
             </Button>
             <Button
               variant="ghost"
               size="icon"
               onClick={handleShare}
-              className="text-secondary"
+              className="text-slate-400 hover:text-slate-700 rounded-full transition-all duration-300 ease-supanova hover:bg-slate-50"
             >
-              <Share2 size={20} />
+              <Share2 size={18} />
             </Button>
           </div>
         </div>
@@ -373,8 +373,8 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
         
         {/* 1. 이미지 및 상세 내용 섹션 */}
         <div className="max-w-[1240px] mx-auto px-4 md:px-6 py-8 md:py-12">
-           {/* 프로젝트 이미지 (흰색 배경 위) */}
-           <div className="bg-gray-50/50 rounded-xl border border-gray-100 overflow-hidden mb-12 shadow-sm flex items-center justify-center min-h-[400px]">
+           {/* 프로젝트 이미지 — 프리미엄 디스플레이 */}
+           <div className="bg-gradient-to-br from-slate-50/80 to-white rounded-2xl ring-1 ring-black/[0.04] overflow-hidden mb-14 shadow-[0_4px_32px_-12px_rgba(0,0,0,0.06)] flex items-center justify-center min-h-[400px]">
              <Image
                src={project.urls.full}
                alt={project.alt_description || "프로젝트 이미지"}
@@ -388,11 +388,11 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
            {/* 프로젝트 설명 및 태그 */}
            <div className="max-w-4xl mx-auto px-2 mb-16">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight break-keep">
+              <h1 className="text-3xl md:text-[2.5rem] font-black text-slate-900 mb-6 leading-[1.2] break-keep tracking-tight">
                 {project.title || "제목 없음"}
               </h1>
-              <div 
-                className="text-lg text-gray-700 leading-8 mb-10 break-keep prose prose-lg max-w-none prose-img:rounded-xl prose-video:rounded-xl prose-headings:font-bold prose-a:text-green-600 hover:prose-a:text-green-700"
+              <div
+                className="text-lg text-slate-600 leading-8 mb-10 break-keep prose prose-lg max-w-none prose-img:rounded-2xl prose-video:rounded-2xl prose-headings:font-bold prose-headings:text-slate-900 prose-a:text-green-600 hover:prose-a:text-green-700 prose-p:text-slate-600"
                 dangerouslySetInnerHTML={{ __html: project.description || project.alt_description || "설명이 없습니다." }}
               />
 
@@ -426,64 +426,69 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
            </div>
         </div>
 
-        {/* 2. 하단 액션 바 (검은색 배경) - 노트폴리오 스타일 핵심 */}
-        <div className="w-full bg-[#18181b] text-white py-20 border-t border-gray-800">
-           <div className="max-w-4xl mx-auto px-4 text-center">
+        {/* 2. 하단 액션 바 — Supanova 다크 프리미엄 */}
+        <div className="w-full bg-gradient-to-b from-[#0F172A] to-[#0C1220] text-white py-20 border-t border-white/5 relative overflow-hidden">
+           {/* 배경 글로우 */}
+           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-gradient-to-b from-green-500/5 to-transparent rounded-full blur-[80px]" />
+
+           <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
                {/* Action Buttons */}
-               <div className="flex flex-row items-center justify-center gap-4 mb-10">
-                  <Button 
+               <div className="flex flex-row items-center justify-center gap-4 mb-12">
+                  <Button
                     onClick={handleLike}
-                    className={`h-14 px-8 rounded-full text-lg font-bold transition-all shadow-lg hover:scale-105 gap-2 border-0 ${
-                      isLiked ? 'bg-[#ff4e4e] hover:bg-[#e04545] text-white' : 'bg-[#333] hover:bg-[#444] text-white'
-                    }`}
+                    className={`h-14 px-8 rounded-full text-lg font-bold transition-all duration-300 ease-supanova gap-2 border-0 ${
+                      isLiked
+                        ? 'bg-red-500 hover:bg-red-600 text-white shadow-[0_4px_20px_-6px_rgba(239,68,68,0.5)]'
+                        : 'bg-white/10 hover:bg-white/15 text-white shadow-[0_2px_12px_-4px_rgba(0,0,0,0.3)]'
+                    } hover:scale-[1.03] active:scale-[0.97]`}
                   >
-                    <Heart className={isLiked ? "fill-current" : ""} size={22} strokeWidth={isLiked ? 0 : 2.5} />
+                    <Heart className={isLiked ? "fill-current" : ""} size={20} strokeWidth={isLiked ? 0 : 2.5} />
                     {isLiked ? '좋아요 취소' : '작업 좋아요'}
                   </Button>
-                  
-                  <Button 
+
+                  <Button
                     onClick={handleBookmark}
-                    className={`h-14 px-8 rounded-full text-lg font-bold transition-all shadow-lg hover:scale-105 gap-2 bg-white text-black hover:bg-gray-200 border-0`}
+                    className="h-14 px-8 rounded-full text-lg font-bold transition-all duration-300 ease-supanova gap-2 bg-white text-slate-900 hover:bg-slate-100 border-0 shadow-[0_4px_20px_-6px_rgba(255,255,255,0.2)] hover:scale-[1.03] active:scale-[0.97]"
                   >
-                    <Bookmark className={isBookmarked ? "fill-current" : ""} size={22} strokeWidth={2.5} />
+                    <Bookmark className={isBookmarked ? "fill-current" : ""} size={20} strokeWidth={2.5} />
                     {isBookmarked ? '컬렉션 저장됨' : '컬렉션 저장'}
                   </Button>
                </div>
 
                {/* Badge & Title */}
-               <div className="mb-4">
-                  <span className="inline-block px-3 py-1 bg-[#00d084] text-black text-xs font-bold rounded mb-4">
+               <div className="mb-5">
+                  <span className="inline-block px-3.5 py-1 bg-green-500/20 text-green-400 text-[10px] font-black tracking-wider uppercase rounded-full mb-5 border border-green-500/10">
                     VIBEFOLIO PICK 선정
                   </span>
-                  <h2 className="text-2xl md:text-3xl font-bold mb-3">{project.title}</h2>
+                  <h2 className="text-2xl md:text-3xl font-black mb-3 tracking-tight">{project.title}</h2>
                </div>
-               
+
                {/* Meta Info */}
-               <div className="text-gray-400 text-sm mb-8 flex items-center justify-center gap-3">
+               <div className="text-slate-500 text-sm mb-8 flex items-center justify-center gap-3">
                   <span>{dayjs(project.created_at).fromNow()}</span>
-                  <span className="w-0.5 h-3 bg-gray-600"></span>
+                  <span className="w-0.5 h-3 bg-slate-700 rounded-full"></span>
                   <span>{project.category || "General"}</span>
                   {project.rendering_type && (
                     <>
-                      <span className="w-0.5 h-3 bg-gray-600"></span>
+                      <span className="w-0.5 h-3 bg-slate-700 rounded-full"></span>
                       <span>{project.rendering_type}</span>
                     </>
                   )}
                </div>
 
                {/* Stats Icons */}
-               <div className="flex items-center justify-center gap-8 text-gray-500">
-                  <div className="flex items-center gap-2" title="조회수">
-                     <Eye size={20} />
-                     <span className="text-lg font-medium text-gray-300">{addCommas(viewCount)}</span>
+               <div className="flex items-center justify-center gap-8 text-slate-500">
+                  <div className="flex items-center gap-2.5" title="조회수">
+                     <Eye size={18} />
+                     <span className="text-lg font-medium text-slate-400 tabular-nums">{addCommas(viewCount)}</span>
                   </div>
-                  <div className="flex items-center gap-2" title="좋아요">
-                     <Heart size={20} />
-                     <span className="text-lg font-medium text-gray-300">{addCommas(likeCount)}</span>
+                  <div className="flex items-center gap-2.5" title="좋아요">
+                     <Heart size={18} />
+                     <span className="text-lg font-medium text-slate-400 tabular-nums">{addCommas(likeCount)}</span>
                   </div>
-                  <div className="flex items-center gap-2" title="댓글">
-                     <MessageCircle size={20} />
-                     <span className="text-lg font-medium text-gray-300">{comments.length}</span>
+                  <div className="flex items-center gap-2.5" title="댓글">
+                     <MessageCircle size={18} />
+                     <span className="text-lg font-medium text-slate-400 tabular-nums">{comments.length}</span>
                   </div>
                </div>
            </div>

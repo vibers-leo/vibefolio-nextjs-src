@@ -172,7 +172,7 @@ export function StickyMenu({
 
       <div className={`${isScrolled ? "fixed top-[56px] left-0 right-0 shadow-sm" : "relative"} z-40 w-full transition-all duration-300`}>
         {/* 1. 상단 메인 카테고리 바 */}
-        <div className={`w-full bg-white/95 backdrop-blur-sm border-b border-gray-100/50 transition-all duration-300 ${isScrolled ? "h-14" : "h-20 md:h-24"}`}>
+        <div className={`w-full bg-white/70 backdrop-blur-2xl backdrop-saturate-[1.8] border-b border-white/40 transition-all duration-500 ease-supanova ${isScrolled ? "h-14 shadow-[0_1px_3px_rgba(0,0,0,0.03)]" : "h-20 md:h-24"}`}>
           <section className={`flex items-center justify-between px-3 md:px-6 h-full w-full gap-2`}>
             {/* 카테고리 목록 */}
             <div className="flex items-center justify-start md:justify-center gap-1 md:gap-2 overflow-x-auto no-scrollbar h-full flex-1">
@@ -186,25 +186,27 @@ export function StickyMenu({
                 return (
                   <div
                     key={category.value}
-                    className={`group flex items-center gap-1.5 md:gap-2 px-3 py-1.5 rounded-full cursor-pointer transition-all duration-200 whitespace-nowrap ${
-                      isActive ? "bg-green-50" : "hover:bg-slate-50"
+                    className={`group flex items-center gap-1.5 md:gap-2 px-3.5 py-2 rounded-xl cursor-pointer transition-all duration-400 ease-supanova whitespace-nowrap relative overflow-hidden ${
+                      isActive
+                        ? "bg-green-50/80 ring-1 ring-green-200/50 shadow-[0_1px_6px_-2px_rgba(22,163,74,0.1)]"
+                        : "hover:bg-slate-50/80"
                     }`}
                     onClick={() => handleCategoryToggle(category.value)}
                     onMouseEnter={() => setHoveredCategory(category.value)}
                     onMouseLeave={() => setHoveredCategory(null)}
                   >
                     <div className="relative">
-                      <FontAwesomeIcon 
-                        icon={category.iconSolid} 
-                        className={`transition-all duration-200 ${isScrolled ? "w-3.5 h-3.5" : "w-4 h-4 md:w-[18px] md:h-[18px]"} ${
-                          showActive ? "text-green-600" : "text-slate-400 group-hover:text-green-600"
+                      <FontAwesomeIcon
+                        icon={category.iconSolid}
+                        className={`transition-all duration-400 ease-supanova ${isScrolled ? "w-3.5 h-3.5" : "w-4 h-4 md:w-[18px] md:h-[18px]"} ${
+                          showActive ? "text-green-600" : "text-slate-400 group-hover:text-green-500"
                         }`}
                       />
                       {isActive && category.value !== "all" && !isScrolled && (
-                        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-500 rounded-full border border-white" />
+                        <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-500 rounded-full ring-2 ring-white" />
                       )}
                     </div>
-                    <span className={`transition-all ${isScrolled ? "text-[13px] font-semibold" : "text-sm md:text-[15px] font-medium"} ${
+                    <span className={`transition-all duration-400 ease-supanova ${isScrolled ? "text-[13px] font-semibold" : "text-sm md:text-[15px] font-medium"} ${
                       isActive ? "text-green-700 font-bold" : "text-slate-600 group-hover:text-green-600"
                     }`}>
                       {category.label}
@@ -268,7 +270,7 @@ export function StickyMenu({
 
         {/* 2. 분야별 확장 패널 - 스크롤 시 축소 적용 */}
         <div 
-          className={`overflow-hidden transition-all duration-300 ease-in-out bg-gray-50/95 backdrop-blur-sm border-b border-gray-100 ${
+          className={`overflow-hidden transition-all duration-500 ease-supanova bg-slate-50/60 backdrop-blur-xl border-b border-slate-100/40 ${
             isFieldPanelOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
           }`}
         >

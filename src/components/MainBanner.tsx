@@ -125,7 +125,7 @@ export function MainBanner() {
   if (banners.length === 0) return null;
 
   return (
-    <section className="w-full pt-6">
+    <section className="w-full pt-6 pb-2">
       <Carousel
         opts={{
           align: "center",
@@ -140,34 +140,33 @@ export function MainBanner() {
               className="basis-[92%] md:basis-[48%] lg:basis-[40%] pl-2 md:pl-4"
             >
               <Link href={banner.link_url || "#"} className={banner.link_url ? "cursor-pointer" : "cursor-default"}>
-                <div 
-                  className="w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-lg relative group isolate shadow-md ring-1 ring-black/5"
+                <div
+                  className="w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-2xl relative group isolate shadow-[0_4px_24px_-8px_rgba(0,0,0,0.12)] ring-1 ring-white/10 transition-all duration-500 ease-supanova hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.2)] hover:scale-[1.01]"
                 >
                   <div className="absolute inset-0 z-0">
-                    <Image 
+                    <Image
                       src={banner.image_url || "/placeholder.jpg"}
-                      alt={banner.title} 
+                      alt={banner.title}
                       fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      className="object-cover transition-all duration-700 ease-supanova group-hover:scale-[1.06]"
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
                       priority={index === 0}
                     />
-                    {/* Stronger Gradient for Clarity */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-90" />
+                    {/* 프리미엄 멀티레이어 그라데이션 */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent" />
                   </div>
 
                   <div className="absolute bottom-0 left-0 w-full p-5 md:p-8 z-10 flex flex-col items-start justify-end h-full">
                     {banner.subtitle && (
-                      <span className="inline-block px-2.5 py-1 mb-3 text-[10px] font-black tracking-widest text-white uppercase bg-white/20 backdrop-blur-md rounded-full border border-white/10 shadow-sm">
+                      <span className="badge-premium bg-white/15 text-white mb-3 backdrop-blur-xl border-white/20 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.3)]">
                         {banner.subtitle}
                       </span>
                     )}
-                    
-                    <h2 className="text-[clamp(1.05rem,2.4vw,1.65rem)] font-black text-white leading-snug tracking-tight drop-shadow-lg max-w-2xl break-keep">
+
+                    <h2 className="text-[clamp(1.1rem,2.5vw,1.75rem)] font-black text-white leading-snug tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)] max-w-2xl break-keep">
                       {banner.title}
                     </h2>
-                    
-                    {/* Description Hidden for Cleanliness */}
                   </div>
                 </div>
               </Link>
@@ -176,8 +175,8 @@ export function MainBanner() {
         </CarouselContent>
         {banners.length > 1 && (
           <>
-            <CarouselPrevious className="left-8 w-12 h-12 rounded-full border-none bg-white/10 hover:bg-white/20 backdrop-blur-md text-white hidden md:flex" />
-            <CarouselNext className="right-8 w-12 h-12 rounded-full border-none bg-white/10 hover:bg-white/20 backdrop-blur-md text-white hidden md:flex" />
+            <CarouselPrevious className="left-8 w-12 h-12 rounded-full border-none bg-white/10 hover:bg-white/25 backdrop-blur-xl text-white hidden md:flex shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)] transition-all duration-300 ease-supanova hover:scale-105" />
+            <CarouselNext className="right-8 w-12 h-12 rounded-full border-none bg-white/10 hover:bg-white/25 backdrop-blur-xl text-white hidden md:flex shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)] transition-all duration-300 ease-supanova hover:scale-105" />
           </>
         )}
       </Carousel>
