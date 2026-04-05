@@ -54,3 +54,10 @@ testsprite_tests/test_credentials.txt
 .gemini/
 .agent/
 session-logs/
+
+# 발표/회의 자료
+public/*.key
+public/*.pptx
+public/5팀*
+public/[5팀]*
+data/
