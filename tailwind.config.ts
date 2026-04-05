@@ -89,7 +89,7 @@ const config = {
         'tinted': '0 8px 32px -8px rgba(22, 163, 74, 0.12)',
       },
       fontFamily: {
-        sans: ["Pretendard", "var(--font-poppins)", "-apple-system", "BlinkMacSystemFont", "system-ui", "Apple SD Gothic Neo", "sans-serif"],
+        sans: ["Paperlogy", "Pretendard Variable", "Pretendard", "system-ui", "sans-serif"],
         poppins: ["var(--font-poppins)", "sans-serif"],
         pretendard: ["Pretendard", "sans-serif"],
       },
