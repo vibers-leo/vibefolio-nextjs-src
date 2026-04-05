@@ -151,7 +151,7 @@ export type BookmarksGroupByOutputType = {
   _max: BookmarksMaxAggregateOutputType | null
 }
 
-type GetBookmarksGroupByPayload<T extends bookmarksGroupByArgs> = Prisma.PrismaPromise<
+export type GetBookmarksGroupByPayload<T extends bookmarksGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BookmarksGroupByOutputType, T['by']> &
       {

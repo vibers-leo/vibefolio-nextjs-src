@@ -233,7 +233,7 @@ export type Vf_usersGroupByOutputType = {
   _max: Vf_usersMaxAggregateOutputType | null
 }
 
-type GetVf_usersGroupByPayload<T extends vf_usersGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_usersGroupByPayload<T extends vf_usersGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_usersGroupByOutputType, T['by']> &
       {

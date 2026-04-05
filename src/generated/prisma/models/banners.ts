@@ -220,7 +220,7 @@ export type BannersGroupByOutputType = {
   _max: BannersMaxAggregateOutputType | null
 }
 
-type GetBannersGroupByPayload<T extends bannersGroupByArgs> = Prisma.PrismaPromise<
+export type GetBannersGroupByPayload<T extends bannersGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<BannersGroupByOutputType, T['by']> &
       {

@@ -206,7 +206,7 @@ export type Project_ratingsGroupByOutputType = {
   _max: Project_ratingsMaxAggregateOutputType | null
 }
 
-type GetProject_ratingsGroupByPayload<T extends project_ratingsGroupByArgs> = Prisma.PrismaPromise<
+export type GetProject_ratingsGroupByPayload<T extends project_ratingsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Project_ratingsGroupByOutputType, T['by']> &
       {

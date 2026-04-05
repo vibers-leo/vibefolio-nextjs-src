@@ -151,7 +151,7 @@ export type Vf_push_tokensGroupByOutputType = {
   _max: Vf_push_tokensMaxAggregateOutputType | null
 }
 
-type GetVf_push_tokensGroupByPayload<T extends vf_push_tokensGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_push_tokensGroupByPayload<T extends vf_push_tokensGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_push_tokensGroupByOutputType, T['by']> &
       {

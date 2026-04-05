@@ -151,7 +151,7 @@ export type FollowsGroupByOutputType = {
   _max: FollowsMaxAggregateOutputType | null
 }
 
-type GetFollowsGroupByPayload<T extends followsGroupByArgs> = Prisma.PrismaPromise<
+export type GetFollowsGroupByPayload<T extends followsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FollowsGroupByOutputType, T['by']> &
       {

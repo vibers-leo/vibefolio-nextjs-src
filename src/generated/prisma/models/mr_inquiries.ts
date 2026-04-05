@@ -242,7 +242,7 @@ export type Mr_inquiriesGroupByOutputType = {
   _max: Mr_inquiriesMaxAggregateOutputType | null
 }
 
-type GetMr_inquiriesGroupByPayload<T extends mr_inquiriesGroupByArgs> = Prisma.PrismaPromise<
+export type GetMr_inquiriesGroupByPayload<T extends mr_inquiriesGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Mr_inquiriesGroupByOutputType, T['by']> &
       {

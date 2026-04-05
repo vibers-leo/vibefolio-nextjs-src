@@ -178,7 +178,7 @@ export type Daily_statsGroupByOutputType = {
   _max: Daily_statsMaxAggregateOutputType | null
 }
 
-type GetDaily_statsGroupByPayload<T extends daily_statsGroupByArgs> = Prisma.PrismaPromise<
+export type GetDaily_statsGroupByPayload<T extends daily_statsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Daily_statsGroupByOutputType, T['by']> &
       {

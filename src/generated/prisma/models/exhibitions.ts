@@ -200,7 +200,7 @@ export type ExhibitionsGroupByOutputType = {
   _max: ExhibitionsMaxAggregateOutputType | null
 }
 
-type GetExhibitionsGroupByPayload<T extends exhibitionsGroupByArgs> = Prisma.PrismaPromise<
+export type GetExhibitionsGroupByPayload<T extends exhibitionsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ExhibitionsGroupByOutputType, T['by']> &
       {

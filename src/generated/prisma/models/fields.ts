@@ -178,7 +178,7 @@ export type FieldsGroupByOutputType = {
   _max: FieldsMaxAggregateOutputType | null
 }
 
-type GetFieldsGroupByPayload<T extends fieldsGroupByArgs> = Prisma.PrismaPromise<
+export type GetFieldsGroupByPayload<T extends fieldsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<FieldsGroupByOutputType, T['by']> &
       {

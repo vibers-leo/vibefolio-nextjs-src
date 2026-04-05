@@ -223,7 +223,7 @@ export type Api_keysGroupByOutputType = {
   _max: Api_keysMaxAggregateOutputType | null
 }
 
-type GetApi_keysGroupByPayload<T extends api_keysGroupByArgs> = Prisma.PrismaPromise<
+export type GetApi_keysGroupByPayload<T extends api_keysGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Api_keysGroupByOutputType, T['by']> &
       {

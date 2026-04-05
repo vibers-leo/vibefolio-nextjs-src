@@ -232,7 +232,7 @@ export type Vf_crawl_logsGroupByOutputType = {
   _max: Vf_crawl_logsMaxAggregateOutputType | null
 }
 
-type GetVf_crawl_logsGroupByPayload<T extends vf_crawl_logsGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_crawl_logsGroupByPayload<T extends vf_crawl_logsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_crawl_logsGroupByOutputType, T['by']> &
       {

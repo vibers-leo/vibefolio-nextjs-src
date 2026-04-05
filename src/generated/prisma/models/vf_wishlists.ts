@@ -178,7 +178,7 @@ export type Vf_wishlistsGroupByOutputType = {
   _max: Vf_wishlistsMaxAggregateOutputType | null
 }
 
-type GetVf_wishlistsGroupByPayload<T extends vf_wishlistsGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_wishlistsGroupByPayload<T extends vf_wishlistsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_wishlistsGroupByOutputType, T['by']> &
       {

@@ -151,7 +151,7 @@ export type ViewsGroupByOutputType = {
   _max: ViewsMaxAggregateOutputType | null
 }
 
-type GetViewsGroupByPayload<T extends viewsGroupByArgs> = Prisma.PrismaPromise<
+export type GetViewsGroupByPayload<T extends viewsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ViewsGroupByOutputType, T['by']> &
       {

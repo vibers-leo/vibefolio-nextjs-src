@@ -200,7 +200,7 @@ export type Vf_notificationsGroupByOutputType = {
   _max: Vf_notificationsMaxAggregateOutputType | null
 }
 
-type GetVf_notificationsGroupByPayload<T extends vf_notificationsGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_notificationsGroupByPayload<T extends vf_notificationsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_notificationsGroupByOutputType, T['by']> &
       {

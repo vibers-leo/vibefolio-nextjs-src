@@ -221,7 +221,7 @@ export type Vf_commentsGroupByOutputType = {
   _max: Vf_commentsMaxAggregateOutputType | null
 }
 
-type GetVf_commentsGroupByPayload<T extends vf_commentsGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_commentsGroupByPayload<T extends vf_commentsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_commentsGroupByOutputType, T['by']> &
       {

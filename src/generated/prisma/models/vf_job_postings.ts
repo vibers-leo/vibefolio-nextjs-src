@@ -248,7 +248,7 @@ export type Vf_job_postingsGroupByOutputType = {
   _max: Vf_job_postingsMaxAggregateOutputType | null
 }
 
-type GetVf_job_postingsGroupByPayload<T extends vf_job_postingsGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_job_postingsGroupByPayload<T extends vf_job_postingsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_job_postingsGroupByOutputType, T['by']> &
       {

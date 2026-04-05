@@ -314,7 +314,7 @@ export type Vf_recruit_itemsGroupByOutputType = {
   _max: Vf_recruit_itemsMaxAggregateOutputType | null
 }
 
-type GetVf_recruit_itemsGroupByPayload<T extends vf_recruit_itemsGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_recruit_itemsGroupByPayload<T extends vf_recruit_itemsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_recruit_itemsGroupByOutputType, T['by']> &
       {

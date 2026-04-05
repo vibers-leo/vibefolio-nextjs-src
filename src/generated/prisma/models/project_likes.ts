@@ -151,7 +151,7 @@ export type Project_likesGroupByOutputType = {
   _max: Project_likesMaxAggregateOutputType | null
 }
 
-type GetProject_likesGroupByPayload<T extends project_likesGroupByArgs> = Prisma.PrismaPromise<
+export type GetProject_likesGroupByPayload<T extends project_likesGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Project_likesGroupByOutputType, T['by']> &
       {

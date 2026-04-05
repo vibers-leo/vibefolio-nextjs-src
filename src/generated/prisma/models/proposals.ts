@@ -235,7 +235,7 @@ export type ProposalsGroupByOutputType = {
   _max: ProposalsMaxAggregateOutputType | null
 }
 
-type GetProposalsGroupByPayload<T extends proposalsGroupByArgs> = Prisma.PrismaPromise<
+export type GetProposalsGroupByPayload<T extends proposalsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<ProposalsGroupByOutputType, T['by']> &
       {

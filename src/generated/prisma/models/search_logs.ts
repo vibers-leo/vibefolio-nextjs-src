@@ -192,7 +192,7 @@ export type Search_logsGroupByOutputType = {
   _max: Search_logsMaxAggregateOutputType | null
 }
 
-type GetSearch_logsGroupByPayload<T extends search_logsGroupByArgs> = Prisma.PrismaPromise<
+export type GetSearch_logsGroupByPayload<T extends search_logsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Search_logsGroupByOutputType, T['by']> &
       {

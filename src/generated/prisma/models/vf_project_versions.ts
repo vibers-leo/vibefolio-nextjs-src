@@ -220,7 +220,7 @@ export type Vf_project_versionsGroupByOutputType = {
   _max: Vf_project_versionsMaxAggregateOutputType | null
 }
 
-type GetVf_project_versionsGroupByPayload<T extends vf_project_versionsGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_project_versionsGroupByPayload<T extends vf_project_versionsGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_project_versionsGroupByOutputType, T['by']> &
       {

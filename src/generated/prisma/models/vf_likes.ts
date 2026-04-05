@@ -178,7 +178,7 @@ export type Vf_likesGroupByOutputType = {
   _max: Vf_likesMaxAggregateOutputType | null
 }
 
-type GetVf_likesGroupByPayload<T extends vf_likesGroupByArgs> = Prisma.PrismaPromise<
+export type GetVf_likesGroupByPayload<T extends vf_likesGroupByArgs> = Prisma.PrismaPromise<
   Array<
     Prisma.PickEnumerable<Vf_likesGroupByOutputType, T['by']> &
       {
