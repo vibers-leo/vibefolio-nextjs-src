@@ -1,3 +1,18 @@
+## 전략 문서 (개발 전 반드시 숙지)
+- **전략 진단 리포트**: `data/STRATEGY_ANALYSIS.md`
+- **PM 공통 지침**: 맥미니 루트 `pm.md`
+- **gstack 빌더 철학**: 맥미니 루트 `gstack.md` — Boil the Lake, Search Before Building, 스프린트 프로세스
+- **개발 프로세스**: Think → Plan → Build → Review → Test → Ship → Reflect
+- **핵심 규칙**: 테스트 동시 작성, 새 패턴 도입 전 검색, 압축률 기반 추정
+
+### 전략 핵심 요약
+- 포트폴리오 플랫폼의 Burning Pain은 약함 → **채용담당자 활성화와 매칭 기능이 생존 조건**
+- Q2 말까지 채용담당자 20명, 매칭 월 5건 이상 목표 설정 필수
+- 무료 모델은 지속 불가능 → 6개월 내 Pro(₩4,900/월) 가격 책정 및 실행
+- AI 자동 분석과 썸네일 생성은 차별화 강점이나, 커뮤니티/네트워크 기능 추가 필요
+
+---
+
 # Vibefolio - Claude Code 지침
 
 ## 프로젝트 개요
@@ -123,3 +138,50 @@
 - 홈: `src/app/HomeClient.tsx` (LazyImageCard로 가상화)
 - 알림: `src/hooks/useNotifications.ts` (incremental insert 최적화됨)
 - OKR: `OKR.md` (분기별 목표 및 진행 추적)
+
+---
+
+## AI Recipe 이미지 API
+
+이 프로젝트는 **AI Recipe 중앙 이미지 서비스**를 사용합니다.
+
+### 사용 가능한 함수
+
+```typescript
+import { searchStockImage, generateAIImage } from '@/lib/ai-recipe-client';
+```
+
+### Stock Image 검색
+```typescript
+const image = await searchStockImage('creative portfolio design', {
+  orientation: 'landscape',
+  size: 'medium',
+});
+// → { url, provider, alt, photographer, ... }
+```
+
+### AI 이미지 생성
+```typescript
+const image = await generateAIImage('modern portfolio thumbnail, minimalist creative design', {
+  size: 'medium',
+  provider: 'auto',
+});
+// → { url, prompt, provider }
+```
+
+### 주요 용도
+- 포트폴리오 썸네일 AI 생성
+- 프로젝트 커버 이미지
+- OG 이미지 자동 생성
+
+### 주의사항
+- Server Action이나 API Route에서만 사용 (API 키 보호)
+- Rate Limit: 1000회/일
+- AI Recipe 서버 실행 필요: http://localhost:3300
+
+
+## 세션로그 기록 (필수)
+- 모든 개발 대화의 주요 내용을 `session-logs/` 폴더에 기록할 것
+- 파일명: `YYYY-MM-DD_한글제목.md` / 내용: 한글
+- 세션 종료 시, 마일스톤 달성 시, **컨텍스트 압축 전**에 반드시 저장
+- 상세 포맷은 상위 CLAUDE.md 참조
