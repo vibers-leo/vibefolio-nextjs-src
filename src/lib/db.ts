@@ -8,13 +8,16 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  // DATABASE_URL의 ?schema= 파라미터를 pg Pool이 무시하므로
-  // options 파라미터로 search_path를 직접 설정
   const url = new URL(process.env.DATABASE_URL!);
   url.searchParams.delete('schema');
   url.searchParams.set('options', '-c search_path=vibefolio');
 
-  const pool = new Pool({ connectionString: url.toString() });
+  const pool = new Pool({
+    connectionString: url.toString(),
+    max: 3,                    // 서버리스: 연결 수 최소화
+    idleTimeoutMillis: 10000,  // 10초 idle 후 연결 해제
+    connectionTimeoutMillis: 5000,
+  });
   const adapter = new PrismaPg(pool, { schema: 'vibefolio' });
 
   return new PrismaClient({
@@ -25,6 +28,7 @@ function createPrismaClient() {
 
 export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+// 개발/프로덕션 모두 globalThis에 저장 (인스턴스 재사용)
+globalForPrisma.prisma = prisma;
 
 export default prisma;
