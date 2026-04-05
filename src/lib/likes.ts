@@ -49,3 +49,12 @@ export async function getProjectLikeCount(projectId: string | number): Promise<n
     return 0;
   }
 }
+
+// toggleLike 기반 addLike / removeLike 호환 함수
+export async function addLike(projectId: string | number): Promise<boolean> {
+  return toggleLike(projectId);
+}
+
+export async function removeLike(projectId: string | number): Promise<boolean> {
+  return toggleLike(projectId);
+}

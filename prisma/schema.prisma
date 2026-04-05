@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
+  schemas  = ["vibefolio"]
 }
 
 model api_keys {
@@ -19,6 +21,7 @@ model api_keys {
   expires_at            DateTime? @db.Timestamptz(6)
   created_at            DateTime? @default(now()) @db.Timestamptz(6)
   profiles              profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model banners {
@@ -31,6 +34,7 @@ model banners {
   display_order Int?      @default(0)
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
   updated_at    DateTime? @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model bookmarks {
@@ -43,6 +47,7 @@ model bookmarks {
 
   @@unique([user_id, project_id])
   @@index([user_id], map: "idx_bookmarks_user")
+  @@schema("vibefolio")
 }
 
 model collection_items {
@@ -54,6 +59,7 @@ model collection_items {
   projects      projects?   @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([collection_id, project_id])
+  @@schema("vibefolio")
 }
 
 model collections {
@@ -69,6 +75,7 @@ model collections {
   profiles         profiles           @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_collections_user")
+  @@schema("vibefolio")
 }
 
 model comments {
@@ -91,12 +98,14 @@ model comments {
 
   @@index([project_id], map: "idx_comments_project")
   @@index([user_id], map: "idx_comments_user")
+  @@schema("vibefolio")
 }
 
 model daily_stats {
   date       DateTime @id @db.Date
   count      Int      @default(0)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model evaluations {
@@ -118,6 +127,7 @@ model evaluations {
 
   @@unique([project_id, user_id])
   @@index([project_id], map: "idx_evaluations_project")
+  @@schema("vibefolio")
 }
 
 model exhibitions {
@@ -132,6 +142,7 @@ model exhibitions {
   poster_url     String?
   is_main_slider Boolean?  @default(false)
   youtube_url    String?
+  @@schema("vibefolio")
 }
 
 model fields {
@@ -139,6 +150,7 @@ model fields {
   slug           String           @unique @db.VarChar(100)
   name           String?          @db.VarChar(255)
   project_fields project_fields[]
+  @@schema("vibefolio")
 }
 
 model follows {
@@ -152,6 +164,7 @@ model follows {
   @@unique([follower_id, following_id])
   @@index([follower_id], map: "idx_follows_follower")
   @@index([following_id], map: "idx_follows_following")
+  @@schema("vibefolio")
 }
 
 model inquiries {
@@ -163,6 +176,7 @@ model inquiries {
   content    String
   status     String?  @default("new")
   created_at DateTime @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model main_banner {
@@ -170,6 +184,7 @@ model main_banner {
   created_at  DateTime @default(now()) @db.Timestamptz(6)
   youtube_url String
   is_active   Boolean? @default(true)
+  @@schema("vibefolio")
 }
 
 model media_releases {
@@ -181,6 +196,7 @@ model media_releases {
   content        String?
   image_url      String?
   published_date DateTime? @db.Date
+  @@schema("vibefolio")
 }
 
 model mr_inquiries {
@@ -204,6 +220,7 @@ model mr_inquiries {
   projects                                    projects? @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profiles_mr_inquiries_receiver_idToprofiles profiles? @relation("mr_inquiries_receiver_idToprofiles", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profiles_mr_inquiries_sender_idToprofiles   profiles? @relation("mr_inquiries_sender_idToprofiles", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model notifications {
@@ -222,6 +239,7 @@ model notifications {
   profiles_notifications_user_idToprofiles   profiles  @relation("notifications_user_idToprofiles", fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_notifications_user")
+  @@schema("vibefolio")
 }
 
 model point_logs {
@@ -233,6 +251,7 @@ model point_logs {
   profiles   profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_point_logs_user")
+  @@schema("vibefolio")
 }
 
 model profiles {
@@ -282,6 +301,7 @@ model profiles {
   wishlists                                       wishlists[]
 
   @@index([email], map: "idx_profiles_email")
+  @@schema("vibefolio")
 }
 
 model project_categories {
@@ -290,6 +310,7 @@ model project_categories {
   category_id   Int
   category_type String?  @default("genre") @db.VarChar(50)
   projects      projects @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model project_collaborators {
@@ -301,6 +322,7 @@ model project_collaborators {
   profiles   profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([project_id, user_id])
+  @@schema("vibefolio")
 }
 
 model project_fields {
@@ -309,6 +331,7 @@ model project_fields {
   field_id   Int
   fields     fields   @relation(fields: [field_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   projects   projects @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model project_likes {
@@ -321,6 +344,7 @@ model project_likes {
 
   @@unique([project_id, user_id])
   @@index([project_id], map: "idx_project_likes_project")
+  @@schema("vibefolio")
 }
 
 model project_ratings {
@@ -336,6 +360,7 @@ model project_ratings {
 
   @@unique([project_id, user_id])
   @@index([project_id], map: "idx_project_ratings_project")
+  @@schema("vibefolio")
 }
 
 model project_versions {
@@ -348,6 +373,7 @@ model project_versions {
   images       String[]
   created_at   DateTime? @default(now()) @db.Timestamptz(6)
   projects     projects  @relation(fields: [project_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model projects {
@@ -392,6 +418,7 @@ model projects {
   @@index([author_id], map: "idx_projects_author")
   @@index([created_at(sort: Desc)], map: "idx_projects_created")
   @@index([visibility], map: "idx_projects_visibility")
+  @@schema("vibefolio")
 }
 
 model proposals {
@@ -414,6 +441,7 @@ model proposals {
   projects                                 projects? @relation(fields: [project_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profiles_proposals_receiver_idToprofiles profiles? @relation("proposals_receiver_idToprofiles", fields: [receiver_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profiles_proposals_sender_idToprofiles   profiles? @relation("proposals_sender_idToprofiles", fields: [sender_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model recruit_items {
@@ -432,6 +460,7 @@ model recruit_items {
   is_approved     Boolean?  @default(false)
   created_at      DateTime? @default(now()) @db.Timestamptz(6)
   updated_at      DateTime? @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model reward_catalog {
@@ -444,6 +473,7 @@ model reward_catalog {
   is_active     Boolean?        @default(true)
   created_at    DateTime?       @default(now()) @db.Timestamptz(6)
   reward_claims reward_claims[]
+  @@schema("vibefolio")
 }
 
 model reward_claims {
@@ -454,6 +484,7 @@ model reward_claims {
   created_at     DateTime?       @default(now()) @db.Timestamptz(6)
   reward_catalog reward_catalog? @relation(fields: [reward_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   profiles       profiles        @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model search_logs {
@@ -462,6 +493,7 @@ model search_logs {
   user_id       String?   @db.Uuid
   results_count Int?      @default(0)
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model site_settings {
@@ -469,6 +501,7 @@ model site_settings {
   og_description String?  @default("부산 동구 문화 예술 공간")
   og_image_url   String?
   updated_at     DateTime @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model vf_categories {
@@ -479,6 +512,7 @@ model vf_categories {
   other_vf_categories vf_categories[]   @relation("vf_categoriesTovf_categories")
   vf_job_postings     vf_job_postings[]
   vf_projects         vf_projects[]
+  @@schema("vibefolio")
 }
 
 model vf_comments {
@@ -496,6 +530,7 @@ model vf_comments {
   vf_users          vf_users?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@index([project_id], map: "idx_vf_comments_project")
+  @@schema("vibefolio")
 }
 
 model vf_crawl_logs {
@@ -508,6 +543,7 @@ model vf_crawl_logs {
   duration_ms   Int?
   error_message String?
   created_at    DateTime? @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model vf_job_postings {
@@ -526,6 +562,7 @@ model vf_job_postings {
   updated_at      DateTime?      @default(now()) @db.Timestamptz(6)
   vf_categories   vf_categories? @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)
   vf_users        vf_users?      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model vf_likes {
@@ -536,6 +573,7 @@ model vf_likes {
   vf_users    vf_users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([user_id, project_id])
+  @@schema("vibefolio")
 }
 
 model vf_notifications {
@@ -555,6 +593,7 @@ model vf_notifications {
 
   @@index([created_at(sort: Desc)], map: "idx_vf_notifications_created")
   @@index([user_id], map: "idx_vf_notifications_user")
+  @@schema("vibefolio")
 }
 
 model vf_project_versions {
@@ -568,6 +607,7 @@ model vf_project_versions {
   released_at   DateTime?    @db.Timestamptz(6)
   created_at    DateTime?    @default(now()) @db.Timestamptz(6)
   vf_projects   vf_projects? @relation(fields: [project_id], references: [project_id], onDelete: Cascade, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model vf_projects {
@@ -610,6 +650,7 @@ model vf_projects {
   @@index([created_at(sort: Desc)], map: "idx_vf_projects_created")
   @@index([user_id], map: "idx_vf_projects_user")
   @@index([visibility], map: "idx_vf_projects_visibility")
+  @@schema("vibefolio")
 }
 
 model vf_proposals {
@@ -621,6 +662,7 @@ model vf_proposals {
   created_at  DateTime? @default(now()) @db.Timestamptz(6)
   updated_at  DateTime? @default(now()) @db.Timestamptz(6)
   vf_users    vf_users? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model vf_push_tokens {
@@ -629,6 +671,7 @@ model vf_push_tokens {
   expo_push_token String    @unique
   created_at      DateTime? @default(now()) @db.Timestamptz(6)
   vf_users        vf_users? @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  @@schema("vibefolio")
 }
 
 model vf_recruit_items {
@@ -657,6 +700,7 @@ model vf_recruit_items {
   created_at         DateTime? @default(now()) @db.Timestamptz(6)
 
   @@index([type], map: "idx_vf_recruit_items_type")
+  @@schema("vibefolio")
 }
 
 model vf_users {
@@ -681,6 +725,7 @@ model vf_users {
   vf_proposals                                          vf_proposals[]
   vf_push_tokens                                        vf_push_tokens[]
   vf_wishlists                                          vf_wishlists[]
+  @@schema("vibefolio")
 }
 
 model vf_wishlists {
@@ -691,6 +736,7 @@ model vf_wishlists {
   vf_users    vf_users    @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([user_id, project_id])
+  @@schema("vibefolio")
 }
 
 model views {
@@ -702,6 +748,7 @@ model views {
   profiles   profiles? @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, project_id])
+  @@schema("vibefolio")
 }
 
 model visits {
@@ -711,6 +758,7 @@ model visits {
   ip         String?
   user_id    String?   @db.Uuid
   created_at DateTime? @default(now()) @db.Timestamptz(6)
+  @@schema("vibefolio")
 }
 
 model wishlists {
@@ -722,4 +770,5 @@ model wishlists {
   profiles   profiles  @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@unique([user_id, project_id])
+  @@schema("vibefolio")
 }

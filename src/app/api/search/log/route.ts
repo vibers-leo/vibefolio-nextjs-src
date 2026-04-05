@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import prisma from '@/lib/db';
+import { validateUser } from '@/lib/auth/validate';
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,34 +10,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Query is required' }, { status: 400 });
     }
 
-    // RPC 함수 호출 (increment_search_count)
-    const { error } = await (supabase as any).rpc('increment_search_count', { 
-      search_term: query.trim() 
+    const user = await validateUser(request);
+
+    await prisma.search_logs.create({
+      data: {
+        query: query.trim(),
+        user_id: user?.id ?? null,
+        results_count: 0,
+      },
     });
-
-    if (error) {
-       // RPC가 없으면 직접 테이블 업데이트 시도 (Fallback)
-       console.warn('RPC failed, falling back to manual update:', error.message);
-       const { data: existing } = await (supabase as any)
-         .from('search_keywords')
-         .select('id, count')
-         .eq('query', query.trim())
-         .single();
-
-       if (existing) {
-         await (supabase as any)
-           .from('search_keywords')
-           .update({ count: existing.count + 1, updated_at: new Date().toISOString() })
-           .eq('id', existing.id);
-       } else {
-         await (supabase as any)
-           .from('search_keywords')
-           .insert([{ query: query.trim(), count: 1 }] as any);
-       }
-    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // 로그 저장 실패는 무시
+    return NextResponse.json({ success: true });
   }
 }

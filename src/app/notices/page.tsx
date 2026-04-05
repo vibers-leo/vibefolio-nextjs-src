@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase/client";
 import { Loader2, Megaphone, Calendar, ChevronRight, Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -37,36 +36,19 @@ export default function NoticesPage() {
         // We fetch projects and filter them in JS if needed, or rely on text search if tags are stored as string sometimes.
         // Assuming custom_data: { tags: ["공지사항", ...] }
         
-        const { data, error } = await supabase
-          .from("Project")
-          .select("*")
-          .or(`scheduled_at.is.null,scheduled_at.lte.${nowISO}`)
-          .order("created_at", { ascending: false });
+        const res = await fetch('/api/notices');
+        const json = await res.json();
 
-        if (error) throw error;
-        
-        if (data) {
-           // Client-side filtering for '공지사항' tag
-           const filtered = data.filter((p: any) => {
-              if (p.deleted_at) return false;
-              let tags: string[] = [];
-              try {
-                  const cd = typeof p.custom_data === 'string' ? JSON.parse(p.custom_data) : p.custom_data;
-                  tags = cd?.tags || [];
-              } catch {}
-              return tags.includes("공지사항") || tags.includes("Notice") || tags.includes("공지");
-           });
-
-           const mapped = filtered.map((p: any) => ({
-               id: p.project_id || p.id,
-               title: p.title,
-               content_text: p.content_text || "",
-               created_at: p.created_at,
-               scheduled_at: p.scheduled_at,
-               custom_data: typeof p.custom_data === 'string' ? JSON.parse(p.custom_data) : p.custom_data,
-           }));
-
-           setNotices(mapped);
+        if (json.notices) {
+          const mapped = json.notices.map((p: any) => ({
+            id: p.project_id || p.id,
+            title: p.title,
+            content_text: p.content_text || "",
+            created_at: p.created_at,
+            scheduled_at: p.scheduled_at,
+            custom_data: typeof p.custom_data === 'string' ? JSON.parse(p.custom_data) : p.custom_data,
+          }));
+          setNotices(mapped);
         }
       } catch (e) {
         console.error("Notices Load Error:", e);

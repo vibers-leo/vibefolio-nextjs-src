@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { validateUser } from "@/lib/auth/validate";
 import { processUserQuery } from "@/lib/ai/search-service";
 import { checkRateLimit } from "@/lib/ai/rate-limit";
 import { hasAIProvider } from "@/lib/ai/client";
@@ -14,8 +14,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const user = await validateUser(req);
 
     // Rate Limit
     const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
@@ -38,38 +37,7 @@ export async function POST(req: NextRequest) {
 
     let currentSessionId = sessionId;
 
-    if (user) {
-      if (!currentSessionId) {
-        const { data: sessionData, error: sessionError } = await supabase
-          .from('ai_chat_sessions')
-          .insert({
-            user_id: user.id,
-            tool_type: category,
-            title: message.slice(0, 30)
-          })
-          .select('id')
-          .single();
-
-        if (!sessionError) {
-          currentSessionId = sessionData.id;
-        }
-      }
-
-      if (currentSessionId) {
-        await supabase.from('ai_chat_messages').insert({
-          session_id: currentSessionId,
-          role: 'user',
-          content: message
-        });
-
-        await supabase.from('ai_chat_messages').insert({
-          session_id: currentSessionId,
-          role: 'assistant',
-          content: agentResponse.answer,
-          tool_data: agentResponse.results
-        });
-      }
-    }
+    // ai_chat_sessions / ai_chat_messages 테이블은 미구현 — 세션 저장 스킵
 
     return NextResponse.json({
       sessionId: currentSessionId,

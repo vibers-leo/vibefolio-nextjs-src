@@ -8,10 +8,14 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
-  const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-  });
-  const adapter = new PrismaPg(pool);
+  // DATABASE_URL의 ?schema= 파라미터를 pg Pool이 무시하므로
+  // options 파라미터로 search_path를 직접 설정
+  const url = new URL(process.env.DATABASE_URL!);
+  url.searchParams.delete('schema');
+  url.searchParams.set('options', '-c search_path=vibefolio');
+
+  const pool = new Pool({ connectionString: url.toString() });
+  const adapter = new PrismaPg(pool, { schema: 'vibefolio' });
 
   return new PrismaClient({
     adapter,

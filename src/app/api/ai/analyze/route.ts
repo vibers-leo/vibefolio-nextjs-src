@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateText, hasAIProvider } from '@/lib/ai/client';
 import { checkRateLimit } from '@/lib/ai/rate-limit';
-import { createClient } from '@/lib/supabase/server';
-
 export async function POST(req: NextRequest) {
   if (!hasAIProvider()) {
     return NextResponse.json({
@@ -13,8 +11,8 @@ export async function POST(req: NextRequest) {
 
   // Rate Limit
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown';
-  const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { validateUser } = await import('@/lib/auth/validate');
+  const user = await validateUser(req);
   const { allowed, remaining } = checkRateLimit(user?.id || ip, !!user);
   if (!allowed) {
     return NextResponse.json({
