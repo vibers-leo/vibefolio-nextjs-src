@@ -418,6 +418,8 @@ model projects {
   @@index([author_id], map: "idx_projects_author")
   @@index([created_at(sort: Desc)], map: "idx_projects_created")
   @@index([visibility], map: "idx_projects_visibility")
+  @@index([views_count(sort: Desc)], map: "idx_vf_projects_views")
+  @@index([likes_count(sort: Desc)], map: "idx_vf_projects_likes")
   @@schema("vibefolio")
 }
 
@@ -650,6 +652,7 @@ model vf_projects {
   @@index([created_at(sort: Desc)], map: "idx_vf_projects_created")
   @@index([user_id], map: "idx_vf_projects_user")
   @@index([visibility], map: "idx_vf_projects_visibility")
+  @@index([deleted_at, created_at(sort: Desc)], map: "idx_vf_projects_active")
   @@schema("vibefolio")
 }
 

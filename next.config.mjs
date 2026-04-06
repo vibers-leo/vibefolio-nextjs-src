@@ -3,7 +3,7 @@ const nextConfig = {
   // 서버 전용 외부 패키지 설정 (Next.js 14 특정 버전 대응)
   experimental: {
     serverComponentsExternalPackages: ['cheerio', 'undici', 'pg', '@prisma/adapter-pg', 'bcryptjs', 'jsonwebtoken', 'ssh2', 'cpu-features'],
-    optimizePackageImports: ['lucide-react', '@fortawesome/react-fontawesome', 'dayjs'],
+    optimizePackageImports: ['lucide-react', '@fortawesome/react-fontawesome', 'dayjs', 'framer-motion', '@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-tabs', '@radix-ui/react-select', 'sonner', 'recharts'],
   },
 
   // 이미지 최적화 설정
@@ -12,10 +12,14 @@ const nextConfig = {
       { protocol: 'https', hostname: 'images.unsplash.com' },
       { protocol: 'https', hostname: 'vibefolio.com' },
       { protocol: 'https', hostname: 'localhost' },
-      { protocol: 'https', hostname: '*.supabase.co' }
+      { protocol: 'https', hostname: '*.supabase.co' },
+      { protocol: 'https', hostname: 'storage.vibers.co.kr' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
     ],
     formats: ['image/avif', 'image/webp'],
-    minimumCacheTTL: 60 * 60 * 24 * 7, // 7일 캐시
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30일 캐시
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256],
   },
   
   // 헤더 설정 (캐싱)

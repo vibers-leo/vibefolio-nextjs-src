@@ -16,6 +16,11 @@ export async function GET(
 
     const data = await prisma.vf_projects.findUnique({
       where: { project_id: parseInt(id) },
+      include: {
+        vf_users: {
+          select: { id: true, username: true, nickname: true, profile_image_url: true },
+        },
+      },
     });
 
     if (!data) {
@@ -29,27 +34,21 @@ export async function GET(
       return NextResponse.json({ error: '접근 권한이 없습니다. (비공개 프로젝트)' }, { status: 403 });
     }
 
-    // 유저 정보 병합
-    const project = data as any;
-    if (data.user_id) {
-      const userInfo = await prisma.vf_users.findUnique({
-        where: { id: data.user_id },
-        select: { id: true, username: true, nickname: true, profile_image_url: true },
-      });
-      if (userInfo) {
-        project.User = {
-          user_id: userInfo.id,
-          username: userInfo.username || userInfo.nickname || 'Unknown',
-          profile_image_url: userInfo.profile_image_url || '/globe.svg',
-        };
-      }
-    }
-
-    // 조회수 증가
-    await prisma.vf_projects.update({
+    // 조회수 증가 — 응답 블로킹 없이 fire-and-forget
+    prisma.vf_projects.update({
       where: { project_id: parseInt(id) },
       data: { views_count: (data.views_count || 0) + 1 },
-    });
+    }).catch(() => {});
+
+    const { vf_users, ...projectData } = data;
+    const project: any = {
+      ...projectData,
+      User: vf_users ? {
+        user_id: vf_users.id,
+        username: vf_users.username || vf_users.nickname || 'Unknown',
+        profile_image_url: vf_users.profile_image_url || '/globe.svg',
+      } : null,
+    };
 
     return NextResponse.json({ project });
   } catch (error: any) {
