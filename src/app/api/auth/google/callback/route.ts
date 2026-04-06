@@ -77,6 +77,14 @@ export async function GET(req: NextRequest) {
     }
 
     const token = createToken({ sub: user.id, email: user.email, role: user.role ?? 'user' });
+
+    // 바이버스 생태계 연결 (fire-and-forget)
+    fetch(`${process.env.VIBERS_SITE_URL ?? 'https://vibers.co.kr'}/api/vibers/connect`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-vibers-secret': process.env.VIBERS_CONNECT_SECRET ?? '' },
+      body: JSON.stringify({ type: 'join', brandSlug: 'vibefolio-nextjs', userEmail: user.email, userName: user.nickname }),
+    }).catch(() => {});
+
     return NextResponse.redirect(new URL(`/?token=${token}`, req.url));
   } catch (error) {
     console.error('[Google OAuth] callback error:', error);
