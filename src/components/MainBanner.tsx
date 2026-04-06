@@ -12,7 +12,7 @@ import {
   Skeleton,
 } from "@/components/ui/index";
 import Link from "next/link";
-
+import React from "react";
 import Image from "next/image";
 
 interface Banner {
@@ -141,7 +141,7 @@ export function MainBanner() {
             >
               <Link href={banner.link_url || "#"} className={banner.link_url ? "cursor-pointer" : "cursor-default"}>
                 <div
-                  className="w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-2xl relative group isolate shadow-[0_4px_24px_-8px_rgba(0,0,0,0.12)] ring-1 ring-white/10 transition-all duration-500 ease-supanova hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.2)] hover:scale-[1.01]"
+                  className="w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-2xl relative group isolate shadow-[0_4px_24px_-8px_rgba(0,0,0,0.12)] ring-1 ring-white/10 transition-all duration-500 ease-supanova hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]"
                 >
                   <div className="absolute inset-0 z-0">
                     <Image
@@ -164,7 +164,7 @@ export function MainBanner() {
                       </span>
                     )}
 
-                    <h2 className="text-[clamp(1.1rem,2.5vw,1.75rem)] font-black text-white leading-snug tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)] max-w-2xl break-keep">
+                    <h2 className="text-[clamp(1.1rem,2.5vw,1.75rem)] font-black text-white leading-snug tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)] max-w-2xl break-keep" style={{ textWrap: 'balance' } as React.CSSProperties}>
                       {banner.title}
                     </h2>
                   </div>

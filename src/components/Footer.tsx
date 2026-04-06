@@ -27,11 +27,11 @@ export function Footer({ className }: { className?: string }) {
         <div className="flex flex-col gap-3 items-center md:items-start">
           {/* 페이지 링크들 */}
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-6 gap-y-2 text-xs text-gray-500">
-            <Link href="/service" className="hover:text-gray-900 transition-colors">서비스 소개</Link>
-            <Link href="/policy/terms" className="hover:text-gray-900 transition-colors">이용약관</Link>
-            <Link href="/policy/privacy" className="font-bold hover:text-gray-900 transition-colors">개인정보처리방침</Link>
-            <Link href="/faq" className="hover:text-gray-900 transition-colors">자주 묻는 질문</Link>
-            <Link href="/contact" className="hover:text-gray-900 transition-colors">문의하기</Link>
+            <Link href="/service" className="hover:text-gray-900 transition-all duration-200">서비스 소개</Link>
+            <Link href="/policy/terms" className="hover:text-gray-900 transition-all duration-200">이용약관</Link>
+            <Link href="/policy/privacy" className="font-semibold hover:text-gray-900 transition-all duration-200">개인정보처리방침</Link>
+            <Link href="/faq" className="hover:text-gray-900 transition-all duration-200">자주 묻는 질문</Link>
+            <Link href="/contact" className="hover:text-gray-900 transition-all duration-200">문의하기</Link>
           </div>
           
           {/* 저작권 문구 */}
@@ -46,7 +46,7 @@ export function Footer({ className }: { className?: string }) {
             href={SOCIAL_LINKS.INSTAGRAM} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="text-gray-400 hover:text-pink-500 transition-colors"
+            className="text-gray-400 hover:text-pink-500 transition-all duration-200 hover:scale-[1.1] active:scale-[0.95]"
           >
             <FontAwesomeIcon icon={faInstagram} className="w-5 h-5" />
           </a>
@@ -54,7 +54,7 @@ export function Footer({ className }: { className?: string }) {
             href={SOCIAL_LINKS.FACEBOOK} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="text-gray-400 hover:text-blue-600 transition-colors"
+            className="text-gray-400 hover:text-blue-600 transition-all duration-200 hover:scale-[1.1] active:scale-[0.95]"
           >
             <FontAwesomeIcon icon={faFacebook} className="w-5 h-5" />
           </a>
@@ -62,7 +62,7 @@ export function Footer({ className }: { className?: string }) {
             href={SOCIAL_LINKS.THREADS} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="text-gray-400 hover:text-black transition-colors"
+            className="text-gray-400 hover:text-black transition-all duration-200 hover:scale-[1.1] active:scale-[0.95]"
           >
             <FontAwesomeIcon icon={faThreads} className="w-5 h-5" />
           </a>
@@ -70,7 +70,7 @@ export function Footer({ className }: { className?: string }) {
             href={SOCIAL_LINKS.YOUTUBE} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="text-gray-400 hover:text-red-500 transition-colors"
+            className="text-gray-400 hover:text-red-500 transition-all duration-200 hover:scale-[1.1] active:scale-[0.95]"
           >
             <FontAwesomeIcon icon={faYoutube} className="w-5 h-5" />
           </a>

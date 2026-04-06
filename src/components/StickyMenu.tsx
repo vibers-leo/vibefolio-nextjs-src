@@ -186,7 +186,7 @@ export function StickyMenu({
                 return (
                   <div
                     key={category.value}
-                    className={`group flex items-center gap-1.5 md:gap-2 px-3.5 py-2 rounded-xl cursor-pointer transition-all duration-400 ease-supanova whitespace-nowrap relative overflow-hidden ${
+                    className={`group flex items-center gap-1.5 md:gap-2 px-3.5 py-2 rounded-xl cursor-pointer transition-all duration-200 ease-supanova whitespace-nowrap relative overflow-hidden select-none hover:scale-[1.02] active:scale-[0.97] ${
                       isActive
                         ? "bg-green-50/80 ring-1 ring-green-200/50 shadow-[0_1px_6px_-2px_rgba(22,163,74,0.1)]"
                         : "hover:bg-slate-50/80"
@@ -223,7 +223,7 @@ export function StickyMenu({
 
               {/* 정렬 드롭다운 */}
               <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 h-9 rounded-lg hover:bg-gray-100 transition-colors focus:outline-none border border-transparent hover:border-gray-300">
+                <DropdownMenuTrigger className="flex items-center gap-1.5 px-3 h-9 rounded-lg hover:bg-gray-100 transition-all duration-200 focus:outline-none border border-transparent hover:border-gray-300 hover:scale-[1.02] active:scale-[0.98]">
                   <FontAwesomeIcon icon={faArrowsUpDown} className="text-gray-600 w-3.5 h-3.5" />
                   <span className={`whitespace-nowrap font-bold pt-[1px] ${isScrolled ? "text-xs" : "text-[13px] md:text-sm text-gray-800"}`}>
                     {currentSortLabel}
@@ -249,7 +249,7 @@ export function StickyMenu({
               {/* 분야별 버튼 */}
               <button
                 onClick={() => setIsFieldPanelOpen(!isFieldPanelOpen)}
-                className={`flex items-center gap-1.5 px-3 h-9 rounded-lg transition-all whitespace-nowrap border ${
+                className={`flex items-center gap-1.5 px-3 h-9 rounded-lg transition-all duration-200 whitespace-nowrap border hover:scale-[1.02] active:scale-[0.98] ${
                   isFieldPanelOpen || selectedFields.length > 0
                     ? "bg-green-50 text-green-700 border-green-200"
                     : "bg-transparent hover:bg-gray-50 text-gray-700 border-transparent hover:border-gray-200"
@@ -283,7 +283,7 @@ export function StickyMenu({
                   <button
                     key={field.id}
                     onClick={() => handleFieldToggle(field.id)}
-                    className={`rounded-full border font-medium transition-all whitespace-nowrap flex items-center gap-2 ${
+                    className={`rounded-full border font-medium transition-all duration-200 whitespace-nowrap flex items-center gap-2 hover:scale-[1.02] active:scale-[0.97] ${
                       isSelected
                         ? "bg-[#16A34A] border-[#16A34A] text-white"
                         : "bg-white border-gray-200 text-gray-600 hover:border-green-400 hover:text-green-600"

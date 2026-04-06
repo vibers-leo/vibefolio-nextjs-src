@@ -43,10 +43,10 @@ export const LazyImageCard = React.memo(function LazyImageCard({
       ) : (
         // Lightweight placeholder matching ImageCard dimensions
         <div className="w-full">
-          <div className="aspect-[4/3] bg-gray-100 rounded-2xl" />
+          <div className="aspect-[4/3] bg-gray-100 rounded-2xl transition-all duration-300" />
           <div className="mt-3 space-y-2">
-            <div className="h-4 bg-gray-100 rounded w-3/4" />
-            <div className="h-3 bg-gray-50 rounded w-1/2" />
+            <div className="h-4 bg-gray-100 rounded w-3/4 transition-all duration-300" />
+            <div className="h-3 bg-gray-50 rounded w-1/2 transition-all duration-300" />
           </div>
         </div>
       )}

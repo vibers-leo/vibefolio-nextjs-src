@@ -198,7 +198,7 @@ export function Header({
                               <button
                                  key={idx}
                                  onClick={() => handleTrendClick(trend.query)}
-                                 className="px-3 py-1.5 bg-gray-50 hover:bg-green-50 hover:text-green-700 text-[13px] font-medium text-gray-700 rounded-full transition-all border border-transparent hover:border-green-100"
+                                 className="px-3 py-1.5 bg-gray-50 hover:bg-green-50 hover:text-green-700 text-[13px] font-medium text-gray-700 rounded-full transition-all duration-200 border border-transparent hover:border-green-100 hover:scale-[1.02] active:scale-[0.97]"
                               >
                                  <span className="text-green-500 mr-1 opacity-50 font-bold">{idx + 1}</span>
                                  {trend.query}
@@ -285,12 +285,12 @@ export function Header({
                ) : (
                   <div className="flex items-center gap-1">
                      <Link href="/login">
-                        <Button variant="ghost" className="text-[15px] font-medium text-black hover:bg-gray-100 hover:text-black rounded-full px-5">
+                        <Button variant="ghost" className="text-[15px] font-medium text-black hover:bg-gray-100 hover:text-black rounded-full px-5 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                            로그인
                         </Button>
                      </Link>
                      <Link href="/signup">
-                        <Button className="rounded-full bg-black hover:bg-gray-800 text-white text-[15px] px-6 font-medium shadow-none">
+                        <Button className="rounded-full bg-black hover:bg-gray-800 text-white text-[15px] px-6 font-medium shadow-none transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]">
                            회원가입
                         </Button>
                      </Link>
@@ -351,8 +351,8 @@ export function Header({
                   </>
                ) : (
                   <>
-                     <Link href="/login" className="w-full py-3 text-center border border-gray-200 rounded-lg font-medium text-gray-700" onClick={() => setIsMobileMenuOpen(false)}>로그인</Link>
-                     <Link href="/signup" className="w-full py-3 text-center bg-black text-white rounded-lg font-medium" onClick={() => setIsMobileMenuOpen(false)}>회원가입</Link>
+                     <Link href="/login" className="w-full py-3 text-center border border-gray-200 rounded-lg font-medium text-gray-700 transition-all duration-200 active:scale-[0.98]" onClick={() => setIsMobileMenuOpen(false)}>로그인</Link>
+                     <Link href="/signup" className="w-full py-3 text-center bg-black text-white rounded-lg font-medium transition-all duration-200 active:scale-[0.98]" onClick={() => setIsMobileMenuOpen(false)}>회원가입</Link>
                   </>
                )}
             </div>
