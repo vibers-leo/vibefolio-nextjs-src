@@ -17,6 +17,10 @@ interface UserData {
   points?: number;
   interests?: any;
   expertise?: any;
+  google_id?: string | null;
+  kakao_id?: string | null;
+  naver_id?: string | null;
+  has_password?: boolean;
 }
 
 interface UserProfile {

@@ -24,6 +24,10 @@ export async function GET(request: NextRequest) {
         points: true,
         interests: true,
         expertise: true,
+        google_id: true,
+        kakao_id: true,
+        naver_id: true,
+        password_hash: true,
         created_at: true,
       },
     });
@@ -32,7 +36,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: '유저를 찾을 수 없습니다.' }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    const { password_hash, ...safeUser } = user;
+
+    return NextResponse.json({
+      user: {
+        ...safeUser,
+        has_password: !!password_hash,
+      },
+    });
   } catch (error) {
     console.error('[Auth/Me] 서버 오류:', error);
     return NextResponse.json({ error: '서버 오류' }, { status: 500 });

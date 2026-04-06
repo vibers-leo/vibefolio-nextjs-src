@@ -1,5 +1,4 @@
-import { supabase } from '@/lib/supabase/client';
-
+// activity_logs는 Prisma 스키마에 없음 — 콘솔 로그만 기록
 export type ActivityAction = 'CREATE' | 'UPDATE' | 'DELETE' | 'LOGIN' | 'APPROVE' | 'REJECT';
 export type TargetType = 'PROJECT' | 'BANNER' | 'RECRUIT' | 'USER' | 'SETTINGS' | 'NOTICE' | 'FAQ' | 'INQUIRY';
 
@@ -25,23 +24,5 @@ export async function logActivity({
   userEmail,
   ipAddress
 }: LogActivityParams) {
-  try {
-    const { error } = await (supabase as any)
-      .from('activity_logs')
-      .insert({
-        action,
-        target_type: targetType,
-        target_id: targetId?.toString(),
-        details,
-        user_id: userId,
-        user_email: userEmail,
-        ip_address: ipAddress || 'unknown'
-      });
-
-    if (error) {
-      console.error('Failed to log activity:', error);
-    }
-  } catch (err) {
-    console.error('Error logging activity:', err);
-  }
+  console.log('[ActivityLog]', { action, targetType, targetId, details, userId, userEmail, ipAddress });
 }

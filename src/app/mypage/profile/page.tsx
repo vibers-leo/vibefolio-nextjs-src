@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, MapPin, Link as LinkIcon, Upload, AlertTriangle } from "lucide-react";
+import { User, Mail, Phone, MapPin, Link as LinkIcon, Upload, AlertTriangle, Shield, KeyRound, Unlink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -48,7 +48,7 @@ import { useAuth } from "@/lib/auth/AuthContext";
 // ... (interface 유지)
 
 export default function ProfileSettingsPage() {
-  const { refreshUserProfile } = useAuth();
+  const { user: authUser, session, refreshUserProfile } = useAuth();
   const [profile, setProfile] = useState<UserProfile>({
     // ... 초기값 유지
     username: "",
@@ -71,6 +71,13 @@ export default function ProfileSettingsPage() {
   // 회원탈퇴 관련 상태
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
+
+  // 비밀번호 변경 상태
+  const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [isSavingPw, setIsSavingPw] = useState(false);
+
+  // 소셜 연동 해제 상태
+  const [unlinkingProvider, setUnlinkingProvider] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -301,6 +308,53 @@ export default function ProfileSettingsPage() {
       if (newFields.length > 3 && newFields.length > fields.length) return prev;
       return { ...prev, interests: { ...prev.interests, fields: newFields } };
     });
+  };
+
+  // 비밀번호 변경
+  const handleChangePassword = async () => {
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      alert('새 비밀번호가 일치하지 않습니다.');
+      return;
+    }
+    const token = session?.access_token;
+    if (!token) { alert('로그인이 필요합니다.'); return; }
+    setIsSavingPw(true);
+    try {
+      const res = await fetch('/api/auth/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ currentPassword: pwForm.currentPassword || undefined, newPassword: pwForm.newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      alert('비밀번호가 변경되었습니다.');
+      setPwForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (e: any) {
+      alert(e.message || '비밀번호 변경 실패');
+    } finally {
+      setIsSavingPw(false);
+    }
+  };
+
+  // 소셜 연동 해제
+  const handleUnlinkSocial = async (provider: string) => {
+    const token = session?.access_token;
+    if (!token) { alert('로그인이 필요합니다.'); return; }
+    setUnlinkingProvider(provider);
+    try {
+      const res = await fetch(`/api/auth/social/${provider}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      alert(`${provider} 연동이 해제되었습니다.`);
+      window.location.reload();
+    } catch (e: any) {
+      alert(e.message || '연동 해제 실패');
+    } finally {
+      setUnlinkingProvider(null);
+    }
   };
 
   // 회원탈퇴 처리
@@ -665,6 +719,102 @@ export default function ProfileSettingsPage() {
                 }
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* 소셜 계정 연동 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield size={18} className="text-indigo-600" />
+              소셜 계정 연동
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[
+              { provider: 'google', label: 'Google', color: 'text-red-500', connected: !!authUser?.google_id },
+              { provider: 'kakao', label: '카카오', color: 'text-yellow-500', connected: !!authUser?.kakao_id },
+              { provider: 'naver', label: '네이버', color: 'text-green-500', connected: !!authUser?.naver_id },
+            ].map(({ provider, label, color, connected }) => (
+              <div key={provider} className="flex items-center justify-between py-2 border-b last:border-b-0">
+                <div className="flex items-center gap-3">
+                  <span className={`font-semibold ${color}`}>{label}</span>
+                  {connected
+                    ? <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">연동됨</span>
+                    : <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">미연동</span>
+                  }
+                </div>
+                {connected ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleUnlinkSocial(provider)}
+                    disabled={unlinkingProvider === provider}
+                    className="text-red-500 border-red-200 hover:bg-red-50"
+                  >
+                    <Unlink size={14} className="mr-1" />
+                    {unlinkingProvider === provider ? '처리중...' : '연동 해제'}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.location.href = `/api/auth/${provider}`}
+                    className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+                  >
+                    연동하기
+                  </Button>
+                )}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* 비밀번호 변경 */}
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <KeyRound size={18} className="text-indigo-600" />
+              비밀번호 변경
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {authUser?.has_password && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">현재 비밀번호</label>
+                <Input
+                  type="password"
+                  placeholder="현재 비밀번호"
+                  value={pwForm.currentPassword}
+                  onChange={(e) => setPwForm({ ...pwForm, currentPassword: e.target.value })}
+                />
+              </div>
+            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호</label>
+              <Input
+                type="password"
+                placeholder="6자 이상"
+                value={pwForm.newPassword}
+                onChange={(e) => setPwForm({ ...pwForm, newPassword: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호 확인</label>
+              <Input
+                type="password"
+                placeholder="비밀번호 재입력"
+                value={pwForm.confirmPassword}
+                onChange={(e) => setPwForm({ ...pwForm, confirmPassword: e.target.value })}
+              />
+            </div>
+            <Button
+              onClick={handleChangePassword}
+              disabled={isSavingPw || !pwForm.newPassword}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              {isSavingPw ? '저장중...' : '비밀번호 저장'}
+            </Button>
           </CardContent>
         </Card>
 

@@ -6,10 +6,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { supabase } from "@/lib/supabase/client";
 import { FcGoogle } from "react-icons/fc";
 import { RiKakaoTalkFill } from "react-icons/ri";
-import { toast } from "sonner"; // 에러 메시지 표시를 위해 toast 사용 추천
+import { SiNaver } from "react-icons/si";
+import { toast } from "sonner";
 
 function LoginContent() {
   const router = useRouter();
@@ -22,14 +22,23 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // OAuth 콜백: URL에 token 파라미터가 있으면 저장 후 리다이렉트
+    const token = searchParams.get("token");
+    if (token) {
+      localStorage.setItem("vf_token", token);
+      toast.success("로그인 성공!");
+      const returnTo = searchParams.get("returnTo") || "/";
+      router.replace(returnTo);
+      return;
+    }
+
     const errorParam = searchParams.get("error");
     if (errorParam) {
       const decodedError = decodeURIComponent(errorParam);
       setError(decodedError);
-      // 에러가 명확히 보이도록 토스트 메시지도 띄웁니다.
       toast.error("로그인 오류", { description: decodedError });
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,18 +46,19 @@ function LoginContent() {
     setLoading(true);
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
-        email: formData.email,
-        password: formData.password,
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email, password: formData.password }),
       });
+      const data = await res.json();
 
-      if (signInError) throw signInError;
+      if (!res.ok) throw new Error(data.error || "로그인 중 오류가 발생했습니다.");
 
-      if (data.user) {
-        toast.success("로그인 성공!");
-        const returnTo = searchParams.get("returnTo") || "/";
-        router.push(returnTo);
-      }
+      localStorage.setItem("vf_token", data.token);
+      toast.success("로그인 성공!");
+      const returnTo = searchParams.get("returnTo") || "/";
+      router.push(returnTo);
     } catch (error: any) {
       console.error("로그인 오류:", error);
       setError(error.message || "로그인 중 오류가 발생했습니다.");
@@ -58,58 +68,17 @@ function LoginContent() {
     }
   };
 
-  const handleGoogleLogin = async () => {
-    try {
-      console.log("Google Login Redirect URL:", `${window.location.origin}/auth/callback`);
-      
-      const returnTo = searchParams.get("returnTo") || "/";
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnTo)}`,
-          queryParams: {
-            access_type: 'offline', // 리프레시 토큰 발급
-            // prompt: 'consent', // 테스트용 속성 제거 (모바일 호환성)
-          },
-        },
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      console.error("Google 로그인 오류:", error);
-      setError(error.message || "Google 로그인 중 오류가 발생했습니다.");
-      toast.error("Google 로그인 실패", { description: error.message });
-    }
+  const handleGoogleLogin = () => {
+    window.location.href = "/api/auth/google";
   };
 
-  const handleKakaoLogin = async () => {
-    try {
-      const returnTo = searchParams.get("returnTo") || "/";
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "kakao",
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(returnTo)}`,
-        },
-      });
-      if (error) throw error;
-    } catch (error: any) {
-      console.error("카카오 로그인 오류:", error);
-      setError(error.message || "카카오 로그인 중 오류가 발생했습니다.");
-      toast.error("카카오 로그인 실패", { description: error.message });
-    }
+  const handleKakaoLogin = () => {
+    window.location.href = "/api/auth/kakao";
   };
 
-  useEffect(() => {
-    // 네이버 인앱 브라우저 감지 및 처리
-    const userAgent = window.navigator.userAgent.toLowerCase();
-    const isNaverApp = userAgent.includes('naver');
-
-    if (isNaverApp) {
-        toast.info("네이버 앱에서는 소셜 로그인이 제한될 수 있습니다.", {
-             description: "원활한 로그인을 위해 크롬이나 사파리 등 기본 브라우저를 이용해주세요.",
-             duration: 5000
-        });
-    }
-  }, []);
+  const handleNaverLogin = () => {
+    window.location.href = "/api/auth/naver";
+  };
 
   return (
     <div className="flex min-h-[100dvh] flex-col items-center justify-center py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50/80 via-white to-green-50/20 relative overflow-hidden noise-overlay">
@@ -250,6 +219,14 @@ function LoginContent() {
           >
             <RiKakaoTalkFill className="h-5 w-5 mr-2.5" />
             카카오 계정으로 로그인
+          </Button>
+          <Button
+            onClick={handleNaverLogin}
+            className="w-full h-12 border-0 text-white hover:brightness-95 rounded-full font-medium shadow-sm hover:shadow-md transition-all duration-300 ease-supanova hover:scale-[1.01]"
+            style={{ backgroundColor: '#03C75A' }}
+          >
+            <SiNaver className="h-4 w-4 mr-2.5" />
+            네이버 계정으로 로그인
           </Button>
         </div>
       </div>

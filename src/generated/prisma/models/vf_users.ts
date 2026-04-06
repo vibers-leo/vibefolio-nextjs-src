@@ -42,6 +42,11 @@ export type Vf_usersMinAggregateOutputType = {
   username: string | null
   profile_image_url: string | null
   role: string | null
+  provider: string | null
+  provider_id: string | null
+  google_id: string | null
+  kakao_id: string | null
+  naver_id: string | null
   points: number | null
   created_at: Date | null
   updated_at: Date | null
@@ -55,6 +60,11 @@ export type Vf_usersMaxAggregateOutputType = {
   username: string | null
   profile_image_url: string | null
   role: string | null
+  provider: string | null
+  provider_id: string | null
+  google_id: string | null
+  kakao_id: string | null
+  naver_id: string | null
   points: number | null
   created_at: Date | null
   updated_at: Date | null
@@ -68,6 +78,11 @@ export type Vf_usersCountAggregateOutputType = {
   username: number
   profile_image_url: number
   role: number
+  provider: number
+  provider_id: number
+  google_id: number
+  kakao_id: number
+  naver_id: number
   points: number
   interests: number
   expertise: number
@@ -93,6 +108,11 @@ export type Vf_usersMinAggregateInputType = {
   username?: true
   profile_image_url?: true
   role?: true
+  provider?: true
+  provider_id?: true
+  google_id?: true
+  kakao_id?: true
+  naver_id?: true
   points?: true
   created_at?: true
   updated_at?: true
@@ -106,6 +126,11 @@ export type Vf_usersMaxAggregateInputType = {
   username?: true
   profile_image_url?: true
   role?: true
+  provider?: true
+  provider_id?: true
+  google_id?: true
+  kakao_id?: true
+  naver_id?: true
   points?: true
   created_at?: true
   updated_at?: true
@@ -119,6 +144,11 @@ export type Vf_usersCountAggregateInputType = {
   username?: true
   profile_image_url?: true
   role?: true
+  provider?: true
+  provider_id?: true
+  google_id?: true
+  kakao_id?: true
+  naver_id?: true
   points?: true
   interests?: true
   expertise?: true
@@ -221,6 +251,11 @@ export type Vf_usersGroupByOutputType = {
   username: string | null
   profile_image_url: string | null
   role: string | null
+  provider: string | null
+  provider_id: string | null
+  google_id: string | null
+  kakao_id: string | null
+  naver_id: string | null
   points: number | null
   interests: runtime.JsonValue | null
   expertise: runtime.JsonValue | null
@@ -259,6 +294,11 @@ export type vf_usersWhereInput = {
   username?: Prisma.StringNullableFilter<"vf_users"> | string | null
   profile_image_url?: Prisma.StringNullableFilter<"vf_users"> | string | null
   role?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  provider?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  provider_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  google_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  kakao_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  naver_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
   points?: Prisma.IntNullableFilter<"vf_users"> | number | null
   interests?: Prisma.JsonNullableFilter<"vf_users">
   expertise?: Prisma.JsonNullableFilter<"vf_users">
@@ -283,6 +323,11 @@ export type vf_usersOrderByWithRelationInput = {
   username?: Prisma.SortOrderInput | Prisma.SortOrder
   profile_image_url?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  google_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  kakao_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  naver_id?: Prisma.SortOrderInput | Prisma.SortOrder
   points?: Prisma.SortOrderInput | Prisma.SortOrder
   interests?: Prisma.SortOrderInput | Prisma.SortOrder
   expertise?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -310,6 +355,11 @@ export type vf_usersWhereUniqueInput = Prisma.AtLeast<{
   nickname?: Prisma.StringNullableFilter<"vf_users"> | string | null
   profile_image_url?: Prisma.StringNullableFilter<"vf_users"> | string | null
   role?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  provider?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  provider_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  google_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  kakao_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
+  naver_id?: Prisma.StringNullableFilter<"vf_users"> | string | null
   points?: Prisma.IntNullableFilter<"vf_users"> | number | null
   interests?: Prisma.JsonNullableFilter<"vf_users">
   expertise?: Prisma.JsonNullableFilter<"vf_users">
@@ -334,6 +384,11 @@ export type vf_usersOrderByWithAggregationInput = {
   username?: Prisma.SortOrderInput | Prisma.SortOrder
   profile_image_url?: Prisma.SortOrderInput | Prisma.SortOrder
   role?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider?: Prisma.SortOrderInput | Prisma.SortOrder
+  provider_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  google_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  kakao_id?: Prisma.SortOrderInput | Prisma.SortOrder
+  naver_id?: Prisma.SortOrderInput | Prisma.SortOrder
   points?: Prisma.SortOrderInput | Prisma.SortOrder
   interests?: Prisma.SortOrderInput | Prisma.SortOrder
   expertise?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -357,6 +412,11 @@ export type vf_usersScalarWhereWithAggregatesInput = {
   username?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
   profile_image_url?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
   role?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
+  provider?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
+  provider_id?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
+  google_id?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
+  kakao_id?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
+  naver_id?: Prisma.StringNullableWithAggregatesFilter<"vf_users"> | string | null
   points?: Prisma.IntNullableWithAggregatesFilter<"vf_users"> | number | null
   interests?: Prisma.JsonNullableWithAggregatesFilter<"vf_users">
   expertise?: Prisma.JsonNullableWithAggregatesFilter<"vf_users">
@@ -372,6 +432,11 @@ export type vf_usersCreateInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -396,6 +461,11 @@ export type vf_usersUncheckedCreateInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -420,6 +490,11 @@ export type vf_usersUpdateInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -444,6 +519,11 @@ export type vf_usersUncheckedUpdateInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -468,6 +548,11 @@ export type vf_usersCreateManyInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -483,6 +568,11 @@ export type vf_usersUpdateManyMutationInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -498,6 +588,11 @@ export type vf_usersUncheckedUpdateManyInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -523,6 +618,11 @@ export type vf_usersCountOrderByAggregateInput = {
   username?: Prisma.SortOrder
   profile_image_url?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  provider_id?: Prisma.SortOrder
+  google_id?: Prisma.SortOrder
+  kakao_id?: Prisma.SortOrder
+  naver_id?: Prisma.SortOrder
   points?: Prisma.SortOrder
   interests?: Prisma.SortOrder
   expertise?: Prisma.SortOrder
@@ -542,6 +642,11 @@ export type vf_usersMaxOrderByAggregateInput = {
   username?: Prisma.SortOrder
   profile_image_url?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  provider_id?: Prisma.SortOrder
+  google_id?: Prisma.SortOrder
+  kakao_id?: Prisma.SortOrder
+  naver_id?: Prisma.SortOrder
   points?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -555,6 +660,11 @@ export type vf_usersMinOrderByAggregateInput = {
   username?: Prisma.SortOrder
   profile_image_url?: Prisma.SortOrder
   role?: Prisma.SortOrder
+  provider?: Prisma.SortOrder
+  provider_id?: Prisma.SortOrder
+  google_id?: Prisma.SortOrder
+  kakao_id?: Prisma.SortOrder
+  naver_id?: Prisma.SortOrder
   points?: Prisma.SortOrder
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
@@ -712,6 +822,11 @@ export type vf_usersCreateWithoutVf_commentsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -735,6 +850,11 @@ export type vf_usersUncheckedCreateWithoutVf_commentsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -774,6 +894,11 @@ export type vf_usersUpdateWithoutVf_commentsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -797,6 +922,11 @@ export type vf_usersUncheckedUpdateWithoutVf_commentsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -820,6 +950,11 @@ export type vf_usersCreateWithoutVf_job_postingsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -843,6 +978,11 @@ export type vf_usersUncheckedCreateWithoutVf_job_postingsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -882,6 +1022,11 @@ export type vf_usersUpdateWithoutVf_job_postingsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -905,6 +1050,11 @@ export type vf_usersUncheckedUpdateWithoutVf_job_postingsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -928,6 +1078,11 @@ export type vf_usersCreateWithoutVf_likesInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -951,6 +1106,11 @@ export type vf_usersUncheckedCreateWithoutVf_likesInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -990,6 +1150,11 @@ export type vf_usersUpdateWithoutVf_likesInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1013,6 +1178,11 @@ export type vf_usersUncheckedUpdateWithoutVf_likesInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1036,6 +1206,11 @@ export type vf_usersCreateWithoutVf_notifications_vf_notifications_sender_idTovf
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1059,6 +1234,11 @@ export type vf_usersUncheckedCreateWithoutVf_notifications_vf_notifications_send
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1087,6 +1267,11 @@ export type vf_usersCreateWithoutVf_notifications_vf_notifications_user_idTovf_u
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1110,6 +1295,11 @@ export type vf_usersUncheckedCreateWithoutVf_notifications_vf_notifications_user
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1149,6 +1339,11 @@ export type vf_usersUpdateWithoutVf_notifications_vf_notifications_sender_idTovf
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1172,6 +1367,11 @@ export type vf_usersUncheckedUpdateWithoutVf_notifications_vf_notifications_send
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1206,6 +1406,11 @@ export type vf_usersUpdateWithoutVf_notifications_vf_notifications_user_idTovf_u
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1229,6 +1434,11 @@ export type vf_usersUncheckedUpdateWithoutVf_notifications_vf_notifications_user
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1252,6 +1462,11 @@ export type vf_usersCreateWithoutVf_projectsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1275,6 +1490,11 @@ export type vf_usersUncheckedCreateWithoutVf_projectsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1314,6 +1534,11 @@ export type vf_usersUpdateWithoutVf_projectsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1337,6 +1562,11 @@ export type vf_usersUncheckedUpdateWithoutVf_projectsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1360,6 +1590,11 @@ export type vf_usersCreateWithoutVf_proposalsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1383,6 +1618,11 @@ export type vf_usersUncheckedCreateWithoutVf_proposalsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1422,6 +1662,11 @@ export type vf_usersUpdateWithoutVf_proposalsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1445,6 +1690,11 @@ export type vf_usersUncheckedUpdateWithoutVf_proposalsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1468,6 +1718,11 @@ export type vf_usersCreateWithoutVf_push_tokensInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1491,6 +1746,11 @@ export type vf_usersUncheckedCreateWithoutVf_push_tokensInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1530,6 +1790,11 @@ export type vf_usersUpdateWithoutVf_push_tokensInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1553,6 +1818,11 @@ export type vf_usersUncheckedUpdateWithoutVf_push_tokensInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1576,6 +1846,11 @@ export type vf_usersCreateWithoutVf_wishlistsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1599,6 +1874,11 @@ export type vf_usersUncheckedCreateWithoutVf_wishlistsInput = {
   username?: string | null
   profile_image_url?: string | null
   role?: string | null
+  provider?: string | null
+  provider_id?: string | null
+  google_id?: string | null
+  kakao_id?: string | null
+  naver_id?: string | null
   points?: number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1638,6 +1918,11 @@ export type vf_usersUpdateWithoutVf_wishlistsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1661,6 +1946,11 @@ export type vf_usersUncheckedUpdateWithoutVf_wishlistsInput = {
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   profile_image_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   role?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  provider_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  google_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  kakao_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  naver_id?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   points?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   interests?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   expertise?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
@@ -1787,6 +2077,11 @@ export type vf_usersSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   username?: boolean
   profile_image_url?: boolean
   role?: boolean
+  provider?: boolean
+  provider_id?: boolean
+  google_id?: boolean
+  kakao_id?: boolean
+  naver_id?: boolean
   points?: boolean
   interests?: boolean
   expertise?: boolean
@@ -1812,6 +2107,11 @@ export type vf_usersSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   username?: boolean
   profile_image_url?: boolean
   role?: boolean
+  provider?: boolean
+  provider_id?: boolean
+  google_id?: boolean
+  kakao_id?: boolean
+  naver_id?: boolean
   points?: boolean
   interests?: boolean
   expertise?: boolean
@@ -1827,6 +2127,11 @@ export type vf_usersSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   username?: boolean
   profile_image_url?: boolean
   role?: boolean
+  provider?: boolean
+  provider_id?: boolean
+  google_id?: boolean
+  kakao_id?: boolean
+  naver_id?: boolean
   points?: boolean
   interests?: boolean
   expertise?: boolean
@@ -1842,6 +2147,11 @@ export type vf_usersSelectScalar = {
   username?: boolean
   profile_image_url?: boolean
   role?: boolean
+  provider?: boolean
+  provider_id?: boolean
+  google_id?: boolean
+  kakao_id?: boolean
+  naver_id?: boolean
   points?: boolean
   interests?: boolean
   expertise?: boolean
@@ -1849,7 +2159,7 @@ export type vf_usersSelectScalar = {
   updated_at?: boolean
 }
 
-export type vf_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password_hash" | "nickname" | "username" | "profile_image_url" | "role" | "points" | "interests" | "expertise" | "created_at" | "updated_at", ExtArgs["result"]["vf_users"]>
+export type vf_usersOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "password_hash" | "nickname" | "username" | "profile_image_url" | "role" | "provider" | "provider_id" | "google_id" | "kakao_id" | "naver_id" | "points" | "interests" | "expertise" | "created_at" | "updated_at", ExtArgs["result"]["vf_users"]>
 export type vf_usersInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vf_comments?: boolean | Prisma.vf_users$vf_commentsArgs<ExtArgs>
   vf_job_postings?: boolean | Prisma.vf_users$vf_job_postingsArgs<ExtArgs>
@@ -1886,6 +2196,11 @@ export type $vf_usersPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     username: string | null
     profile_image_url: string | null
     role: string | null
+    provider: string | null
+    provider_id: string | null
+    google_id: string | null
+    kakao_id: string | null
+    naver_id: string | null
     points: number | null
     interests: runtime.JsonValue | null
     expertise: runtime.JsonValue | null
@@ -2330,6 +2645,11 @@ export interface vf_usersFieldRefs {
   readonly username: Prisma.FieldRef<"vf_users", 'String'>
   readonly profile_image_url: Prisma.FieldRef<"vf_users", 'String'>
   readonly role: Prisma.FieldRef<"vf_users", 'String'>
+  readonly provider: Prisma.FieldRef<"vf_users", 'String'>
+  readonly provider_id: Prisma.FieldRef<"vf_users", 'String'>
+  readonly google_id: Prisma.FieldRef<"vf_users", 'String'>
+  readonly kakao_id: Prisma.FieldRef<"vf_users", 'String'>
+  readonly naver_id: Prisma.FieldRef<"vf_users", 'String'>
   readonly points: Prisma.FieldRef<"vf_users", 'Int'>
   readonly interests: Prisma.FieldRef<"vf_users", 'Json'>
   readonly expertise: Prisma.FieldRef<"vf_users", 'Json'>

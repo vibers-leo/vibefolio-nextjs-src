@@ -711,6 +711,11 @@ model vf_users {
   username                                              String?            @unique
   profile_image_url                                     String?
   role                                                  String?            @default("user")
+  provider                                              String?
+  provider_id                                           String?
+  google_id                                             String?
+  kakao_id                                              String?
+  naver_id                                              String?
   points                                                Int?               @default(0)
   interests                                             Json?              @default("[]")
   expertise                                             Json?              @default("[]")
