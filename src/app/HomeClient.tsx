@@ -572,7 +572,7 @@ function HomeContentInner({ initialProjects, initialBanners }: HomeClientProps) 
                       key={project.id}
                       project={project}
                       onClick={() => handleProjectClick(project)}
-                      priority={index < 8}
+                      priority={index < 20}
                     />
                   ))}
                 </div>
@@ -605,7 +605,7 @@ function HomeContentInner({ initialProjects, initialBanners }: HomeClientProps) 
                )
             )}
 
-            {loading && <ProjectGridSkeleton count={10} />}
+            {loading && projects.length === 0 && <ProjectGridSkeleton count={10} />}
         </div>
       </main>
 
