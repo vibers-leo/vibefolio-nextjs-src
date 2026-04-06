@@ -141,9 +141,10 @@ function transformProjectToCard(proj: any): ImageDialogProps {
 
 interface HomeClientProps {
   initialProjects: any[];
+  initialBanners?: any[];
 }
 
-function HomeContentInner({ initialProjects }: HomeClientProps) {
+function HomeContentInner({ initialProjects, initialBanners }: HomeClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q"); // 검색어 가져오기
@@ -469,7 +470,7 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
               </p>
             </div>
           </div>
-          <MainBanner />
+          <MainBanner initialBanners={initialBanners} />
         </section>
 
         {/* 팝업 모달 */}
@@ -639,10 +640,10 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
 }
 
 // Searchparams를 사용하는 컴포넌트를 Suspense로 감싸기
-export default function HomeClient({ initialProjects }: HomeClientProps) {
+export default function HomeClient({ initialProjects, initialBanners }: HomeClientProps) {
   return (
     <Suspense fallback={<div className="min-h-[100dvh] bg-white" />}>
-      <HomeContentInner initialProjects={initialProjects} />
+      <HomeContentInner initialProjects={initialProjects} initialBanners={initialBanners} />
     </Suspense>
   );
 }

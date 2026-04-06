@@ -44,70 +44,34 @@ const FALLBACK_BANNERS: Banner[] = [
   },
 ];
 
-export function MainBanner() {
-  const [banners, setBanners] = useState<Banner[]>([]);
-  const [loading, setLoading] = useState(true);
+interface MainBannerProps {
+  initialBanners?: Banner[];
+}
+
+export function MainBanner({ initialBanners }: MainBannerProps = {}) {
+  const [banners, setBanners] = useState<Banner[]>(initialBanners || []);
+  const [loading, setLoading] = useState(!initialBanners || initialBanners.length === 0);
 
   useEffect(() => {
+    // SSR 데이터가 있으면 클라이언트 fetch 불필요
+    if (initialBanners && initialBanners.length > 0) return;
+
     let isMounted = true;
-
-    // 캐시 확인 함수
-    const checkCache = () => {
-      try {
-        const cached = localStorage.getItem("main_banners_cache");
-        if (cached) {
-          const { data, timestamp } = JSON.parse(cached);
-          // 1시간 유효 기간
-          if (Date.now() - timestamp < 60 * 60 * 1000) {
-            setBanners(data);
-            setLoading(false);
-            return true;
-          }
-        }
-      } catch (e) {
-        console.error("Cache parsing error", e);
-      }
-      return false;
-    };
-
     const loadBanners = async () => {
-      const hasCache = checkCache();
-
       try {
-        // Prisma 기반 API 호출 (self-hosted PostgreSQL)
         const res = await fetch("/api/banners?activeOnly=true");
         if (!res.ok) throw new Error(`API 응답 오류: ${res.status}`);
         const { banners: data } = await res.json();
-
-        if (isMounted && data && data.length > 0) {
-          setBanners(data);
-          localStorage.setItem("main_banners_cache", JSON.stringify({
-            data,
-            timestamp: Date.now(),
-          }));
-        } else if (isMounted && !hasCache) {
-          // DB에 데이터 없으면 폴백
-          setBanners(FALLBACK_BANNERS);
-        }
-      } catch (error) {
-        console.warn("배너 로드 실패 (캐시/폴백 사용):", error);
-        if (isMounted && !hasCache) {
-          setBanners(FALLBACK_BANNERS);
-        }
+        if (isMounted) setBanners(data && data.length > 0 ? data : FALLBACK_BANNERS);
+      } catch {
+        if (isMounted) setBanners(FALLBACK_BANNERS);
       } finally {
         if (isMounted) setLoading(false);
       }
     };
-
-    if (!checkCache()) {
-      loadBanners();
-    } else {
-      // 캐시가 있어도 백그라운드에서 최신 데이터 갱신
-      loadBanners();
-    }
-
+    loadBanners();
     return () => { isMounted = false; };
-  }, []);
+  }, [initialBanners]);
 
   if (loading) {
     return (
