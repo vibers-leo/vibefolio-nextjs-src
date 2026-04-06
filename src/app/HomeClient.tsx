@@ -1,6 +1,7 @@
 "use client";
 
 import React, { Suspense, useState, useEffect, useCallback, useMemo } from "react";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import dynamic from 'next/dynamic';
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -218,48 +219,86 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
     }
   }, [user, userProfile]);
 
+  // React Query: 첫 페이지 fetch (stale-while-revalidate 패턴)
+  const buildProjectsUrl = useCallback((pageNum: number) => {
+    const limit = 20;
+    const searchParam = searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : "";
+    let categoryParam = "";
+    let modeParam = "";
+    if (selectedCategory === 'growth') {
+      modeParam = "&mode=growth";
+    } else if (selectedCategory === 'audit') {
+      modeParam = "&mode=audit";
+    } else if (selectedCategory && selectedCategory !== 'all' && selectedCategory !== 'interests') {
+      categoryParam = `&category=${selectedCategory}`;
+    }
+    const fieldParam = selectedFields.length > 0 ? `&field=${selectedFields[0]}` : "";
+    const sortParam = `&sortBy=${sortBy}`;
+    return `/api/projects?page=${pageNum}&limit=${limit}${searchParam}${categoryParam}${fieldParam}${modeParam}${sortParam}`;
+  }, [searchQuery, selectedCategory, selectedFields, sortBy]);
+
+  const { data: queryData, isFetching: isQueryFetching } = useQuery({
+    queryKey: ['projects', searchQuery, selectedCategory, selectedFields, sortBy],
+    queryFn: async () => {
+      const res = await fetch(buildProjectsUrl(1));
+      if (!res.ok) throw new Error('Failed to fetch projects');
+      const data = await res.json();
+      return (data.data || data.projects || []) as any[];
+    },
+    staleTime: 30 * 1000,       // 30초간 신선
+    gcTime: 5 * 60 * 1000,      // 5분 캐시 유지
+    placeholderData: keepPreviousData, // 필터 전환 시 이전 데이터 유지
+    enabled: !(
+      !searchQuery &&
+      selectedCategory === 'all' &&
+      selectedFields.length === 0 &&
+      sortBy === 'latest' &&
+      initialDataUsed &&
+      projects.length > 0
+    ),
+  });
+
+  // React Query 결과로 projects 상태 동기화 (첫 페이지)
+  useEffect(() => {
+    if (queryData && !isQueryFetching) {
+      const enriched = queryData.map(transformProjectToCard);
+      setProjects(enriched);
+      setHasMore(queryData.length >= 20);
+      setPage(1);
+      setLoading(false);
+      isFetchingRef.current = false;
+    }
+  }, [queryData, isQueryFetching]);
+
+  // 로딩 상태 동기화
+  useEffect(() => {
+    if (isQueryFetching) {
+      setLoading(true);
+    }
+  }, [isQueryFetching]);
+
   const loadProjects = useCallback(
     async (pageNum = 1, reset = false) => {
       if (isFetchingRef.current && !reset) return;
-      
-      if (reset) {
-          setLoading(true);
-          setHasMore(true);
-          isFetchingRef.current = true;
-          setInitialDataUsed(false);
-      }
-      try {
-        const limit = 20;
-        const searchParam = searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : "";
-        
-        let categoryParam = "";
-        let modeParam = "";
-        if (selectedCategory === 'growth') {
-            modeParam = "&mode=growth";
-        } else if (selectedCategory === 'audit') {
-            modeParam = "&mode=audit";
-        } else if (selectedCategory && selectedCategory !== 'all' && selectedCategory !== 'interests') {
-            categoryParam = `&category=${selectedCategory}`;
-        }
 
-        const fieldParam = selectedFields.length > 0 ? `&field=${selectedFields[0]}` : "";
-        const sortParam = `&sortBy=${sortBy}`;
-        
-        const res = await fetch(`/api/projects?page=${pageNum}&limit=${limit}${searchParam}${categoryParam}${fieldParam}${modeParam}${sortParam}`);
+      if (reset) {
+        setLoading(true);
+        setHasMore(true);
+        isFetchingRef.current = true;
+        setInitialDataUsed(false);
+      }
+      // 첫 페이지는 React Query가 처리하므로 스킵
+      if (pageNum === 1) return;
+
+      try {
+        const res = await fetch(buildProjectsUrl(pageNum));
         const data = await res.json();
-        
-        // API 응답 키가 'data'일 수도 있고 'projects'일 수도 있음 (Dual Support)
         const projectList = data.data || data.projects;
 
         if (res.ok && projectList) {
           const enriched = projectList.map(transformProjectToCard);
-          
-          reset ? setProjects(enriched) : setProjects(prev => [...prev, ...enriched]);
-          
-          // 더 이상 불러올 데이터가 없으면 hasMore를 false로 설정
-          if (projectList.length < limit) {
-            setHasMore(false);
-          }
+          setProjects(prev => [...prev, ...enriched]);
+          if (projectList.length < 20) setHasMore(false);
         } else {
           setHasMore(false);
         }
@@ -270,20 +309,17 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
         isFetchingRef.current = false;
       }
     },
-    [searchQuery, selectedCategory, selectedFields, sortBy]
+    [buildProjectsUrl]
   );
 
   // 검색/필터 변경 시에만 새로 로드 (초기 SSR 데이터가 있고 조건이 맞으면 스킵)
   useEffect(() => {
     const isDefaultState = !searchQuery && selectedCategory === 'all' && selectedFields.length === 0 && sortBy === 'latest';
-    
+
     if (isDefaultState && initialDataUsed && projects.length > 0) {
-      // SSR 데이터를 이미 사용 중이므로 다시 로드하지 않음
       return;
     }
-    
-    loadProjects(1, true);
-  }, [searchQuery, selectedCategory, selectedFields, sortBy, loadProjects]);
+  }, [searchQuery, selectedCategory, selectedFields, sortBy]);
 
   // 필터링 로직 강화 (카테고리 + 분야 + 관심사) - 복수 선택 지원
   const filtered = useMemo(() => {
@@ -422,12 +458,12 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
         <section className="w-full pt-4 pb-2">
           <div className="max-w-[1800px] mx-auto px-3 md:px-8 mb-6">
             <div className="flex flex-col gap-1.5">
-              <span className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-medium bg-green-500/10 text-green-600 w-fit">Creative Portfolio Platform</span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[1.1] break-keep">
+              <span className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-semibold bg-indigo-500/10 text-indigo-600 w-fit transition-all duration-200">Creative Portfolio Platform</span>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[1.1] break-keep" style={{ textWrap: 'balance' } as React.CSSProperties}>
                 <span className="text-hero-gradient">당신의 작품</span>이<br className="hidden md:block" />
                 <span className="text-slate-900">세상과 만나는 순간</span>
               </h1>
-              <p className="text-slate-500 text-base md:text-lg font-medium max-w-lg leading-relaxed mt-2 break-keep">
+              <p className="text-slate-500 text-base md:text-lg font-medium max-w-lg leading-relaxed mt-2 break-keep" style={{ wordBreak: 'keep-all' } as React.CSSProperties}>
                 크리에이터들의 포트폴리오를 발견하고,<br className="hidden md:block" />
                 영감을 주고받는 프리미엄 공간.
               </p>
@@ -466,10 +502,10 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
                                    </div>
                                    <span className="text-orange-600 font-black text-[10px] tracking-[0.2em] uppercase">Special Mission</span>
                                 </div>
-                                <h2 className="text-4xl font-black text-slate-950 tracking-tighter leading-snug break-keep mt-1">
+                                <h2 className="text-4xl font-black text-slate-950 tracking-tighter leading-snug break-keep mt-1" style={{ textWrap: 'balance' } as React.CSSProperties}>
                                     제 평가는요? <span className="text-orange-600">전문 진단</span> 프로젝트
                                 </h2>
-                                <p className="text-slate-500 text-[16px] font-medium max-w-lg leading-relaxed break-keep">
+                                <p className="text-slate-500 text-[16px] font-medium max-w-lg leading-relaxed break-keep" style={{ wordBreak: 'keep-all' } as React.CSSProperties}>
                                     창작자의 치열한 고민이 담긴 작품들입니다.<br/>
                                     여러분의 냉철한 시선으로 미슐랭 평점을 매겨주세요.
                                 </p>
@@ -516,10 +552,10 @@ function HomeContentInner({ initialProjects }: HomeClientProps) {
             {/* 검색어 표시 */}
             {searchQuery && (
               <div className="pt-10 mb-10 flex items-center justify-between border-b border-slate-100/60 pb-6 transition-all animate-in fade-in slide-in-from-top-2">
-                <h2 className="text-2xl font-bold text-slate-900 break-keep tracking-tight">
+                <h2 className="text-2xl font-bold text-slate-900 break-keep tracking-tight" style={{ textWrap: 'balance' } as React.CSSProperties}>
                   '<span className="text-gradient-premium">{searchQuery}</span>' 검색 결과 <span className="text-slate-300 font-medium ml-2 text-lg">{filtered.length}건</span>
                 </h2>
-                <Button variant="ghost" size="sm" onClick={() => router.push('/')} className="hover:bg-red-50 hover:text-red-500 rounded-full px-4 transition-all duration-300 ease-supanova hover:scale-[1.02] active:scale-[0.97]">
+                <Button variant="ghost" size="sm" onClick={() => router.push('/')} className="hover:bg-red-50 hover:text-red-500 rounded-full px-4 transition-all duration-200 ease-supanova hover:scale-[1.02] active:scale-[0.98]">
                   <FontAwesomeIcon icon={faXmark} className="mr-2" />
                   검색 취소
                 </Button>

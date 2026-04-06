@@ -359,8 +359,8 @@ export default function AdminPage() {
       {/* Welcome Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-            반가워요, <span className="text-[#16A34A]">관리자님!</span> 👋
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight break-keep">
+            반가워요, <span className="text-indigo-600">관리자님!</span>
           </h1>
           <p className="text-slate-500 mt-2 font-medium">오늘의 바이브폴리오 현황을 요약해 드립니다.</p>
         </div>
@@ -410,7 +410,7 @@ export default function AdminPage() {
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-4">
                   <CardTitle className="text-xl font-black flex items-center gap-2">
-                    <FontAwesomeIcon icon={faChartBar} className="text-[#16A34A]" />
+                    <FontAwesomeIcon icon={faChartBar} className="text-indigo-600" />
                     플랫폼 통계
                   </CardTitle>
                   <div className="flex items-center gap-4 text-xs font-bold text-slate-400 bg-slate-50 px-4 py-2 rounded-full">
@@ -492,11 +492,11 @@ export default function AdminPage() {
           
           <div className="mt-8 pt-6 border-t border-slate-50 flex items-center justify-between">
             <p className="text-sm font-medium text-slate-500 italic">
-              플랫폼 활성도가 전주 대비 <span className={`font-bold ${stats.projectGrowth >= 0 ? 'text-[#16A34A]' : 'text-red-600'}`}>
+              플랫폼 활성도가 전주 대비 <span className={`font-bold ${stats.projectGrowth >= 0 ? 'text-indigo-600' : 'text-red-600'}`}>
                 {Math.abs(stats.projectGrowth)}% {stats.projectGrowth >= 0 ? '개선' : '정체'}
               </span>되었습니다.
             </p>
-            <Button variant="ghost" className="text-[#16A34A] font-bold text-xs hover:bg-[#16A34A]/5 rounded-xl" onClick={() => router.push('/admin/stats')}>상세 리포트 보기</Button>
+            <Button variant="ghost" className="text-indigo-600 font-bold text-xs hover:bg-indigo-50 rounded-xl" onClick={() => router.push('/admin/stats')}>상세 리포트 보기</Button>
           </div>
       </Card>
 

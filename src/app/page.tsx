@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { supabase } from "@/lib/supabase/client";
+import prisma from "@/lib/db";
 import HomeClient from "./HomeClient";
 
 // 서버에서 초기 프로젝트 데이터를 미리 가져옴 (SSR)
@@ -7,50 +7,67 @@ export const revalidate = 60; // 1분마다 재검증
 
 async function getInitialProjects() {
   try {
-    const nowISO = new Date().toISOString();
-    
-    const { data, error } = await supabase
-      .from('Project')
-      .select(`
-        project_id, user_id, category_id, title, rendering_type, 
-        thumbnail_url, views_count, likes_count, created_at, 
-        custom_data, allow_michelin_rating, allow_stickers, 
-        allow_secret_comments, visibility, scheduled_at, audit_deadline, is_growth_requested
-      `)
-      .is('deleted_at', null)
-      .eq('visibility', 'public')
-      .or(`scheduled_at.is.null,scheduled_at.lte.${nowISO}`)
-      .order('created_at', { ascending: false })
-      .range(0, 19); // 첫 20개
+    const now = new Date();
 
-    if (error) throw error;
-    
-    if (data && data.length > 0) {
+    const projects = await prisma.vf_projects.findMany({
+      where: {
+        deleted_at: null,
+        visibility: 'public',
+        OR: [
+          { scheduled_at: null },
+          { scheduled_at: { lte: now } },
+        ],
+      },
+      select: {
+        project_id: true,
+        user_id: true,
+        category_id: true,
+        title: true,
+        rendering_type: true,
+        thumbnail_url: true,
+        views_count: true,
+        likes_count: true,
+        created_at: true,
+        custom_data: true,
+        allow_michelin_rating: true,
+        allow_stickers: true,
+        allow_secret_comments: true,
+        visibility: true,
+        scheduled_at: true,
+        audit_deadline: true,
+        is_feedback_requested: true,
+      },
+      orderBy: { created_at: 'desc' },
+      take: 20,
+    });
+
+    if (projects.length > 0) {
       // 작성자 정보 병합
-      const userIds = [...new Set(data.map((p: any) => p.user_id).filter(Boolean))] as string[];
-      
+      const userIds = [...new Set(projects.map((p) => p.user_id).filter(Boolean))] as string[];
+
       if (userIds.length > 0) {
-        const { data: usersData } = await supabase
-          .from('profiles')
-          .select('id, username, avatar_url, expertise')
-          .in('id', userIds);
+        const users = await prisma.vf_users.findMany({
+          where: { id: { in: userIds } },
+          select: { id: true, username: true, profile_image_url: true, expertise: true },
+        });
 
-        const userMap = new Map();
-        usersData?.forEach((u: any) => {
-          userMap.set(u.id, {
+        const userMap = new Map(users.map((u) => [
+          u.id,
+          {
             username: u.username || 'Unknown',
-            avatar_url: u.avatar_url || '/globe.svg',
+            avatar_url: u.profile_image_url || '/globe.svg',
             expertise: u.expertise || null,
-          });
-        });
+          },
+        ]));
 
-        data.forEach((project: any) => {
-          project.users = userMap.get(project.user_id) || { username: 'Unknown', avatar_url: '/globe.svg' };
-        });
+        return projects.map((project) => ({
+          ...project,
+          users: userMap.get(project.user_id ?? '') || { username: 'Unknown', avatar_url: '/globe.svg' },
+        }));
       }
     }
 
-    return data || [];
+    return projects;
   } catch (error) {
     console.error('[SSR] Failed to fetch initial projects:', error);
     return [];

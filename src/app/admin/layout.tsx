@@ -18,7 +18,7 @@ export default function AdminLayout({
 }) {
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-slate-50 flex">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50/20 to-slate-50 flex">
         <AdminSidebar />
         <main className="flex-1 ml-64 p-8">
           {children}

@@ -28,70 +28,70 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary: Vibrant Green (#16A34A) */
-    --primary: 142 76% 36%;
+    /* Primary: Indigo (#4F46E5) */
+    --primary: 243 75% 59%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;    /* Cool Gray (#F1F5F9) */
+    --secondary: 240 5% 96%;       /* Cool Gray */
     --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96.1%;
+    --muted: 240 5% 96%;
     --muted-foreground: 215 16% 47%;
 
-    /* Accent: Lime Green (#84CC16) */
-    --accent: 84 81% 44%;
+    /* Accent: Indigo (#4F46E5) */
+    --accent: 243 75% 59%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 214 32% 91%;         /* Light Gray (#E2E8F0) */
-    --input: 214 32% 91%;
-    --ring: 142 76% 36%;
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 243 75% 59%;
 
     --radius: 0.25rem; /* Reduced rounding (~4px) */
 
-    /* Vibe 전용 변수 (Green Theme) */
-    --vibe-green: 142 76% 36%;
-    --vibe-mint: 84 81% 44%;
-    --vibe-hover: 210 40% 96.1%;
+    /* Vibefolio 전용 변수 (Indigo Theme) */
+    --vibe-indigo: 243 75% 59%;
+    --vibe-indigo-light: 240 100% 97%;
+    --vibe-hover: 240 5% 96%;
+    --premium-shadow-color: 243 75% 59%;
 
-    --divider: 214 32% 91%;
+    --divider: 240 6% 90%;
 
     /* Supanova 프리미엄 변수 */
     --spring-easing: cubic-bezier(0.16, 1, 0.3, 1);
     --spring-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
-    --premium-shadow-color: 142 76% 36%;
   }
 
   .dark {
-    --background: 144 10% 4%;
+    --background: 240 10% 4%;
     --foreground: 0 0% 98%;
-    
-    --card: 144 10% 4%;
+
+    --card: 240 10% 6%;
     --card-foreground: 0 0% 98%;
-    
-    --popover: 144 10% 4%;
+
+    --popover: 240 10% 6%;
     --popover-foreground: 0 0% 98%;
-    
-    --primary: 142 71% 45%;
+
+    --primary: 243 75% 65%;
     --primary-foreground: 0 0% 100%;
-    
-    --secondary: 144 4% 16%;
+
+    --secondary: 240 5% 16%;
     --secondary-foreground: 0 0% 98%;
-    
-    --muted: 144 4% 16%;
-    --muted-foreground: 144 5% 65%;
-    
-    --accent: 84 81% 44%;
-    --accent-foreground: 144 10% 4%;
-    
+
+    --muted: 240 5% 16%;
+    --muted-foreground: 240 5% 65%;
+
+    --accent: 243 75% 65%;
+    --accent-foreground: 240 10% 4%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    
-    --border: 144 4% 16%;
-    --input: 144 4% 16%;
-    --ring: 142 71% 45%;
+
+    --border: 240 5% 18%;
+    --input: 240 5% 18%;
+    --ring: 243 75% 65%;
   }
 
   * {
@@ -150,9 +150,9 @@
   }
 
   .behance-card:hover {
-    box-shadow: 0 10px 30px -10px rgba(22, 163, 74, 0.2);
+    box-shadow: 0 10px 30px -10px rgba(79, 70, 229, 0.2);
     transform: translateY(-4px) scale(1.01);
-    border-color: rgba(22, 163, 74, 0.3);
+    border-color: rgba(79, 70, 229, 0.3);
   }
 
   /* 둥근 버튼 (Pill Shape) */
@@ -166,9 +166,9 @@
   }
 
   .btn-primary:hover {
-    background: #15803d; /* Green-700 Hover */
+    background: #4338ca; /* Green-700 Hover */
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
   }
 
   .btn-secondary {
@@ -183,8 +183,8 @@
 
   .btn-secondary:hover {
     background: var(--vibe-hover);
-    border-color: #16A34A;
-    color: #16A34A;
+    border-color: #4F46E5;
+    color: #4F46E5;
   }
 
   /* 헤더 스타일 */
@@ -375,18 +375,18 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(22, 163, 74, 0.3); /* Green tint */
+    background: rgba(79, 70, 229, 0.3); /* Green tint */
     border-radius: 99px;
     transition: background 0.2s ease;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(22, 163, 74, 0.6);
+    background: rgba(79, 70, 229, 0.6);
   }
 
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: rgba(22, 163, 74, 0.3) transparent;
+    scrollbar-color: rgba(79, 70, 229, 0.3) transparent;
   }
 
   /* 텍스트 말줄임 */
@@ -444,7 +444,7 @@
   }
 
   .editor-blocks .block-heading {
-    border-left-color: #22C55E; /* Green */
+    border-left-color: #6366F1; /* Green */
   }
 
   .editor-blocks .block-heading::before {
@@ -455,7 +455,7 @@
     transform: translateY(-50%);
     font-size: 10px;
     font-weight: bold;
-    color: #22C55E;
+    color: #6366F1;
     opacity: 0;
     transition: opacity 0.2s ease;
   }
@@ -596,8 +596,8 @@ input:-webkit-autofill:active {
 .card-bezel:hover {
   box-shadow:
     0 0 0 1px rgba(255,255,255,1) inset,
-    0 4px 16px -4px rgba(22, 163, 74, 0.08),
-    0 24px 64px -16px rgba(22, 163, 74, 0.12);
+    0 4px 16px -4px rgba(79, 70, 229, 0.08),
+    0 24px 64px -16px rgba(79, 70, 229, 0.12);
   transform: translateY(-6px);
 }
 
@@ -634,7 +634,7 @@ input:-webkit-autofill:active {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(22, 163, 74, 0.3);
+  background: rgba(79, 70, 229, 0.3);
   background-clip: content-box;
 }
 
@@ -645,7 +645,7 @@ input:-webkit-autofill:active {
 
 /* 프리미엄 그라데이션 텍스트 */
 .text-gradient-premium {
-  background: linear-gradient(135deg, #16A34A 0%, #10B981 30%, #059669 70%, #047857 100%);
+  background: linear-gradient(135deg, #4F46E5 0%, #6366f1 30%, #4F46E5 70%, #3730a3 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -672,8 +672,8 @@ input:-webkit-autofill:active {
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.2); }
-  50% { box-shadow: 0 0 24px 4px rgba(22, 163, 74, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.2); }
+  50% { box-shadow: 0 0 24px 4px rgba(79, 70, 229, 0.15); }
 }
 
 .animate-spring-up {
@@ -691,7 +691,7 @@ input:-webkit-autofill:active {
 /* 프리미엄 포커스 링 */
 .focus-ring-premium:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px white, 0 0 0 4px rgba(22, 163, 74, 0.5);
+  box-shadow: 0 0 0 2px white, 0 0 0 4px rgba(79, 70, 229, 0.5);
 }
 
 /* 그라디언트 보더 */
@@ -706,7 +706,7 @@ input:-webkit-autofill:active {
   position: absolute;
   inset: -1px;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(22,163,74,0.3), rgba(16,185,129,0.1), rgba(22,163,74,0.3));
+  background: linear-gradient(135deg, rgba(79,70,229,0.3), rgba(99,102,241,0.1), rgba(79,70,229,0.3));
   z-index: -1;
 }
 
@@ -749,7 +749,7 @@ input:-webkit-autofill:active {
   inset: 0;
   border-radius: inherit;
   opacity: 0;
-  background: linear-gradient(135deg, rgba(22,163,74,0.08), rgba(16,185,129,0.04));
+  background: linear-gradient(135deg, rgba(79,70,229,0.08), rgba(99,102,241,0.04));
   transition: opacity 0.4s var(--spring-easing);
 }
 
@@ -759,10 +759,10 @@ input:-webkit-autofill:active {
 }
 
 .pill-premium.active {
-  border-color: rgba(22, 163, 74, 0.2);
-  background: rgba(22, 163, 74, 0.05);
-  color: #16A34A;
-  box-shadow: 0 2px 12px -4px rgba(22, 163, 74, 0.15);
+  border-color: rgba(79, 70, 229, 0.2);
+  background: rgba(79, 70, 229, 0.05);
+  color: #4F46E5;
+  box-shadow: 0 2px 12px -4px rgba(79, 70, 229, 0.15);
 }
 
 /* 인터렉티브 엘레먼트 bounce */
@@ -781,7 +781,7 @@ input:-webkit-autofill:active {
 /* Supanova 프리미엄 스크롤바 — 글로벌 */
 html {
   scrollbar-width: thin;
-  scrollbar-color: rgba(22, 163, 74, 0.15) transparent;
+  scrollbar-color: rgba(79, 70, 229, 0.15) transparent;
 }
 
 ::-webkit-scrollbar {
@@ -794,17 +794,17 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(22, 163, 74, 0.15);
+  background: rgba(79, 70, 229, 0.15);
   border-radius: 99px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(22, 163, 74, 0.35);
+  background: rgba(79, 70, 229, 0.35);
 }
 
 /* Supanova 프리미엄 Hero 그라데이션 텍스트 */
 .text-hero-gradient {
-  background: linear-gradient(135deg, #0f172a 0%, #16A34A 50%, #10B981 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #4F46E5 50%, #6366f1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -855,10 +855,10 @@ html {
 }
 
 .card-double-bezel:hover {
-  border-color: rgba(22, 163, 74, 0.15);
+  border-color: rgba(79, 70, 229, 0.15);
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.8) inset,
-    0 8px 40px -12px rgba(22, 163, 74, 0.12),
+    0 8px 40px -12px rgba(79, 70, 229, 0.12),
     0 24px 64px -16px rgba(16, 24, 40, 0.08);
 }
 
@@ -875,7 +875,7 @@ html {
 
 /* 프리미엄 스크롤바 — 호버 시 그린 틴트 */
 ::-webkit-scrollbar-thumb:active {
-  background: rgba(22, 163, 74, 0.5);
+  background: rgba(79, 70, 229, 0.5);
   background-clip: content-box;
 }
 
@@ -884,7 +884,7 @@ html {
   background: rgba(255, 255, 255, 0.95);
   box-shadow:
     0 0 0 2px white,
-    0 0 0 4px rgba(22, 163, 74, 0.15),
-    0 4px 24px -8px rgba(22, 163, 74, 0.08);
+    0 0 0 4px rgba(79, 70, 229, 0.15),
+    0 4px 24px -8px rgba(79, 70, 229, 0.08);
 }
 

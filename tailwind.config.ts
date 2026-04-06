@@ -74,19 +74,39 @@ const config = {
           "0%": { transform: "translateX(-150%) skewX(-15deg)" },
           "100%": { transform: "translateX(150%) skewX(-15deg)" },
         },
+        fadeInUp: {
+          "0%": { opacity: "0", transform: "translateY(2rem)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        "spring-up": {
+          "0%": { transform: "translateY(40px)", opacity: "0" },
+          "60%": { transform: "translateY(-4px)", opacity: "1" },
+          "80%": { transform: "translateY(2px)" },
+          "100%": { transform: "translateY(0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         shine: "shine 1.5s infinite",
+        "fade-in-up": "fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        float: "float 4s ease-in-out infinite",
+        "spring-up": "spring-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
       transitionTimingFunction: {
         'supanova': 'cubic-bezier(0.16, 1, 0.3, 1)',
+        'spring': 'cubic-bezier(0.34, 1.56, 0.64, 1)',
       },
       boxShadow: {
         'card': '0 4px 24px -4px rgba(16, 24, 40, 0.06), 0 2px 8px -2px rgba(16, 24, 40, 0.03)',
         'card-hover': '0 20px 60px -15px rgba(16, 24, 40, 0.1), 0 4px 16px -4px rgba(16, 24, 40, 0.06)',
-        'tinted': '0 8px 32px -8px rgba(22, 163, 74, 0.12)',
+        'tinted': '0 8px 32px -8px rgba(79, 70, 229, 0.12)',
+        'indigo': '0 4px 20px -6px rgba(79, 70, 229, 0.3)',
+        'indigo-lg': '0 12px 40px -10px rgba(79, 70, 229, 0.25)',
       },
       fontFamily: {
         sans: ["Paperlogy", "Pretendard Variable", "Pretendard", "system-ui", "sans-serif"],

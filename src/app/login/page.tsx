@@ -81,16 +81,16 @@ function LoginContent() {
   };
 
   return (
-    <div className="flex min-h-[100dvh] flex-col items-center justify-center py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50/80 via-white to-green-50/20 relative overflow-hidden noise-overlay">
+    <div className="flex min-h-[100dvh] flex-col items-center justify-center py-20 md:py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-slate-50/80 via-white to-indigo-50/20 relative overflow-hidden noise-overlay">
       {/* 배경 데코레이션 — Supanova 프리미엄 */}
-      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-bl from-green-100/25 to-transparent rounded-full blur-[140px] -mr-72 -mt-72" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-emerald-50/30 to-transparent rounded-full blur-[100px] -ml-40 -mb-40" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-radial from-green-100/10 to-transparent rounded-full blur-[80px]" />
+      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-gradient-to-bl from-indigo-100/25 to-transparent rounded-full blur-[140px] -mr-72 -mt-72" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-violet-50/30 to-transparent rounded-full blur-[100px] -ml-40 -mb-40" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-radial from-indigo-100/10 to-transparent rounded-full blur-[80px]" />
 
       {/* 프리미엄 글래스 카드 */}
-      <div className="w-full max-w-md space-y-8 bg-white/75 backdrop-blur-2xl backdrop-saturate-[1.6] p-8 md:p-10 rounded-[2rem] shadow-[0_8px_60px_-16px_rgba(22,163,74,0.08),0_24px_80px_-24px_rgba(0,0,0,0.06)] ring-1 ring-white/70 relative z-10">
+      <div className="w-full max-w-md space-y-8 bg-white/75 backdrop-blur-2xl backdrop-saturate-[1.6] p-8 md:p-10 rounded-[2rem] shadow-[0_8px_60px_-16px_rgba(79,70,229,0.08),0_24px_80px_-24px_rgba(0,0,0,0.06)] ring-1 ring-white/70 relative z-10">
         <div className="text-center">
-          <span className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-medium bg-green-500/10 text-green-600 inline-block mb-4">Welcome Back</span>
+          <span className="rounded-full px-3 py-1 text-[11px] uppercase tracking-[0.15em] font-medium bg-indigo-500/10 text-indigo-600 inline-block mb-4">Welcome Back</span>
           <h2 className="text-3xl font-black tracking-tighter text-slate-900 leading-snug break-keep">
             다시 만나서 반가워요
           </h2>
@@ -98,7 +98,7 @@ function LoginContent() {
             계정이 없으신가요?{" "}
             <Link
               href="/signup"
-              className="font-bold text-green-600 hover:text-green-700 transition-all duration-300 ease-supanova"
+              className="font-bold text-indigo-600 hover:text-indigo-700 transition-all duration-300 ease-supanova"
             >
               회원가입
             </Link>
@@ -131,7 +131,7 @@ function LoginContent() {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 placeholder="example@email.com"
-                className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
+                className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
               />
             </div>
 
@@ -153,7 +153,7 @@ function LoginContent() {
                   setFormData({ ...formData, password: e.target.value })
                 }
                 placeholder="비밀번호"
-                className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
+                className="h-12 rounded-2xl bg-slate-50/60 border-slate-200/40 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all duration-300 ease-supanova placeholder:text-slate-400"
               />
             </div>
           </div>
@@ -164,7 +164,7 @@ function LoginContent() {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 rounded-md border-slate-300 text-green-600 focus:ring-green-500 transition-colors"
+                className="h-4 w-4 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 transition-colors"
               />
               <label
                 htmlFor="remember-me"
@@ -177,7 +177,7 @@ function LoginContent() {
             <div className="text-sm">
               <Link
                 href="/forgot-password"
-                className="font-medium text-green-600 hover:text-green-700 transition-colors"
+                className="font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
               >
                 비밀번호 찾기
               </Link>
