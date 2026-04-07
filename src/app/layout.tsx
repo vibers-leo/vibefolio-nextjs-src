@@ -7,7 +7,6 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { Toaster } from "@/components/ui/sonner";
 // TooltipProvider is already in ClientProviders.tsx
 import { AutoLogoutProvider } from "@/components/AutoLogoutProvider";
-import NextTopLoader from 'nextjs-toploader';
 import { RootLayoutContent } from "@/components/layout/RootLayoutContent";
 import RealtimeListener from "@/components/RealtimeListener";
 import { VisitTracker } from "@/components/VisitTracker";
@@ -164,7 +163,6 @@ export default function RootLayout({
           </>
         )}
         <VisitTracker />
-        <NextTopLoader color="#000000" showSpinner={false} />
         <ClientProviders>
           <AutoLogoutProvider>
             <>
