@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { RefreshCw, Globe, ExternalLink, ArrowLeft, CheckCircle, XCircle, Code, FileText } from 'lucide-react';
 
@@ -24,6 +24,8 @@ export default function AdminSeoPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [llmsTxt, setLlmsTxt] = useState<boolean | null>(null);
+
+  useEffect(() => { handleFetch(); }, []);
 
   const fetchMeta = async () => {
     setLoading(true);
