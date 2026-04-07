@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   let title = defaultTitle;
   let description = defaultDesc;
-  let ogImage = "";
+  let ogImage = "/og-image.png"; // Default OG image
   let favicon = "/vibefolio2.png"; // Default Favicon
 
   // Metadata Load optimization: skip heavy DB work if already in environment or cache
@@ -95,11 +95,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const headersList = await headers();
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
@@ -167,7 +168,7 @@ export default function RootLayout({
           <AutoLogoutProvider>
             <>
               <RealtimeListener />
-              <RootLayoutContent isReviewServer={headers().get('host')?.includes('review')}>
+              <RootLayoutContent isReviewServer={headersList.get('host')?.includes('review')}>
                 {children}
               </RootLayoutContent>
               <Toaster position="top-center" />
