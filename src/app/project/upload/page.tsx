@@ -688,7 +688,7 @@ export default function ProjectUploadPage() {
                                     const url = await uploadImage(file);
                                     setCoverPreview(url);
                                 } catch (err) {
-                                    toast.error("이미지 업로드 실패");
+                                    toast.error("이미지 올리기 실패");
                                 }
                               }
                            }} />

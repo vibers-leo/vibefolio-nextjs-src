@@ -127,7 +127,7 @@ export default function ServicePage() {
               </div>
               <h4 className="text-2xl font-bold mb-4 text-slate-900">Infinite Insight</h4>
               <p className="text-slate-600 leading-relaxed text-lg">
-                당신의 취향을 분석하여 매일 새로운 영감을 배달합니다. 
+                당신의 취향을 살펴보기하여 매일 새로운 영감을 배달합니다. 
                 데이터 기반의 큐레이션으로 감각을 확장하세요.
               </p>
             </div>
@@ -212,7 +212,7 @@ export default function ServicePage() {
                    </h3>
                    <p className="text-slate-600 leading-relaxed text-lg">
                       언어의 장벽 없이 전 세계 크리에이터와 연결됩니다. 
-                      자동 번역 시스템과 글로벌 검색 최적화로 
+                      자동 번역 시스템과 글로벌 찾기 최적화로 
                       당신의 작업물이 국경을 넘어 더 많은 팬들에게 닿을 수 있습니다.
                    </p>
                 </div>
@@ -280,7 +280,7 @@ export default function ServicePage() {
                    </h3>
                    <p className="text-slate-600 leading-relaxed text-lg">
                       누가 내 작품을 좋아했는지, 어떤 경로로 방문했는지. 
-                      상세한 데이터 분석 대시보드를 통해 팬덤의 성향을 파악하고 
+                      상세한 데이터 살펴보기 대시보드를 통해 팬덤의 성향을 파악하고 
                       나를 더 효과적으로 브랜딩하는 전략을 세우세요.
                    </p>
                 </div>

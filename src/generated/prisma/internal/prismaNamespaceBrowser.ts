@@ -97,7 +97,10 @@ export const ModelName = {
   vf_wishlists: 'vf_wishlists',
   views: 'views',
   visits: 'visits',
-  wishlists: 'wishlists'
+  wishlists: 'wishlists',
+  InstagramConnection: 'InstagramConnection',
+  YouTubeConnection: 'YouTubeConnection',
+  ProfileLink: 'ProfileLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -810,6 +813,52 @@ export const WishlistsScalarFieldEnum = {
 } as const
 
 export type WishlistsScalarFieldEnum = (typeof WishlistsScalarFieldEnum)[keyof typeof WishlistsScalarFieldEnum]
+
+
+export const InstagramConnectionScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  site_slug: 'site_slug',
+  access_token: 'access_token',
+  instagram_user_id: 'instagram_user_id',
+  username: 'username',
+  token_expires: 'token_expires',
+  last_synced: 'last_synced',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InstagramConnectionScalarFieldEnum = (typeof InstagramConnectionScalarFieldEnum)[keyof typeof InstagramConnectionScalarFieldEnum]
+
+
+export const YouTubeConnectionScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  channel_id: 'channel_id',
+  channel_title: 'channel_title',
+  thumbnail_url: 'thumbnail_url',
+  is_active: 'is_active',
+  last_synced: 'last_synced',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type YouTubeConnectionScalarFieldEnum = (typeof YouTubeConnectionScalarFieldEnum)[keyof typeof YouTubeConnectionScalarFieldEnum]
+
+
+export const ProfileLinkScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  title: 'title',
+  url: 'url',
+  icon: 'icon',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ProfileLinkScalarFieldEnum = (typeof ProfileLinkScalarFieldEnum)[keyof typeof ProfileLinkScalarFieldEnum]
 
 
 export const SortOrder = {

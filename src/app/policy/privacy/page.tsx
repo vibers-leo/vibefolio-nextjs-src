@@ -80,7 +80,7 @@ export default function PrivacyPolicyPage() {
                   <tr>
                     <td className="p-4 border border-slate-200 font-bold bg-slate-50">필수</td>
                     <td className="p-4 border border-slate-200">이메일, 비밀번호, 닉네임</td>
-                    <td className="p-4 border border-slate-200">회원 식별 및 가입 의사 확인</td>
+                    <td className="p-4 border border-slate-200">회원 식별 및 가입 의사 확인해요</td>
                   </tr>
                   <tr>
                     <td className="p-4 border border-slate-200 font-bold bg-slate-50">선택</td>

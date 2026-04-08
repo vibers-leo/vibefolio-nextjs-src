@@ -22,8 +22,8 @@ const CATEGORIES = [
   { id: 'opportunity', label: '🔭 기회 탐색', desc: '전국의 공모전, 해커톤, 대외활동을 찾아드립니다.', placeholder: '예: 카카오 공모전, 대학생 해커톤...' },
   { id: 'job', label: '💼 AI 채용', desc: '프롬프트 엔지니어, AI 아티스트 등 새로운 기회를 잡으세요.', placeholder: '예: 프롬프트 엔지니어, 영상 편집...' },
   { id: 'trend', label: '📰 트렌드', desc: '놓치면 안 될 최신 AI 기술 뉴스와 인사이트를 요약해드립니다.', placeholder: '예: Sora, ChatGPT 5, LLM 트렌드...' },
-  { id: 'recipe', label: '👨‍🍳 레시피', desc: '원하는 스타일의 이미지 생성 프롬프트와 워크플로우를 알려드립니다.', placeholder: '예: 사이버펑크 스타일, 수채화풍 로고...' },
-  { id: 'tool', label: '🛠️ 도구 추천', desc: '작업 목적에 딱 맞는 최고의 AI 도구를 추천해드립니다.', placeholder: '예: 배경 제거, 동영상 업스케일링, 목소리 변조...' },
+  { id: 'recipe', label: '👨‍🍳 레시피', desc: '원하는 스타일의 이미지 만들기 프롬프트와 워크플로우를 알려드립니다.', placeholder: '예: 사이버펑크 스타일, 수채화풍 로고...' },
+  { id: 'tool', label: '🛠️ 도구 추천', desc: '작업 목적에 딱 맞는 최고의 AI 도구를 추천해드립니다.', placeholder: '예: 배경 없애기, 동영상 업스케일링, 목소리 변조...' },
 ];
 
 export default function OpportunityFinderPage() {
@@ -148,12 +148,12 @@ export default function OpportunityFinderPage() {
                 disabled={loading || !keyword.trim()}
                 className="h-14 px-8 text-lg font-medium bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl shadow-md transition-all hover:scale-105"
               >
-                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "검색하기"}
+                {loading ? <Loader2 className="w-6 h-6 animate-spin" /> : "찾기"}
               </Button>
             </div>
             {/* Cost Info Tooltip */}
             <div className="mt-3 text-center text-xs text-gray-400">
-               * AI 검색은 '해보자고' MCP 엔진을 사용하며, 실시간 외부 데이터를 수집합니다.
+               * AI 찾기은 '해보자고' MCP 엔진을 사용하며, 실시간 외부 데이터를 수집합니다.
             </div>
           </CardContent>
         </Card>
@@ -164,7 +164,7 @@ export default function OpportunityFinderPage() {
             <div className="text-center py-20">
               <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto mb-4" />
               <p className="text-gray-500 text-lg animate-pulse">
-                AI가 정보를 수집하고 분석 중입니다...<br/>
+                AI가 정보를 수집하고 살펴보기 중입니다...<br/>
                 <span className="text-sm">(Engine: Haebojago MCP)</span>
               </p>
             </div>
@@ -173,9 +173,9 @@ export default function OpportunityFinderPage() {
           {!loading && searched && results.length === 0 && (
             <div className="text-center py-20 bg-white rounded-3xl shadow-sm">
               <span className="text-6xl mb-4 block">😅</span>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">검색 결과가 없습니다</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">찾기 결과가 없습니다</h3>
               <p className="text-gray-500">
-                다른 키워드로 검색해보시는 건 어떨까요?
+                다른 키워드로 찾기해보시는 건 어떨까요?
               </p>
             </div>
           )}

@@ -140,7 +140,7 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ id:
   };
 
   const deleteCollection = async () => {
-    if (!confirm("정말로 이 컬렉션을 삭제하시겠습니까? 안에 담긴 프로젝트는 삭제되지 않습니다.")) return;
+    if (!confirm("정말로 이 컬렉션을 없애기하시겠습니까? 안에 담긴 프로젝트는 없애기되지 않습니다.")) return;
 
     try {
       const { error } = await supabase
@@ -150,16 +150,16 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ id:
 
       if (error) throw error;
       
-      alert('컬렉션이 삭제되었습니다.');
+      alert('컬렉션이 없애기되었습니다.');
       router.push('/mypage?tab=collections');
     } catch (error) {
-      console.error('삭제 실패:', error);
-      alert('삭제 중 오류가 발생했습니다.');
+      console.error('없애기 실패:', error);
+      alert('없애기 중 오류가 발생했습니다.');
     }
   };
 
   const removeProjectFromCollection = async (projectId: string) => {
-     if (!confirm("이 프로젝트를 컬렉션에서 제거하시겠습니까?")) return;
+     if (!confirm("이 프로젝트를 컬렉션에서 없애기하시겠습니까?")) return;
      try {
         const { error } = await supabase
           .from('CollectionItem')
@@ -170,8 +170,8 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ id:
 
         setProjects(prev => prev.filter(p => p.id !== projectId));
      } catch (e) {
-        console.error("제거 실패:", e);
-        alert("제거 실패");
+        console.error("없애기 실패:", e);
+        alert("없애기 실패");
      }
   };
 
@@ -223,7 +223,7 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ id:
                 <DropdownMenuContent align="end">
                     <DropdownMenuItem className="text-red-500 focus:text-red-500 cursor-pointer" onClick={deleteCollection}>
                         <Trash2 className="mr-2 h-4 w-4" />
-                        컬렉션 삭제
+                        컬렉션 없애기
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
@@ -242,7 +242,7 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ id:
                                 created_at: new Date().toISOString()
                             }}
                         />
-                        {/* 호버 시 삭제 버튼 노출 */}
+                        {/* 호버 시 없애기 버튼 노출 */}
                         <button 
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -250,7 +250,7 @@ export default function CollectionDetailPage({ params }: { params: Promise<{ id:
                                 removeProjectFromCollection(project.id);
                             }}
                             className="absolute top-2 right-2 p-2 bg-black/50 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
-                            title="컬렉션에서 제거"
+                            title="컬렉션에서 없애기"
                         >
                             <Trash2 size={16} />
                         </button>

@@ -175,7 +175,7 @@ export default function AdminRecruitPage() {
       
       if (response.ok) {
         const result = await response.json();
-        toast.success(`크롤링 완료! 발견: ${result.itemsFound}개, 추가: ${result.itemsAdded}개, 업데이트: ${result.itemsUpdated}개`);
+        toast.success(`크롤링 완료했어요! 발견: ${result.itemsFound}개, 추가: ${result.itemsAdded}개, 업데이트: ${result.itemsUpdated}개`);
         loadItems();
       } else {
         toast.error("크롤러 실행 중 오류가 발생했습니다.");
@@ -197,7 +197,7 @@ export default function AdminRecruitPage() {
         .eq('id', id);
 
       if (error) throw error;
-      toast.success("승인 및 게시 완료!");
+      toast.success("승인 및 게시 완료했어요!");
       loadItems();
     } catch (error) {
       console.error('Approve Error:', error);
@@ -272,9 +272,9 @@ export default function AdminRecruitPage() {
     }
   };
 
-  // 항목 삭제 (Supabase 연동)
+  // 항목 없애기 (Supabase 연동)
   const handleDelete = async (id: number) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
+    if (!confirm("정말 없애기하시겠습니까?")) return;
 
     try {
       const { error } = await supabase
@@ -286,8 +286,8 @@ export default function AdminRecruitPage() {
       
       await loadItems();
     } catch (error) {
-      console.error("삭제 실패:", error);
-      alert("삭제 중 오류가 발생했습니다.");
+      console.error("없애기 실패:", error);
+      alert("없애기 중 오류가 발생했습니다.");
     }
   };
 
@@ -615,13 +615,13 @@ export default function AdminRecruitPage() {
                             <input type="file" id="admin-recruit-thumb" className="hidden" accept="image/*" onChange={async (e) => {
                               const file = e.target.files?.[0]; if (!file) return;
                               try { 
-                                toast.info("포스터 업로드 중..."); 
+                                toast.info("포스터 올리기 중..."); 
                                 const url = await uploadImage(file, 'recruits');
                                 setFormData({...formData, thumbnail: url}); 
                                 toast.success("포스터 적용 완료");
                               } catch (err) { 
                                 console.error("Poster upload failed:", err);
-                                toast.error("포스터 업로드 실패: " + (err as Error).message); 
+                                toast.error("포스터 올리기 실패: " + (err as Error).message); 
                               }
                             }} />
                           </div>
@@ -639,13 +639,13 @@ export default function AdminRecruitPage() {
                             <input type="file" id="admin-recruit-banner" className="hidden" accept="image/*" onChange={async (e) => {
                               const file = e.target.files?.[0]; if (!file) return;
                               try { 
-                                toast.info("배너 업로드 중..."); 
+                                toast.info("배너 올리기 중..."); 
                                 const url = await uploadImage(file, 'banners');
                                 setFormData({...formData, banner_image_url: url}); 
                                 toast.success("배너 적용 완료");
                               } catch (err) { 
                                 console.error("Banner upload failed:", err);
-                                toast.error("배너 업로드 실패: " + (err as Error).message); 
+                                toast.error("배너 올리기 실패: " + (err as Error).message); 
                               }
                             }} />
                           </div>
@@ -696,7 +696,7 @@ export default function AdminRecruitPage() {
                                         
                                         const currentCount = formData.attachments?.length || 0;
                                         if (currentCount + files.length > 10) {
-                                            toast.error("파일은 최대 10개까지만 업로드 가능합니다.");
+                                            toast.error("파일은 최대 10개까지만 올리기 가능합니다.");
                                             return;
                                         }
 
@@ -706,17 +706,17 @@ export default function AdminRecruitPage() {
                                                 continue;
                                             }
                                             try {
-                                                toast.info(`${file.name} 업로드 중...`);
+                                                toast.info(`${file.name} 올리기 중...`);
                                                 const uploaded = await uploadFile(file, 'recruit_files'); 
                                                 
                                                 setFormData(prev => ({
                                                     ...prev, 
                                                     attachments: [...(prev.attachments || []), uploaded]
                                                 }));
-                                                toast.success(`${file.name} 업로드 완료`);
+                                                toast.success(`${file.name} 올리기 완료`);
                                             } catch (err) {
                                                 console.error(err);
-                                                toast.error(`업로드 실패: ${((err as any).message)}`);
+                                                toast.error(`올리기 실패: ${((err as any).message)}`);
                                             }
                                         }
                                         e.target.value = ''; 
@@ -843,12 +843,12 @@ export default function AdminRecruitPage() {
           </Card>
         </div>
 
-        {/* 검색 */}
+        {/* 찾기 */}
         <div className="mb-6 flex items-center gap-4">
           <div className="flex items-center border rounded-lg px-4 py-2 bg-white flex-1">
             <Search size={20} className="text-gray-400 mr-2" />
             <Input
-              placeholder="제목, 회사명, 내용으로 검색..."
+              placeholder="제목, 회사명, 내용으로 찾기..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="border-none focus-visible:ring-0"
@@ -878,7 +878,7 @@ export default function AdminRecruitPage() {
             ) : filteredItems.length === 0 ? (
               <p className="text-gray-500 text-center py-12">
                 {searchTerm || filterType !== "all"
-                  ? "검색 결과가 없습니다"
+                  ? "찾기 결과가 없습니다"
                   : "등록된 항목이 없습니다"}
               </p>
             ) : (

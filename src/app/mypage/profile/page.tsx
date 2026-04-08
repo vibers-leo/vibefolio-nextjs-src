@@ -172,25 +172,25 @@ export default function ProfileSettingsPage() {
       let imageUrl = profile.profileImage;
       let coverUrl = profile.coverImage;
 
-      // 프로필 이미지가 새로 업로드되었다면
+      // 프로필 이미지가 새로 올리기되었다면
       if (imageFile) {
         try {
           const { uploadImage } = await import("@/lib/supabase/storage");
           imageUrl = await uploadImage(imageFile, 'profiles');
         } catch (uploadError: any) {
-          alert(`프로필 이미지 업로드 실패: ${uploadError.message}`);
+          alert(`프로필 이미지 올리기 실패: ${uploadError.message}`);
           return;
         }
       }
 
-      // 커버 이미지가 새로 업로드되었다면
+      // 커버 이미지가 새로 올리기되었다면
       if (coverImageFile) {
         try {
           const { uploadImage } = await import("@/lib/supabase/storage");
           // profiles 버킷 사용 (혹은 banners)
           coverUrl = await uploadImage(coverImageFile, 'profiles'); 
         } catch (uploadError: any) {
-          alert(`커버 이미지 업로드 실패: ${uploadError.message}`);
+          alert(`커버 이미지 올리기 실패: ${uploadError.message}`);
           return;
         }
       }
@@ -276,7 +276,7 @@ export default function ProfileSettingsPage() {
     }
   };
 
-  // 스킬 삭제
+  // 스킬 없애기
   const handleRemoveSkill = (skill: string) => {
     setProfile({
       ...profile,
@@ -390,7 +390,7 @@ export default function ProfileSettingsPage() {
       // 로그아웃 처리
       await supabase.auth.signOut();
       
-      alert('계정이 성공적으로 삭제되었습니다. 이용해주셔서 감사합니다.');
+      alert('계정이 성공적으로 없애기되었습니다. 이용해주셔서 감사합니다.');
       window.location.href = '/'; 
       
     } catch (error) {
@@ -481,7 +481,7 @@ export default function ProfileSettingsPage() {
                   <Button variant="outline" asChild>
                     <span>
                       <Upload size={18} className="mr-2" />
-                      이미지 업로드
+                      이미지 올리기
                     </span>
                   </Button>
                 </label>
@@ -527,7 +527,7 @@ export default function ProfileSettingsPage() {
                 disabled // 이메일은 수정 불가
               />
             </div>
-            {/* 전화번호, 위치 필드 삭제됨 */}
+            {/* 전화번호, 위치 필드 없애기됨 */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 소개
@@ -800,7 +800,7 @@ export default function ProfileSettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호 확인</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">새 비밀번호 확인해요</label>
               <Input
                 type="password"
                 placeholder="비밀번호 재입력"
@@ -827,7 +827,7 @@ export default function ProfileSettingsPage() {
               <div className="flex items-center justify-between">
                  <div>
                     <h4 className="font-medium text-gray-900">회원 탈퇴</h4>
-                    <p className="text-sm text-gray-500 mt-1">계정을 삭제하면 복구할 수 없습니다.</p>
+                    <p className="text-sm text-gray-500 mt-1">계정을 없애기하면 복구할 수 없습니다.</p>
                  </div>
                  <Button 
                    variant="destructive" 
@@ -854,7 +854,7 @@ export default function ProfileSettingsPage() {
           </Button>
         </div>
       </div>
-      {/* 회원탈퇴 확인 모달 */}
+      {/* 회원탈퇴 확인해요 모달 */}
       <Dialog open={deleteModalOpen} onOpenChange={setDeleteModalOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -873,9 +873,9 @@ export default function ProfileSettingsPage() {
           
           <div className="space-y-4 py-4">
             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <h4 className="font-semibold text-red-800 mb-2">⚠️ 삭제되는 데이터</h4>
+              <h4 className="font-semibold text-red-800 mb-2">⚠️ 없애기되는 데이터</h4>
               <ul className="text-sm text-red-700 space-y-1">
-                <li>• 업로드한 모든 프로젝트</li>
+                <li>• 올리기한 모든 프로젝트</li>
                 <li>• 좋아요, 댓글, 팔로우 기록</li>
                 <li>• 컬렉션 및 저장된 항목</li>
                 <li>• 받은 제안 및 메시지</li>
@@ -885,7 +885,7 @@ export default function ProfileSettingsPage() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                탈퇴를 확인하기 위해 아래에 <span className="font-bold text-red-600">"회원탈퇴"</span>를 입력해주세요.
+                탈퇴를 확인해요해요 위해 아래에 <span className="font-bold text-red-600">"회원탈퇴"</span>를 입력해주세요.
               </label>
               <Input
                 placeholder="회원탈퇴"

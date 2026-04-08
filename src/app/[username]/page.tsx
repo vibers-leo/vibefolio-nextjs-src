@@ -47,7 +47,7 @@ export default async function PublicProfilePage({ params }: Props) {
     notFound();
   }
   
-  // 현재 로그인한 사용자 확인 (본인 확인용)
+  // 현재 로그인한 사용자 확인해요 (본인 확인해요용)
   const { data: { user } } = await supabase.auth.getUser();
 
   // 1. 프로필 정보 조회

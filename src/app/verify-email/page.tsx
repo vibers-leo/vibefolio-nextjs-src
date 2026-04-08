@@ -60,7 +60,7 @@ export default function VerifyEmailPage() {
       setCooldown(60); // 60초 쿨다운
       
       toast.success("인증 이메일이 재전송되었습니다!", {
-        description: "이메일을 확인해주세요. 스팸함도 확인해보세요.",
+        description: "이메일을 확인해요해주세요. 스팸함도 확인해요해보세요.",
         duration: 5000,
       });
 
@@ -103,7 +103,7 @@ export default function VerifyEmailPage() {
           <div className="flex items-start gap-3">
             <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
             <div className="text-sm text-blue-900">
-              <p className="font-semibold mb-1">이메일을 확인해주세요</p>
+              <p className="font-semibold mb-1">이메일을 확인해요해주세요</p>
               <p className="text-blue-700">받은편지함에서 인증 링크를 클릭하면 가입이 완료됩니다.</p>
             </div>
           </div>
@@ -113,8 +113,8 @@ export default function VerifyEmailPage() {
             <div className="text-sm text-amber-900">
               <p className="font-semibold mb-1">이메일이 안 보이나요?</p>
               <ul className="text-amber-700 space-y-1 list-disc list-inside">
-                <li>스팸함을 확인해보세요</li>
-                <li>이메일 주소가 정확한지 확인하세요</li>
+                <li>스팸함을 확인해요해보세요</li>
+                <li>이메일 주소가 정확한지 확인해요해봐요</li>
                 <li>몇 분 정도 기다려보세요</li>
               </ul>
             </div>
@@ -197,7 +197,7 @@ export default function VerifyEmailPage() {
         {/* 도움말 */}
         <div className="bg-gray-50 rounded-lg p-4 text-center">
           <p className="text-xs text-gray-600">
-            💡 <strong>팁:</strong> Gmail 사용자는 "프로모션" 탭도 확인해보세요
+            💡 <strong>팁:</strong> Gmail 사용자는 "프로모션" 탭도 확인해요해보세요
           </p>
         </div>
       </div>

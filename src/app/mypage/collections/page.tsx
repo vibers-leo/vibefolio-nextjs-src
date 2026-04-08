@@ -93,7 +93,7 @@ export default function CollectionsPage() {
         {/* 헤더 */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold">내 컬렉션</h1>
-          <p className="text-gray-600 mt-2">저장한 프로젝트를 폴더별로 확인하세요</p>
+          <p className="text-gray-600 mt-2">저장한 프로젝트를 폴더별로 확인해요해봐요</p>
         </div>
 
         {/* 컬렉션 목록 */}

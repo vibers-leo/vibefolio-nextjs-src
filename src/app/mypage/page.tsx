@@ -310,9 +310,9 @@ export default function MyPage() {
     }
   };
 
-  // 프로젝트 삭제
+  // 프로젝트 없애기
   const handleDeleteProject = async (projectId: string) => {
-    if (!confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) return;
+    if (!confirm("정말로 이 프로젝트를 없애기하시겠습니까?")) return;
     
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -326,13 +326,13 @@ export default function MyPage() {
         headers: { 'Authorization': `Bearer ${session.access_token}` }
       });
       
-      if (!response.ok) throw new Error('삭제 실패');
+      if (!response.ok) throw new Error('없애기 실패');
       
       setProjects(prev => prev.filter(p => String(p.id) !== String(projectId)));
       setStats(prev => ({ ...prev, projects: prev.projects - 1 }));
-      alert("프로젝트가 삭제되었습니다.");
+      alert("프로젝트가 없애기되었습니다.");
     } catch (err) {
-      alert("삭제에 실패했습니다.");
+      alert("없애기에 실패했습니다.");
     }
   };
 
@@ -358,7 +358,7 @@ export default function MyPage() {
     }
   };
   
-  // 커버 이미지 업로드
+  // 커버 이미지 올리기
   const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !userId) return;
@@ -375,7 +375,7 @@ export default function MyPage() {
       const fileName = `cover_${userId}_${Date.now()}.${fileExt}`;
       const filePath = `${fileName}`; // profiles 버킷 루트에 저장
 
-      // 1. Storage에 업로드
+      // 1. Storage에 올리기
       const { error: uploadError } = await supabase.storage
         .from('profiles')
         .upload(filePath, file);
@@ -399,8 +399,8 @@ export default function MyPage() {
       setUserProfile((prev: any) => ({ ...prev, cover_image_url: publicUrl }));
       alert("커버 이미지가 변경되었습니다.");
     } catch (error) {
-      console.error('커버 이미지 업로드 실패:', error);
-      alert("이미지 업로드에 실패했습니다.");
+      console.error('커버 이미지 올리기 실패:', error);
+      alert("이미지 올리기에 실패했습니다.");
     } finally {
       setLoading(false);
     }
@@ -439,7 +439,7 @@ export default function MyPage() {
       // 로그아웃 처리
       await supabase.auth.signOut();
       
-      alert('계정이 성공적으로 삭제되었습니다. 이용해주셔서 감사합니다.');
+      alert('계정이 성공적으로 없애기되었습니다. 이용해주셔서 감사합니다.');
       router.push('/');
       
     } catch (error) {
@@ -638,7 +638,7 @@ export default function MyPage() {
                     </div>
                     <h3 className="text-xl font-bold text-gray-900 mb-2 z-10">아직 캔버스가 비어있어요</h3>
                     <p className="text-gray-500 text-sm mb-8 z-10 text-center max-w-sm px-4 leading-relaxed">
-                      첫 번째 프로젝트를 업로드하고<br/>당신의 크리에이티브를 전 세계에 공유해보세요! 🎨
+                      첫 번째 프로젝트를 올리기하고<br/>당신의 크리에이티브를 전 세계에 공유해보세요! 🎨
                     </p>
                     <Button onClick={() => router.push('/project/upload')} className="bg-green-600 hover:bg-green-700 text-white rounded-full px-8 h-14 text-base font-bold shadow-lg shadow-green-200">
                       첫 프로젝트 시작하기
@@ -696,7 +696,7 @@ export default function MyPage() {
                     <div className="flex flex-col items-center justify-center py-24 bg-white rounded-[2.5rem] border border-dashed border-gray-200">
                       <BarChart3 className="w-16 h-16 text-gray-200 mb-4" />
                       <h3 className="text-xl font-bold text-gray-900 mb-1">도착한 피드백이 없습니다</h3>
-                      <p className="text-gray-400 text-sm">프로젝트를 업로드하고 전문가들의 의견을 받아보세요.</p>
+                      <p className="text-gray-400 text-sm">프로젝트를 올리기하고 전문가들의 의견을 받아보세요.</p>
                       <Button onClick={() => router.push('/project/upload')} className="mt-6 rounded-full bg-slate-900 text-white font-bold px-8">프로젝트 등록하기</Button>
                     </div>
                  )}
@@ -747,8 +747,8 @@ export default function MyPage() {
                     { type: 'divider' },
 
                     { id: 'lean-canvas', label: 'AI 린 캔버스', icon: Grid, desc: '사업 모델 구조화' },
-                    { id: 'persona', label: 'AI 고객 페르소나', icon: UserCircle2, desc: '고객 정의 및 분석' },
-                    { id: 'assistant', label: 'AI 콘텐츠 어시스턴트', icon: Wand2, desc: '텍스트 생성 및 다듬기' },
+                    { id: 'persona', label: 'AI 고객 페르소나', icon: UserCircle2, desc: '고객 정의 및 살펴보기' },
+                    { id: 'assistant', label: 'AI 콘텐츠 어시스턴트', icon: Wand2, desc: '텍스트 만들기 및 다듬기' },
                   ].map((tool, idx) => {
                     if (tool.type === 'divider') {
                         return <div key={`div-${idx}`} className="h-px bg-gray-100 my-2 mx-4" />;
@@ -797,9 +797,9 @@ export default function MyPage() {
                                   {activeAiTool === 'tool' && <><Zap className="text-yellow-500 w-6 h-6"/> AI 도구 추천</>}
                                </h2>
                                <p className="text-sm text-gray-500 pl-8">
-                                  {activeAiTool === 'job' && "최신 AI 프롬프트 엔지니어링 채용 공고와 해커톤 정보를 확인하세요."}
+                                  {activeAiTool === 'job' && "최신 AI 프롬프트 엔지니어링 채용 공고와 해커톤 정보를 확인해요해봐요."}
                                   {activeAiTool === 'trend' && "매일 업데이트되는 글로벌 AI 업계의 최신 동향과 뉴스 링크를 제공합니다."}
-                                  {activeAiTool === 'recipe' && "다양한 이미지 생성 프롬프트 스타일과 워크플로우를 발견하고 적용해보세요."}
+                                  {activeAiTool === 'recipe' && "다양한 이미지 만들기 프롬프트 스타일과 워크플로우를 발견하고 적용해보세요."}
                                   {activeAiTool === 'tool' && "작업 효율을 극대화해줄 최신 AI 에이전트와 서비스를 추천해드립니다."}
                                </p>
                            </div>
@@ -850,7 +850,7 @@ export default function MyPage() {
               <AlertTriangle className="h-5 w-5" /> 회원탈퇴
             </DialogTitle>
             <DialogDescription>
-              탈퇴 시 작성한 모든 프로젝트, 컬렉션, 좋아요 정보가 영구적으로 삭제되며 복구할 수 없습니다.
+              탈퇴 시 작성한 모든 프로젝트, 컬렉션, 좋아요 정보가 영구적으로 없애기되며 복구할 수 없습니다.
               <br /><br />
               계속하시려면 아래 입력창에 <strong>회원탈퇴</strong>를 입력해주세요.
             </DialogDescription>

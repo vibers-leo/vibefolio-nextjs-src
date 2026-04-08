@@ -132,7 +132,7 @@ export default function AuditReportPage() {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-950 text-white">
           <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4" />
-          <p className="font-black text-xl animate-pulse">인사이트 분석 중...</p>
+          <p className="font-black text-xl animate-pulse">인사이트 살펴보기 중...</p>
       </div>
     );
   }

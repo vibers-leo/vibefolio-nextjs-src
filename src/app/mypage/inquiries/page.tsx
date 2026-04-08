@@ -39,10 +39,10 @@ export default function InquiriesPage() {
       alert("로그인이 필요합니다.");
       return;
     }
-    if (confirm("문의를 삭제하시겠습니까?")) {
+    if (confirm("문의를 없애기하시겠습니까?")) {
       const { error } = await deleteInquiry(id, user.id);
       if (error) {
-        alert("문의 삭제에 실패했습니다.");
+        alert("문의 없애기에 실패했습니다.");
       } else {
         // Refresh the list after deletion
         fetchInquiries();
@@ -66,7 +66,7 @@ export default function InquiriesPage() {
             내 1:1 문의
           </h1>
           <p className="text-gray-600">
-            프로젝트 제작자에게 보낸 문의 내역을 확인하세요
+            프로젝트 제작자에게 보낸 문의 내역을 확인해요해봐요
           </p>
         </div>
 
@@ -88,7 +88,7 @@ export default function InquiriesPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg mb-2">
-                        {inquiry.projects?.title || "삭제된 프로젝트"}
+                        {inquiry.projects?.title || "없애기된 프로젝트"}
                       </CardTitle>
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">

@@ -174,7 +174,7 @@ export default function FeedbackFeaturesPage() {
                       </div>
                       <div className="mt-8 flex justify-end">
                           <span className="px-4 py-2 bg-emerald-600 rounded-lg text-sm font-bold flex items-center gap-2">
-                             <FontAwesomeIcon icon={faPaperPlane} /> 전송 완료
+                             <FontAwesomeIcon icon={faPaperPlane} /> 전송 완료했어요 
                           </span>
                       </div>
                   </div>
@@ -188,7 +188,7 @@ export default function FeedbackFeaturesPage() {
          <div className="container mx-auto px-6">
             <h2 className="text-4xl font-bold text-gray-900 mb-6">여러분의 성장을 끝까지 응원합니다</h2>
             <p className="text-gray-500 mb-10 max-w-xl mx-auto">
-               지금 바로 프로젝트를 업로드하고, 동료들의 솔직한 피드백을 받아보세요.
+               지금 바로 프로젝트를 올리기하고, 동료들의 솔직한 피드백을 받아보세요.
             </p>
             <Button onClick={() => router.push('/growth')} className="h-14 px-12 rounded-full bg-black text-white hover:bg-gray-800 text-lg font-bold shadow-xl hover:shadow-2xl transition-all">
                성장하기 시작하기

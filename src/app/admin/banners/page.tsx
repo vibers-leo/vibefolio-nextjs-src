@@ -240,7 +240,7 @@ export default function AdminBannersPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
+    if (!confirm("정말 없애기하시겠습니까?")) return;
     try {
       const { error } = await (supabase.from("banners") as any).delete().eq("id", id);
       if (error) throw error;
@@ -253,10 +253,10 @@ export default function AdminBannersPage() {
         userEmail: (await supabase.auth.getUser()).data.user?.email
       });
       loadBanners();
-      toast.success("배너가 삭제되었습니다.");
+      toast.success("배너가 없애기되었습니다.");
     } catch (err) {
       console.error("Delete error:", err);
-      toast.error("삭제 중 오류가 발생했습니다.");
+      toast.error("없애기 중 오류가 발생했습니다.");
     }
   };
 
@@ -338,7 +338,7 @@ export default function AdminBannersPage() {
 
   const handleBannerImageUpload = async (id: number, file: File) => {
     try {
-      toast.info("와이드 배너 업로드 중...");
+      toast.info("와이드 배너 올리기 중...");
       const url = await uploadImage(file, 'banners');
       const { error } = await supabase
         .from('recruit_items')
@@ -349,13 +349,13 @@ export default function AdminBannersPage() {
       toast.success("와이드 배너가 적용되었습니다.");
       loadPromotedItems();
     } catch (err) {
-      toast.error("업로드 실패: " + (err as Error).message);
+      toast.error("올리기 실패: " + (err as Error).message);
     }
   };
 
   const handleDownload = async (url: string, filename: string) => {
     try {
-      // CORS 문제 해결을 위해 API 프록시를 통해 다운로드
+      // CORS 문제 해결을 위해 API 프록시를 통해 담아받기
       const proxyUrl = `/api/admin/proxy-download?url=${encodeURIComponent(url)}`;
       const response = await fetch(proxyUrl);
       
@@ -371,9 +371,9 @@ export default function AdminBannersPage() {
       window.URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error("Download failed:", err);
-      // Fallback: 새 탭에서 열기 (직접 다운로드는 안될 수 있음)
+      // Fallback: 새 탭에서 열기 (직접 담아받기는 안될 수 있음)
       window.open(url, '_blank');
-      toast.error("직접 다운로드 실패. 이미지를 새 탭에서 열었습니다.");
+      toast.error("직접 담아받기 실패. 이미지를 새 탭에서 열었습니다.");
     }
   };
 
@@ -448,7 +448,7 @@ export default function AdminBannersPage() {
                           size="icon" 
                           className="w-12 h-12 rounded-2xl hover:bg-blue-50 text-blue-400 hover:text-blue-600"
                           onClick={() => handleDownload(banner.image_url, `banner_${banner.id}.png`)}
-                          title="이미지 다운로드 (NanoBanana Pro 업로드용)"
+                          title="이미지 담아받기 (NanoBanana Pro 올리기용)"
                         >
                           <Download size={20} />
                         </Button>
@@ -524,7 +524,7 @@ export default function AdminBannersPage() {
                                };
                                input.click();
                              }}
-                             title="와이드 배너 업로드 (Landscape)"
+                             title="와이드 배너 올리기 (Landscape)"
                            >
                              <Upload size={16} />
                            </Button>
@@ -533,7 +533,7 @@ export default function AdminBannersPage() {
                              size="icon" 
                              className="h-9 w-9 rounded-lg text-blue-500 hover:bg-blue-50"
                              onClick={() => handleDownload(item.thumbnail, `promoted_${item.id}.png`)}
-                             title="이미지 다운로드 (NanoBanana Pro 업로드용)"
+                             title="이미지 담아받기 (NanoBanana Pro 올리기용)"
                            >
                              <Download size={16} />
                            </Button>
@@ -629,7 +629,7 @@ function EditorModal({
                 disabled={loading}
               >
                 {loading ? <Loader2 className="mr-2 h-3 w-3 animate-spin" /> : <Upload className="mr-2 h-3 w-3" />}
-                직접 업로드
+                직접 올리기
               </Button>
               <input 
                 type="file" 
@@ -640,12 +640,12 @@ function EditorModal({
                   const file = e.target.files?.[0];
                   if (!file) return;
                   try {
-                    toast.info("이미지 업로드 중...");
+                    toast.info("이미지 올리기 중...");
                     const url = await uploadImage(file, 'banners');
                     setFormData({...formData, image_url: url});
-                    toast.success("이미지가 업로드되었습니다.");
+                    toast.success("이미지가 올리기되었습니다.");
                   } catch (err) {
-                    toast.error("업로드 실패: " + (err as Error).message);
+                    toast.error("올리기 실패: " + (err as Error).message);
                   }
                 }}
               />
@@ -703,7 +703,7 @@ function EditorModal({
           <div className="space-y-2">
             <label className="text-sm font-bold text-slate-700">상세 설명 (관리용)</label>
             <Input 
-              placeholder="관리자만 확인하는 상세 내용"
+              placeholder="관리자만 확인해요하는 상세 내용"
               className="h-12 rounded-xl border-slate-100 bg-slate-50"
               value={formData.description}
               onChange={(e) => setFormData({...formData, description: e.target.value})}

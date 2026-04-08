@@ -44,7 +44,7 @@ const CATEGORIES: Record<string, { name: string; description: string; icon: stri
   },
   "ai": {
     name: "AI",
-    description: "AI 생성 이미지, AI 활용 작품",
+    description: "AI 만들기 이미지, AI 활용 작품",
     icon: "🤖"
   },
   "cartoon": {

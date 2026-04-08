@@ -129,12 +129,12 @@ export default function AdminUsersPage() {
         </Button>
       </div>
 
-      {/* 검색 및 필터 */}
+      {/* 찾기 및 필터 */}
       <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex gap-4">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <Input 
-            placeholder="이름 또는 이메일로 검색..." 
+            placeholder="이름 또는 이메일로 찾기..." 
             className="pl-10"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -211,7 +211,7 @@ export default function AdminUsersPage() {
               {filteredUsers.length === 0 && (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    검색 결과가 없습니다.
+                    찾기 결과가 없습니다.
                   </td>
                 </tr>
               )}

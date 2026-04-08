@@ -146,14 +146,14 @@ export default function AdminFAQsPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
+    if (!confirm("정말 없애기하시겠습니까?")) return;
     try {
       const { error } = await (supabase.from("faqs") as any).delete().eq("id", id);
       if (error) throw error;
       loadFaqs();
     } catch (err) {
       console.error("Delete error:", err);
-      alert("삭제 중 오류가 발생했습니다.");
+      alert("없애기 중 오류가 발생했습니다.");
     }
   };
 
@@ -207,7 +207,7 @@ export default function AdminFAQsPage() {
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <Input 
-              placeholder="질문 또는 답변으로 검색..." 
+              placeholder="질문 또는 답변으로 찾기..." 
               className="pl-11 h-12 bg-slate-50 border-none focus-visible:ring-1 focus-visible:ring-green-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

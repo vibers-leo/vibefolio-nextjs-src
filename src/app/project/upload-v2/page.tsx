@@ -157,13 +157,13 @@ export default function AdvancedProjectUploadPage() {
     try {
       if (!userId || !coverImage) throw new Error('필수 정보가 누락되었습니다.');
 
-      // 1. 커버 이미지 업로드
+      // 1. 커버 이미지 올리기
       const coverUrl = await uploadImage(coverImage);
 
-      // 2. 블록 데이터 처리 (이미지 블록의 파일 업로드 등)
-      // TODO: 각 블록의 이미지/비디오 파일 업로드 처리
+      // 2. 블록 데이터 처리 (이미지 블록의 파일 올리기 등)
+      // TODO: 각 블록의 이미지/비디오 파일 올리기 처리
 
-      // 3. 프로젝트 생성
+      // 3. 프로젝트 만들기
       const category_id = GENRE_TO_CATEGORY_ID[selectedGenres[0]] || 1;
 
       const response = await fetch('/api/projects', {
@@ -241,7 +241,7 @@ export default function AdvancedProjectUploadPage() {
                     <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-4">
                       <FontAwesomeIcon icon={faCamera} className="w-8 h-8 text-green-600" />
                     </div>
-                    <p className="text-lg font-semibold text-gray-700 mb-1">이미지 업로드</p>
+                    <p className="text-lg font-semibold text-gray-700 mb-1">이미지 올리기</p>
                     <p className="text-sm text-gray-500">PNG, JPG, GIF (최대 10MB)</p>
                   </div>
                   <input

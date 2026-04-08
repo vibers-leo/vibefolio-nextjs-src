@@ -429,7 +429,7 @@ function ViewerContent() {
                             <h3 className="text-2xl font-black text-slate-900 tracking-tighter leading-none">
                               {stepType === 'rating' ? "Phase 1: 항목별 정밀 진단" : 
                                stepType === 'voting' ? "Phase 2: 직관적 투표/판정" : 
-                               stepType === 'final_review' ? "Phase 3: 심층 질문 및 총평" : "진단 최종 확인"}
+                               stepType === 'final_review' ? "Phase 3: 심층 질문 및 총평" : "진단 최종 확인해요"}
                             </h3>
                             <p className="text-[11px] font-black text-green-600 uppercase tracking-[0.2em] mt-3 bg-green-50 inline-block px-3 py-1 rounded-full">{currentStep + 1} / {steps.length} 단계</p>
                           </div>

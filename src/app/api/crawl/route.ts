@@ -1,6 +1,7 @@
 // src/app/api/crawl/route.ts — Prisma
 import { NextRequest, NextResponse } from 'next/server';
 import { crawlAll } from '@/lib/crawlers/crawler';
+import { isAIRelated } from '@/lib/crawlers/sources';
 import prisma from '@/lib/db';
 import { isAdminEmail, ADMIN_EMAILS } from '@/lib/auth/admins';
 import { validateUser } from '@/lib/auth/validate';
@@ -167,6 +168,11 @@ async function handleCrawl(keyword?: string, type: string = 'all') {
           category_tags: item.categoryTags || [],
           crawled_at: new Date(),
         };
+
+        // contest 타입은 AI 관련성 재확인 (제외 키워드 포함)
+        if (item.type === 'contest' && !isAIRelated(item.title, item.description)) {
+          continue;
+        }
 
         if (!existing) {
           await prisma.vf_recruit_items.create({

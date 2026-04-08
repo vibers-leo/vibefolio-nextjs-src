@@ -236,7 +236,7 @@ export default function MyEvaluationsPage() {
                                    className="w-full h-12 rounded-2xl bg-slate-900 hover:bg-black text-white font-black text-sm gap-2 shadow-lg"
                                 >
                                    <FontAwesomeIcon icon={faChartBar} className="w-4 h-4 text-orange-400" />
-                                   전문가 진단 리포트 확인
+                                   전문가 진단 리포트 확인해요
                                 </Button>
                              </div>
                           </div>

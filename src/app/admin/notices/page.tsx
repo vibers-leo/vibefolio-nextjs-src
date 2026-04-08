@@ -125,15 +125,15 @@ export default function AdminNoticesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("정말 삭제하시겠습니까?")) return;
+    if (!confirm("정말 없애기하시겠습니까?")) return;
     try {
       const { error } = await (supabase.from("notices") as any).delete().eq("id", id);
       if (error) throw error;
-      toast.success("삭제되었습니다.");
+      toast.success("없애기되었습니다.");
       loadNotices();
     } catch (err) {
       console.error("Delete error:", err);
-      toast.error("삭제 중 오류가 발생했습니다.");
+      toast.error("없애기 중 오류가 발생했습니다.");
     }
   };
 
@@ -187,7 +187,7 @@ export default function AdminNoticesPage() {
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
             <Input 
-              placeholder="제목, 버전 등으로 검색..." 
+              placeholder="제목, 버전 등으로 찾기..." 
               className="pl-11 h-12 bg-slate-50 border-none focus-visible:ring-1 focus-visible:ring-blue-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -435,7 +435,7 @@ function NoticeEditor({ initialData, onBack, onSave }: { initialData: Notice | n
                      <img src={coverPreview} alt="Cover" className="w-full h-full object-cover" />
                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
                         <Button variant="secondary" size="sm" onClick={() => { setCoverImage(null); setCoverPreview(null); }}>
-                           <Trash2 size={14} className="mr-2" /> 제거
+                           <Trash2 size={14} className="mr-2" /> 없애기
                         </Button>
                         <Button variant="default" size="sm" onClick={() => document.getElementById('full-cover-upload')?.click()}>
                            <Camera size={14} className="mr-2" /> 변경

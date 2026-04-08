@@ -222,10 +222,33 @@ export const AI_KEYWORDS = [
 ];
 
 /**
+ * 제외 키워드 - AI와 무관한 공모전 필터링
+ * 채용공고, 사진/디자인/문학 공모전, 봉사활동 등 노이즈 제거
+ */
+export const EXCLUDE_KEYWORDS = [
+  // 채용/취업
+  '채용', '취업', '인턴', '인턴십', '입사', '신입', '경력', '공채', '리크루팅',
+  '구직', '구인', '잡페어', '채용설명회', 'Job Fair',
+  // 순수 예술/디자인 공모전 (AI 아닌 것)
+  'UCC', '사진공모전', '광고공모전',
+  '웹툰', '만화', '포스터공모전', '캐릭터공모전', '로고공모전', '슬로건', '네이밍공모전',
+  // 문학/학술
+  '논문', '에세이', '수기', '독후감', '시 공모', '소설', '시나리오', '문학',
+  // 봉사/사회
+  '봉사', '재능기부', '자원봉사', '사회공헌',
+];
+
+/**
  * 제목/설명에서 AI 관련 컨텐츠인지 판별
+ * 1. 제외 키워드 있으면 false
+ * 2. AI_KEYWORDS 중 하나라도 있으면 true
  */
 export function isAIRelated(title: string, description: string = ''): boolean {
   const text = `${title} ${description}`.toLowerCase();
+
+  // 제외 키워드 체크 (최우선)
+  if (EXCLUDE_KEYWORDS.some(kw => text.includes(kw.toLowerCase()))) return false;
+
   return AI_KEYWORDS.some(keyword => text.includes(keyword.toLowerCase()));
 }
 

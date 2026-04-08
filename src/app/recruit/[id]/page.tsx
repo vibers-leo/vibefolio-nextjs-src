@@ -8,7 +8,7 @@ interface Props {
   params: { id: string };
 }
 
-// SEO 메타데이터 동적 생성 (정공법)
+// SEO 메타데이터 동적 만들기 (정공법)
 export async function generateMetadata(
   { params }: Props,
   parent: ResolvingMetadata

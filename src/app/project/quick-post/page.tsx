@@ -58,7 +58,7 @@ export default function QuickPostPage() {
   const [sourceUrl, setSourceUrl] = useState("");
   const [siteName, setSiteName] = useState("");
 
-  // AI 분석 결과
+  // AI 살펴보기 결과
   const [techStack, setTechStack] = useState<string[]>([]);
   const [features, setFeatures] = useState<string[]>([]);
   const [projectType, setProjectType] = useState("");
@@ -69,7 +69,7 @@ export default function QuickPostPage() {
   const [selectedGenre, setSelectedGenre] = useState("");
   const [selectedFields, setSelectedFields] = useState<string[]>([]);
 
-  // === URL 분석 ===
+  // === URL 살펴보기 ===
   const handleExtract = async () => {
     if (!url.trim()) {
       toast.error("URL을 입력해주세요.");
@@ -86,9 +86,9 @@ export default function QuickPostPage() {
     setExtractStage("페이지 접속 중...");
 
     const stageTimers = [
-      setTimeout(() => setExtractStage("콘텐츠 분석 중..."), 1500),
+      setTimeout(() => setExtractStage("콘텐츠 살펴보기 중..."), 1500),
       setTimeout(() => setExtractStage("기술 스택 감지 중..."), 3000),
-      setTimeout(() => setExtractStage("AI 소개글 생성 중..."), 5000),
+      setTimeout(() => setExtractStage("AI 소개글 만들기 중..."), 5000),
     ];
 
     try {
@@ -101,7 +101,7 @@ export default function QuickPostPage() {
       const data: ExtractedData = await res.json();
 
       if (!res.ok) {
-        throw new Error((data as any).error || "URL 분석에 실패했습니다.");
+        throw new Error((data as any).error || "URL 살펴보기에 실패했습니다.");
       }
 
       setTitle(data.title || "");
@@ -111,7 +111,7 @@ export default function QuickPostPage() {
       setSourceUrl(data.sourceUrl || normalizedUrl);
       setSiteName(data.siteName || "");
 
-      // AI 분석 결과 설정
+      // AI 살펴보기 결과 설정
       setTechStack(data.techStack || []);
       setFeatures(data.features || []);
       setProjectType(data.projectType || "");
@@ -127,9 +127,9 @@ export default function QuickPostPage() {
       }
 
       setStep("edit");
-      toast.success("AI 분석이 완료되었습니다!");
+      toast.success("AI 살펴보기이 완료되었습니다!");
     } catch (err: any) {
-      toast.error(err.message || "URL 분석에 실패했습니다.");
+      toast.error(err.message || "URL 살펴보기에 실패했습니다.");
     } finally {
       stageTimers.forEach(clearTimeout);
       setExtracting(false);
@@ -235,7 +235,7 @@ export default function QuickPostPage() {
         {/* 스텝 인디케이터 */}
         <div className="flex items-center justify-center gap-2 mb-10">
           {(["url", "edit", "category"] as Step[]).map((s, i) => {
-            const labels = ["URL 입력", "내용 확인", "카테고리"];
+            const labels = ["URL 입력", "내용 확인해요", "카테고리"];
             const isActive = step === s;
             const isDone =
               (s === "url" && step !== "url") ||
@@ -291,12 +291,12 @@ export default function QuickPostPage() {
                 {extracting ? (
                   <>
                     <Loader2 size={18} className="mr-2 animate-spin" />
-                    {extractStage || "분석 중..."}
+                    {extractStage || "살펴보기 중..."}
                   </>
                 ) : (
                   <>
                     <Sparkles size={18} className="mr-2" />
-                    AI로 자동 분석하기
+                    AI로 자동 살펴보기
                   </>
                 )}
               </Button>
@@ -314,7 +314,7 @@ export default function QuickPostPage() {
           </div>
         )}
 
-        {/* === Step 2: 내용 확인/수정 === */}
+        {/* === Step 2: 내용 확인해요/수정 === */}
         {step === "edit" && (
           <div className="space-y-6">
             {/* Analysis Summary Card */}
@@ -322,7 +322,7 @@ export default function QuickPostPage() {
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Sparkles size={18} className="text-green-600" />
-                  <h2 className="text-lg font-bold text-gray-900">AI 분석 결과</h2>
+                  <h2 className="text-lg font-bold text-gray-900">AI 살펴보기 결과</h2>
                 </div>
 
                 {/* Tech Stack Badges */}
@@ -401,7 +401,7 @@ export default function QuickPostPage() {
                       onClick={() => { setThumbnailUrl(""); setThumbnailError(false); }}
                       className="bg-black/50 text-white text-xs px-2 py-1 rounded-md hover:bg-black/70"
                     >
-                      제거
+                      없애기
                     </button>
                   </div>
                 </div>
@@ -414,13 +414,13 @@ export default function QuickPostPage() {
                       <>
                         <AlertCircle size={28} className="mx-auto text-amber-400" />
                         <p className="text-xs font-bold text-amber-600">오픈그래프 이미지를 불러올 수 없습니다</p>
-                        <p className="text-[11px] text-gray-400">이미지를 직접 업로드해주세요 (클릭 또는 드래그)</p>
+                        <p className="text-[11px] text-gray-400">이미지를 직접 올리기해주세요 (클릭 또는 드래그)</p>
                       </>
                     ) : (
                       <>
                         <Upload size={28} className="mx-auto" />
                         <p className="text-xs font-bold">오픈그래프 이미지가 설정되지 않았습니다</p>
-                        <p className="text-[11px]">클릭하여 대표 이미지를 직접 업로드하세요</p>
+                        <p className="text-[11px]">클릭하여 대표 이미지를 직접 올려요</p>
                       </>
                     )}
                   </div>
@@ -435,13 +435,13 @@ export default function QuickPostPage() {
                   const file = e.target.files?.[0];
                   if (!file) return;
                   try {
-                    toast.info("이미지 업로드 중...");
+                    toast.info("이미지 올리기 중...");
                     const url = await uploadImage(file, "projects");
                     setThumbnailUrl(url);
                     setThumbnailError(false);
-                    toast.success("이미지가 업로드되었습니다.");
+                    toast.success("이미지가 올리기되었습니다.");
                   } catch (err: any) {
-                    toast.error("업로드 실패: " + err.message);
+                    toast.error("올리기 실패: " + err.message);
                   }
                   e.target.value = "";
                 }}
@@ -463,7 +463,7 @@ export default function QuickPostPage() {
               {/* 소개글 */}
               <div>
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
-                  소개글 <span className="text-green-600">(AI 생성 — 자유롭게 수정하세요)</span>
+                  소개글 <span className="text-green-600">(AI 만들기 — 자유롭게 수정하세요)</span>
                 </label>
                 <Textarea
                   value={description}
@@ -490,7 +490,7 @@ export default function QuickPostPage() {
                 onClick={() => setStep("url")}
                 className="flex-1 h-11 rounded-xl"
               >
-                다시 분석
+                다시 살펴보기
               </Button>
               <Button
                 onClick={() => setStep("category")}

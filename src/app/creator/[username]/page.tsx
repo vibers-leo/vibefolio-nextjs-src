@@ -75,7 +75,7 @@ export default function CreatorProfilePage() {
   useEffect(() => {
     const fetchCreatorData = async () => {
       try {
-        // 현재 로그인한 사용자 확인
+        // 현재 로그인한 사용자 확인해요
         const { data: { user } } = await supabase.auth.getUser();
         setCurrentUserId(user?.id || null);
 
@@ -150,7 +150,7 @@ export default function CreatorProfilePage() {
 
         setFollowersCount(followersCount || 0);
 
-        // 팔로우 상태 확인
+        // 팔로우 상태 확인해요
         if (user && userData.id !== user.id) {
           const { data: followData } = await supabase
             .from('Follow')

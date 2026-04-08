@@ -79,7 +79,7 @@ export default function AdminSeoPage() {
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-slate-900">SEO 관리</h1>
-          <p className="text-sm text-slate-500">{SITE_NAME} — 검색엔진 최적화 현황</p>
+          <p className="text-sm text-slate-500">{SITE_NAME} — 찾기엔진 최적화 현황</p>
         </div>
       </div>
 
@@ -153,7 +153,7 @@ export default function AdminSeoPage() {
             </div>
 
             <div className="border border-slate-200 rounded-xl p-4 space-y-3">
-              <h4 className="text-xs font-semibold text-slate-500 uppercase">AEO 상태 (AI 검색 최적화)</h4>
+              <h4 className="text-xs font-semibold text-slate-500 uppercase">AEO 상태 (AI 찾기 최적화)</h4>
               <div className="grid grid-cols-2 gap-3">
                 <div className={`p-3 rounded-xl border ${liveMeta.jsonLd ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
                   <div className={`flex items-center gap-1.5 text-xs font-medium ${liveMeta.jsonLd ? 'text-green-700' : 'text-red-600'}`}>
@@ -179,7 +179,7 @@ export default function AdminSeoPage() {
         ) : (
           <div className="text-center py-8">
             <Globe className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <p className="text-xs text-slate-400">&quot;현재 상태 불러오기&quot; 버튼으로 사이트의 OG/SEO 상태를 확인하세요.</p>
+            <p className="text-xs text-slate-400">&quot;현재 상태 불러오기&quot; 버튼으로 사이트의 OG/SEO 상태를 확인해요해봐요.</p>
           </div>
         )}
       </div>

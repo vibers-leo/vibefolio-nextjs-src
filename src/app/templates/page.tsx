@@ -209,12 +209,12 @@ export default function TemplatesPage() {
             바이브코딩으로 쉽게 커스터마이징하고 나만의 웹사이트를 만들 수 있습니다.
           </p>
           
-          {/* 검색 */}
+          {/* 찾기 */}
           <div className="max-w-xl mx-auto relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <Input
               type="text"
-              placeholder="템플릿 검색..."
+              placeholder="템플릿 찾기..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-6 text-gray-900 text-lg rounded-xl border-0 shadow-lg"
@@ -263,7 +263,7 @@ export default function TemplatesPage() {
           </div>
         ) : filteredTemplates.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-gray-500 text-lg">검색 결과가 없습니다.</p>
+            <p className="text-gray-500 text-lg">찾기 결과가 없습니다.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

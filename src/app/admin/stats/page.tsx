@@ -102,7 +102,7 @@ export default function AdminStatsPage() {
         const d = new Date();
         d.setDate(d.getDate() - i);
         
-        // KST 기준으로 날짜 문자열 생성 (YYYY-MM-DD)
+        // KST 기준으로 날짜 문자열 만들기 (YYYY-MM-DD)
         const dateStr = d.toLocaleDateString("en-CA", { timeZone: "Asia/Seoul" });
         
         const dayLabel = weekDays[new Date(dateStr).getDay()]; // 로컬 시간 기준 요일
@@ -141,7 +141,7 @@ export default function AdminStatsPage() {
         console.error("Log fetch error:", logErr);
       }
 
-      // 4. Analytics (방문 분석)
+      // 4. Analytics (방문 살펴보기)
       let topReferrers: ReferrerStat[] = [];
       let deviceStats = { mobile: 0, desktop: 0 };
 
@@ -150,7 +150,7 @@ export default function AdminStatsPage() {
           .from('visit_logs')
           .select('referrer, device_type')
           .order('visited_at', { ascending: false })
-          .limit(500); // 최근 500건 분석
+          .limit(500); // 최근 500건 살펴보기
 
         visitData = data || [];
 
@@ -223,14 +223,14 @@ export default function AdminStatsPage() {
     document.body.removeChild(link);
   };
 
-  // const getAIInsight = ... 삭제됨
+  // const getAIInsight = ... 없애기됨
   
   if (adminLoading || loading) {
     return (
       <div className="h-[80vh] flex items-center justify-center">
         <div className="text-center">
           <Loader2 size={40} className="animate-spin text-[#16A34A] mx-auto mb-4" />
-          <p className="text-slate-400 font-bold tracking-tight">상세 통계 데이터를 분석 중입니다...</p>
+          <p className="text-slate-400 font-bold tracking-tight">상세 통계 데이터를 살펴보기 중입니다...</p>
         </div>
       </div>
     );
@@ -247,7 +247,7 @@ export default function AdminStatsPage() {
             <BarChart3 className="text-[#16A34A]" size={36} />
             종합 통계 리포트
           </h1>
-          <p className="text-slate-500 mt-2 font-medium">바이브폴리오의 성장 지표를 실시간으로 분석합니다.</p>
+          <p className="text-slate-500 mt-2 font-medium">바이브폴리오의 성장 지표를 실시간으로 살펴보기합니다.</p>
         </div>
         <div className="flex bg-white p-1 rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <button 
@@ -299,7 +299,7 @@ export default function AdminStatsPage() {
           onClick={() => setActiveTab('analytics')}
           className={`px-6 py-2.5 text-sm font-bold rounded-lg transition-all ${activeTab === 'analytics' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-900'}`}
         >
-          📈 유입/기기 분석
+          📈 유입/기기 살펴보기
         </button>
         <button 
           onClick={() => setActiveTab('logs')}

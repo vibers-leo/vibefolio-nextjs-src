@@ -180,6 +180,20 @@ const image = await generateAIImage('modern portfolio thumbnail, minimalist crea
 - AI Recipe 서버 실행 필요: http://localhost:3300
 
 
+## Vibers 공통 스킬 연동
+
+| 작업 | 공통 스킬 | 비고 |
+|------|----------|------|
+| AI 공모전 크롤링·필터링 | `/ai-contest` | **원본**: `src/lib/crawlers/sources.ts` (222개 AI 키워드) |
+| 웹 디자인 | `/vibers-design` | SOFT_LIGHT 테마 권장 |
+| 서버·배포 점검 | `/vibers-admin` | Vercel 배포 |
+
+**이 프로젝트의 `src/lib/crawlers/`는 AI 공모전 크롤링 스킬의 원본 레퍼런스다.**
+- `sources.ts` → AI 키워드 222개 + `isAIRelated()` / `getAIRelevanceScore()` 원본
+- `crawler.ts` → 4개 소스 통합 크롤러 + `crawlAIOnly()` 원본
+- `thinkcontest.ts` → 씽굿 크롤러 원본
+- 이 파일들을 개선하면 `/ai-contest` 공통 스킬에 반영할 것
+
 ## 세션로그 기록 (필수)
 - 모든 개발 대화의 주요 내용을 `session-logs/` 폴더에 기록할 것
 - 파일명: `YYYY-MM-DD_한글제목.md` / 내용: 한글

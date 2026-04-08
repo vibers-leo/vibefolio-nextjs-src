@@ -53,13 +53,13 @@ function ResetPasswordContent() {
             if (data.session) {
               console.log('[Reset Password] Session set successfully');
               setHasValidSession(true);
-              // URL에서 해시 제거 (보안)
+              // URL에서 해시 없애기 (보안)
               window.history.replaceState(null, '', window.location.pathname);
             }
           }
         }
         
-        // 2. 기존 세션 확인 (auth/callback에서 리다이렉트된 경우)
+        // 2. 기존 세션 확인해요 (auth/callback에서 리다이렉트된 경우)
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           console.log('[Reset Password] Session found');
@@ -69,7 +69,7 @@ function ResetPasswordContent() {
         }
       } catch (e) {
         console.error('[Reset Password] Init error:', e);
-        setError('세션 확인 중 오류가 발생했습니다.');
+        setError('세션 확인해요 중 오류가 발생했습니다.');
       } finally {
         setCheckingSession(false);
       }
@@ -121,7 +121,7 @@ function ResetPasswordContent() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="animate-spin text-green-600 mx-auto mb-4" size={40} />
-          <p className="text-gray-600">인증 확인 중...</p>
+          <p className="text-gray-600">인증 확인해요 중...</p>
         </div>
       </div>
     );
@@ -201,7 +201,7 @@ function ResetPasswordContent() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="confirmPassword" className="text-sm font-medium">비밀번호 확인</label>
+                      <label htmlFor="confirmPassword" className="text-sm font-medium">비밀번호 확인해요</label>
                       <div className="relative">
                         <Input
                           id="confirmPassword"
@@ -253,12 +253,12 @@ function ResetPasswordContent() {
               )}
             </>
           ) : (
-            // 완료 상태
+            // 완료했어요 상태
             <div className="text-center py-4">
               <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <CheckCircle2 className="w-8 h-8 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold mb-2">변경 완료!</h3>
+              <h3 className="text-xl font-bold mb-2">변경 완료했어요!</h3>
               <p className="text-gray-600 mb-8">
                 비밀번호가 성공적으로 변경되었습니다.<br />
                 잠시 후 로그인 페이지로 이동합니다.

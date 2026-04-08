@@ -62,16 +62,16 @@ export default function LeanCanvasPage() {
 
         if (!response.ok) {
             const errData = await response.json();
-            throw new Error(errData.error || 'AI 생성 실패');
+            throw new Error(errData.error || 'AI 만들기 실패');
         }
 
         const data = await response.json();
         setCanvasData(data);
         setIsGenerated(true);
-        toast.success("린 캔버스가 생성되었습니다!");
+        toast.success("린 캔버스가 만들기되었습니다!");
     } catch (error) {
         console.error(error);
-        toast.error("생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        toast.error("만들기에 실패했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
         setIsLoading(false);
     }
@@ -182,7 +182,7 @@ ${canvasData.revenueStreams}
                 className="h-12 px-6 bg-black hover:bg-gray-800 text-white rounded-lg font-bold text-base gap-2 transition-all min-w-[120px]"
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
-                {isLoading ? "작성 중" : "생성하기"}
+                {isLoading ? "작성 중" : "만들기"}
               </Button>
             </div>
           </div>

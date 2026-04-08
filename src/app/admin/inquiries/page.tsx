@@ -44,11 +44,11 @@ export default function AdminInquiriesPage() {
   };
 
   const handleDelete = async (id: number) => {
-    if (confirm("이 문의를 정말로 삭제하시겠습니까?")) {
+    if (confirm("이 문의를 정말로 없애기하시겠습니까?")) {
       // Admin delete does not need a user ID check here, relies on RLS
       const { error } = await deleteInquiry(id, ""); // Pass empty string for userId
       if (error) {
-        alert("문의 삭제에 실패했습니다.");
+        alert("문의 없애기에 실패했습니다.");
       } else {
         fetchInquiries(); // Refresh list
       }
@@ -79,7 +79,7 @@ export default function AdminInquiriesPage() {
             문의 관리
           </h1>
           <p className="text-gray-600">
-            사용자들의 1:1 문의를 확인하고 관리하세요
+            사용자들의 1:1 문의를 확인해요하고 관리하세요
           </p>
         </div>
 
@@ -120,7 +120,7 @@ export default function AdminInquiriesPage() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <CardTitle className="text-lg mb-2">
-                        {inquiry.projects?.title || "삭제된 프로젝트"}
+                        {inquiry.projects?.title || "없애기된 프로젝트"}
                       </CardTitle>
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <div className="flex items-center gap-1">

@@ -113,7 +113,7 @@ export default function AdminRecruitCrawlPage() {
       const result = await response.json();
       
       toast.success(
-        `크롤링 완료! 발견: ${result.itemsFound}개, 추가: ${result.itemsAdded}개, 업데이트: ${result.itemsUpdated}개`
+        `크롤링 완료했어요! 발견: ${result.itemsFound}개, 추가: ${result.itemsAdded}개, 업데이트: ${result.itemsUpdated}개`
       );
 
       // 상태 새로고침
@@ -126,10 +126,10 @@ export default function AdminRecruitCrawlPage() {
     }
   };
 
-  // 키워드 검색 크롤링 실행
+  // 키워드 찾기 크롤링 실행
   const handleKeywordCrawl = async () => {
     if (!keyword.trim()) {
-        toast.error("검색어를 입력해주세요");
+        toast.error("찾기어를 입력해주세요");
         return;
     }
 
@@ -141,7 +141,7 @@ export default function AdminRecruitCrawlPage() {
         return;
       }
 
-      toast.info(`'${keyword}' 관련 정보를 검색 및 수집합니다... (Web + MCP)`);
+      toast.info(`'${keyword}' 관련 정보를 찾기 및 수집합니다... (Web + MCP)`);
 
       const response = await fetch('/api/crawl', {
         method: 'POST',
@@ -159,13 +159,13 @@ export default function AdminRecruitCrawlPage() {
       const result = await response.json();
       
       toast.success(
-        `검색 완료! 발견: ${result.itemsFound}개, 추가: ${result.itemsAdded}개`
+        `찾기 완료했어요! 발견: ${result.itemsFound}개, 추가: ${result.itemsAdded}개`
       );
       setKeyword("");
       await fetchCrawlStatus();
     } catch (error) {
       console.error('Keyword crawl error:', error);
-      toast.error("검색 크롤링 실패. 잠시 후 다시 시도해주세요.");
+      toast.error("찾기 크롤링 실패. 잠시 후 다시 시도해주세요.");
     } finally {
       setIsCrawling(false);
     }
@@ -196,7 +196,7 @@ export default function AdminRecruitCrawlPage() {
           채용/공모전 크롤링 관리
         </h1>
         <p className="text-gray-600">
-          자동 크롤링 현황을 확인하고 수동으로 크롤링을 실행할 수 있습니다
+          자동 크롤링 현황을 확인해요하고 수동으로 크롤링을 실행할 수 있습니다
         </p>
       </div>
 
@@ -269,12 +269,12 @@ export default function AdminRecruitCrawlPage() {
         </div>
       )}
 
-      {/* 키워드 검색 크롤링 (신규 기능 - MCP & Web Search) */}
+      {/* 키워드 찾기 크롤링 (신규 기능 - MCP & Web Search) */}
       <Card className="mb-6 border-blue-200 bg-blue-50/50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Search className="w-5 h-5 text-blue-600" />
-            키워드 검색 크롤링 (MCP & Web Search)
+            키워드 찾기 크롤링 (MCP & Web Search)
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -292,11 +292,11 @@ export default function AdminRecruitCrawlPage() {
                className="bg-blue-600 hover:bg-blue-700 text-white"
              >
                {isCrawling ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Search className="w-4 h-4 mr-2" />}
-               검색 및 수집 실행
+               찾기 및 수집 실행
              </Button>
           </div>
           <p className="text-sm text-gray-500 mt-3">
-            💡 <strong>위비티, 네이버 뉴스, 해보자고(MCP)</strong>를 통해 해당 키워드와 관련된 공모전/활동을 정밀 검색하여 목록에 추가합니다.
+            💡 <strong>위비티, 네이버 뉴스, 해보자고(MCP)</strong>를 통해 해당 키워드와 관련된 공모전/활동을 정밀 찾기하여 목록에 추가합니다.
           </p>
         </CardContent>
       </Card>

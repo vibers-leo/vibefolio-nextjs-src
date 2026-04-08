@@ -430,7 +430,10 @@ export const ModelName = {
   vf_wishlists: 'vf_wishlists',
   views: 'views',
   visits: 'visits',
-  wishlists: 'wishlists'
+  wishlists: 'wishlists',
+  InstagramConnection: 'InstagramConnection',
+  YouTubeConnection: 'YouTubeConnection',
+  ProfileLink: 'ProfileLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -446,7 +449,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "api_keys" | "banners" | "bookmarks" | "collection_items" | "collections" | "comments" | "daily_stats" | "evaluations" | "exhibitions" | "fields" | "follows" | "inquiries" | "main_banner" | "media_releases" | "mr_inquiries" | "notifications" | "point_logs" | "profiles" | "project_categories" | "project_collaborators" | "project_fields" | "project_likes" | "project_ratings" | "project_versions" | "projects" | "proposals" | "recruit_items" | "reward_catalog" | "reward_claims" | "search_logs" | "site_settings" | "vf_categories" | "vf_comments" | "vf_crawl_logs" | "vf_job_postings" | "vf_likes" | "vf_notifications" | "vf_project_versions" | "vf_projects" | "vf_proposals" | "vf_push_tokens" | "vf_recruit_items" | "vf_users" | "vf_wishlists" | "views" | "visits" | "wishlists"
+    modelProps: "api_keys" | "banners" | "bookmarks" | "collection_items" | "collections" | "comments" | "daily_stats" | "evaluations" | "exhibitions" | "fields" | "follows" | "inquiries" | "main_banner" | "media_releases" | "mr_inquiries" | "notifications" | "point_logs" | "profiles" | "project_categories" | "project_collaborators" | "project_fields" | "project_likes" | "project_ratings" | "project_versions" | "projects" | "proposals" | "recruit_items" | "reward_catalog" | "reward_claims" | "search_logs" | "site_settings" | "vf_categories" | "vf_comments" | "vf_crawl_logs" | "vf_job_postings" | "vf_likes" | "vf_notifications" | "vf_project_versions" | "vf_projects" | "vf_proposals" | "vf_push_tokens" | "vf_recruit_items" | "vf_users" | "vf_wishlists" | "views" | "visits" | "wishlists" | "instagramConnection" | "youTubeConnection" | "profileLink"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3928,6 +3931,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InstagramConnection: {
+      payload: Prisma.$InstagramConnectionPayload<ExtArgs>
+      fields: Prisma.InstagramConnectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InstagramConnectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InstagramConnectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>
+        }
+        findFirst: {
+          args: Prisma.InstagramConnectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InstagramConnectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>
+        }
+        findMany: {
+          args: Prisma.InstagramConnectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>[]
+        }
+        create: {
+          args: Prisma.InstagramConnectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>
+        }
+        createMany: {
+          args: Prisma.InstagramConnectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InstagramConnectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>[]
+        }
+        delete: {
+          args: Prisma.InstagramConnectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>
+        }
+        update: {
+          args: Prisma.InstagramConnectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.InstagramConnectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InstagramConnectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InstagramConnectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.InstagramConnectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InstagramConnectionPayload>
+        }
+        aggregate: {
+          args: Prisma.InstagramConnectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInstagramConnection>
+        }
+        groupBy: {
+          args: Prisma.InstagramConnectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InstagramConnectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InstagramConnectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InstagramConnectionCountAggregateOutputType> | number
+        }
+      }
+    }
+    YouTubeConnection: {
+      payload: Prisma.$YouTubeConnectionPayload<ExtArgs>
+      fields: Prisma.YouTubeConnectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.YouTubeConnectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.YouTubeConnectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>
+        }
+        findFirst: {
+          args: Prisma.YouTubeConnectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.YouTubeConnectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>
+        }
+        findMany: {
+          args: Prisma.YouTubeConnectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>[]
+        }
+        create: {
+          args: Prisma.YouTubeConnectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>
+        }
+        createMany: {
+          args: Prisma.YouTubeConnectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.YouTubeConnectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>[]
+        }
+        delete: {
+          args: Prisma.YouTubeConnectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>
+        }
+        update: {
+          args: Prisma.YouTubeConnectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.YouTubeConnectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.YouTubeConnectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.YouTubeConnectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.YouTubeConnectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$YouTubeConnectionPayload>
+        }
+        aggregate: {
+          args: Prisma.YouTubeConnectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateYouTubeConnection>
+        }
+        groupBy: {
+          args: Prisma.YouTubeConnectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.YouTubeConnectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.YouTubeConnectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.YouTubeConnectionCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProfileLink: {
+      payload: Prisma.$ProfileLinkPayload<ExtArgs>
+      fields: Prisma.ProfileLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProfileLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProfileLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.ProfileLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProfileLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>
+        }
+        findMany: {
+          args: Prisma.ProfileLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>[]
+        }
+        create: {
+          args: Prisma.ProfileLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>
+        }
+        createMany: {
+          args: Prisma.ProfileLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProfileLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.ProfileLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>
+        }
+        update: {
+          args: Prisma.ProfileLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProfileLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProfileLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProfileLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProfileLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProfileLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.ProfileLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProfileLink>
+        }
+        groupBy: {
+          args: Prisma.ProfileLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProfileLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProfileLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProfileLinkCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4663,6 +4888,52 @@ export const WishlistsScalarFieldEnum = {
 export type WishlistsScalarFieldEnum = (typeof WishlistsScalarFieldEnum)[keyof typeof WishlistsScalarFieldEnum]
 
 
+export const InstagramConnectionScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  site_slug: 'site_slug',
+  access_token: 'access_token',
+  instagram_user_id: 'instagram_user_id',
+  username: 'username',
+  token_expires: 'token_expires',
+  last_synced: 'last_synced',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type InstagramConnectionScalarFieldEnum = (typeof InstagramConnectionScalarFieldEnum)[keyof typeof InstagramConnectionScalarFieldEnum]
+
+
+export const YouTubeConnectionScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  channel_id: 'channel_id',
+  channel_title: 'channel_title',
+  thumbnail_url: 'thumbnail_url',
+  is_active: 'is_active',
+  last_synced: 'last_synced',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type YouTubeConnectionScalarFieldEnum = (typeof YouTubeConnectionScalarFieldEnum)[keyof typeof YouTubeConnectionScalarFieldEnum]
+
+
+export const ProfileLinkScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  title: 'title',
+  url: 'url',
+  icon: 'icon',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ProfileLinkScalarFieldEnum = (typeof ProfileLinkScalarFieldEnum)[keyof typeof ProfileLinkScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4942,6 +5213,9 @@ export type GlobalOmitConfig = {
   views?: Prisma.viewsOmit
   visits?: Prisma.visitsOmit
   wishlists?: Prisma.wishlistsOmit
+  instagramConnection?: Prisma.InstagramConnectionOmit
+  youTubeConnection?: Prisma.YouTubeConnectionOmit
+  profileLink?: Prisma.ProfileLinkOmit
 }
 
 /* Types for Logging */

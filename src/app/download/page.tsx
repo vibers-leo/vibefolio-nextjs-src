@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Sparkles, Layers, Star, Users, Zap, ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "앱 다운로드 | Vibefolio",
+  title: "앱 담아받기 | Vibefolio",
   description: "Vibefolio 앱으로 언제 어디서나 나만의 포트폴리오를 관리하세요. iOS · Android 출시 예정.",
   openGraph: {
     title: "Vibefolio 앱 출시 예정",
@@ -17,7 +17,7 @@ const features = [
   {
     icon: <Layers size={22} />,
     title: "간편한 포트폴리오 등록",
-    desc: "URL 하나로 AI가 자동으로 프로젝트를 분석하고 정리해줘요.",
+    desc: "URL 하나로 AI가 자동으로 프로젝트를 살펴보기하고 정리해줘요.",
   },
   {
     icon: <Star size={22} />,
@@ -31,7 +31,7 @@ const features = [
   },
   {
     icon: <Zap size={22} />,
-    title: "AI 썸네일 자동 생성",
+    title: "AI 썸네일 자동 만들기",
     desc: "프로젝트 소개 이미지를 AI가 자동으로 만들어줘요.",
   },
 ];
@@ -120,7 +120,7 @@ export default function DownloadPage() {
             </h2>
             <p className="text-slate-500 leading-relaxed">
               이미 vibefolio.net에서 포트폴리오를 만들었다면 앱에서도 그대로 이어집니다.
-              새 프로젝트 등록, 평가 확인, 메시지까지 — 손가락 하나로.
+              새 프로젝트 등록, 평가 확인해요, 메시지까지 — 손가락 하나로.
             </p>
           </div>
 

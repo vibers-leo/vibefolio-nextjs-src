@@ -249,7 +249,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
 
       await addComment(projectId, user.id, newComment, username, avatarUrl, newCommentSecret);
       
-      // 알림 생성 (자신의 게시물이 아닐 때만)
+      // 알림 만들기 (자신의 게시물이 아닐 때만)
       if (project && project.user_id !== user.id) {
         await createNotification({
           userId: project.user_id,
@@ -277,7 +277,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
       alert("로그인이 필요합니다.");
       return;
     }
-    if (!confirm("댓글을 삭제하시겠습니까?")) {
+    if (!confirm("댓글을 없애기하시겠습니까?")) {
       return;
     }
 
@@ -288,7 +288,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
       setComments(updatedComments);
     } catch (error) {
       console.error("Failed to delete comment:", error);
-      alert("댓글 삭제에 실패했습니다.");
+      alert("댓글 없애기에 실패했습니다.");
     }
   };
 
@@ -588,7 +588,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                               )}
                               <span className="text-xs text-gray-400">{dayjs(comment.createdAt).format("YYYY.MM.DD")}</span>
                               {user && user.id === comment.user_id && (
-                                 <button onClick={() => handleDeleteComment(comment.id)} className="ml-auto text-xs text-gray-300 hover:text-red-500 transition-colors">삭제</button>
+                                 <button onClick={() => handleDeleteComment(comment.id)} className="ml-auto text-xs text-gray-300 hover:text-red-500 transition-colors">없애기</button>
                               )}
                           </div>
                           <p className={`text-sm leading-relaxed whitespace-pre-wrap ${comment.isSecret ? 'text-gray-500 italic' : 'text-gray-700'}`}>

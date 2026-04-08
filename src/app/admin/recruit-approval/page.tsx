@@ -147,7 +147,7 @@ export default function RecruitApprovalPage() {
   };
 
   const handleReject = async (id: number) => {
-    if (!confirm('정말 거부하시겠습니까? 이 항목은 삭제됩니다.')) return;
+    if (!confirm('정말 거부하시겠습니까? 이 항목은 없애기됩니다.')) return;
 
     setProcessing(id);
     try {
@@ -210,7 +210,7 @@ export default function RecruitApprovalPage() {
       return;
     }
 
-    if (!confirm(`선택된 ${selectedIds.size}개 항목을 모두 거부(삭제)하시겠습니까?`)) return;
+    if (!confirm(`선택된 ${selectedIds.size}개 항목을 모두 거부(없애기)하시겠습니까?`)) return;
 
     setBulkProcessing(true);
     try {
@@ -445,7 +445,7 @@ export default function RecruitApprovalPage() {
                         className="flex items-center gap-1 text-sm text-blue-600 hover:underline mb-4"
                       >
                         <ExternalLink size={14} />
-                        원본 링크 확인
+                        원본 링크 확인해요
                       </a>
                     )}
 

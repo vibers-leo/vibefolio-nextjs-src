@@ -55,7 +55,7 @@ function ContactForm() {
         throw new Error(data.error || "문의 전송 중 오류가 발생했습니다.");
       }
 
-      alert("문의가 성공적으로 접수되었습니다.\n담당자가 확인 후 답변드리겠습니다.");
+      alert("문의가 성공적으로 접수되었습니다.\n담당자가 확인해요 후 답변드리겠습니다.");
       router.push("/");
     } catch (error: any) {
       console.error("문의 전송 오류:", error);

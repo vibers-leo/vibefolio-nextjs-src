@@ -45,9 +45,9 @@ export default function FAQPage() {
           const defaultFaqs: FAQ[] = [
             { id: 1, category: "서비스 이용", question: "Vibefolio는 어떤 서비스인가요?", answer: "Vibefolio는 크리에이터들이 자신의 포트폴리오를 공유하고, 전 세계 아티스트들과 소통하며 영감을 주고받을 수 있는 프리미엄 포트폴리오 커뮤니티입니다." },
             { id: 2, category: "계정 관리", question: "회원가입은 어떻게 하나요?", answer: "우측 상단의 '회원가입' 버튼을 클릭하거나, Google 계정으로 간편하게 가입하실 수 있습니다." },
-            { id: 3, category: "프로젝트", question: "프로젝트는 어떻게 업로드하나요?", answer: "로그인 후 '프로젝트 등록' 버튼을 클릭하여 이미지, 제목, 설명 등을 입력하고 업로드하실 수 있습니다." },
-            { id: 4, category: "프로젝트", question: "어떤 형식의 파일을 업로드할 수 있나요?", answer: "JPG, PNG, GIF 등의 이미지 파일을 지원하며, 최대 10MB까지 업로드 가능합니다." },
-            { id: 5, category: "운영 정책", question: "저작권은 어떻게 보호되나요?", answer: "업로드된 모든 작품의 저작권은 창작자에게 있으며, 무단 도용 시 법적 조치가 가능합니다." },
+            { id: 3, category: "프로젝트", question: "프로젝트는 어떻게 올리기하나요?", answer: "로그인 후 '프로젝트 등록' 버튼을 클릭하여 이미지, 제목, 설명 등을 입력하고 올리기하실 수 있습니다." },
+            { id: 4, category: "프로젝트", question: "어떤 형식의 파일을 올리기할 수 있나요?", answer: "JPG, PNG, GIF 등의 이미지 파일을 지원하며, 최대 10MB까지 올리기 가능합니다." },
+            { id: 5, category: "운영 정책", question: "저작권은 어떻게 보호되나요?", answer: "올리기된 모든 작품의 저작권은 창작자에게 있으며, 무단 도용 시 법적 조치가 가능합니다." },
             { id: 6, category: "문의", question: "문의는 어떻게 하나요?", answer: "하단의 '1:1 문의하기' 버튼을 통해 언제든지 문의하실 수 있으며, 24시간 내에 답변드립니다." },
           ];
           setFaqs(defaultFaqs);
@@ -62,7 +62,7 @@ export default function FAQPage() {
         const defaultFaqs: FAQ[] = [
           { id: 1, category: "서비스 이용", question: "Vibefolio는 어떤 서비스인가요?", answer: "Vibefolio는 크리에이터들이 자신의 포트폴리오를 공유하고, 전 세계 아티스트들과 소통하며 영감을 주고받을 수 있는 프리미엄 포트폴리오 커뮤니티입니다." },
           { id: 2, category: "계정 관리", question: "회원가입은 어떻게 하나요?", answer: "우측 상단의 '회원가입' 버튼을 클릭하거나, Google 계정으로 간편하게 가입하실 수 있습니다." },
-          { id: 3, category: "프로젝트", question: "프로젝트는 어떻게 업로드하나요?", answer: "로그인 후 '프로젝트 등록' 버튼을 클릭하여 이미지, 제목, 설명 등을 입력하고 업로드하실 수 있습니다." },
+          { id: 3, category: "프로젝트", question: "프로젝트는 어떻게 올리기하나요?", answer: "로그인 후 '프로젝트 등록' 버튼을 클릭하여 이미지, 제목, 설명 등을 입력하고 올리기하실 수 있습니다." },
         ];
         setFaqs(defaultFaqs);
         setFilteredFaqs(defaultFaqs);
@@ -111,7 +111,7 @@ export default function FAQPage() {
           <div className="relative mb-6">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
             <Input 
-              placeholder="궁금한 내용을 입력해 보세요 (예: 비밀번호 찾기, 업로드 등)"
+              placeholder="궁금한 내용을 입력해 보세요 (예: 비밀번호 찾기, 올리기 등)"
               className="pl-12 h-14 rounded-2xl border-slate-200 text-lg focus:ring-green-500"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -169,9 +169,9 @@ export default function FAQPage() {
             </Accordion>
           ) : (
             <div className="text-center py-24">
-              <p className="text-slate-400 text-lg mb-6">검색 결과가 없습니다.</p>
+              <p className="text-slate-400 text-lg mb-6">찾기 결과가 없습니다.</p>
               <Button asChild variant="outline" onClick={() => {setSearchTerm(""); setSelectedCategory("전체");}}>
-                <span>검색 조건 초기화</span>
+                <span>찾기 조건 초기화</span>
               </Button>
             </div>
           )}

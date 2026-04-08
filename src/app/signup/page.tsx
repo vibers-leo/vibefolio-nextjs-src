@@ -60,13 +60,13 @@ export default function SignupPage() {
       if (error) throw error;
 
       if (data.session) {
-        // 이미 세션이 생성됨 (자동 로그인 설정인 경우)
+        // 이미 세션이 만들기됨 (자동 로그인 설정인 경우)
         toast.success("회원가입이 완료되었습니다!");
         router.push("/");
       } else {
-        // 이메일 확인 필요
-        toast.success("회원가입 확인 이메일이 발송되었습니다!", {
-          description: "이메일을 확인하여 계정을 활성화해주세요.",
+        // 이메일 확인해요 필요
+        toast.success("회원가입 확인해요 이메일이 발송되었습니다!", {
+          description: "이메일을 확인해요하여 계정을 활성화해주세요.",
           duration: 5000,
         });
         router.push(`/verify-email?email=${encodeURIComponent(email)}`);
@@ -217,7 +217,7 @@ export default function SignupPage() {
 
           <div>
             <label htmlFor="password-confirm" className="block text-sm font-semibold text-slate-700 mb-1.5">
-              비밀번호 확인
+              비밀번호 확인해요
             </label>
             <Input
               id="password-confirm"

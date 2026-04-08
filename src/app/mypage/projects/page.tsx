@@ -75,7 +75,7 @@ export default function MyProjectsPage() {
   }, [router]);
 
   const handleDelete = async (projectId: string) => {
-    if (!confirm("정말로 이 프로젝트를 삭제하시겠습니까?")) {
+    if (!confirm("정말로 이 프로젝트를 없애기하시겠습니까?")) {
       return;
     }
 
@@ -97,14 +97,14 @@ export default function MyProjectsPage() {
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || '삭제에 실패했습니다.');
+        throw new Error(data.error || '없애기에 실패했습니다.');
       }
 
       setProjects(prev => prev.filter(p => p.id !== projectId));
-      alert("프로젝트가 삭제되었습니다.");
+      alert("프로젝트가 없애기되었습니다.");
     } catch (err: any) {
-      console.error("프로젝트 삭제 실패:", err);
-      alert(err.message || "프로젝트 삭제에 실패했습니다.");
+      console.error("프로젝트 없애기 실패:", err);
+      alert(err.message || "프로젝트 없애기에 실패했습니다.");
     }
   };
 
@@ -152,7 +152,7 @@ export default function MyProjectsPage() {
           <div className="text-center py-20 bg-white rounded-xl border border-dashed border-gray-300">
             <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 mb-2">
-              아직 업로드한 프로젝트가 없습니다
+              아직 올리기한 프로젝트가 없습니다
             </h2>
             <p className="text-gray-500 mb-6">
               멋진 작품을 공유해보세요!
@@ -161,7 +161,7 @@ export default function MyProjectsPage() {
               onClick={() => router.push('/project/upload')}
               className="bg-[#16A34A] hover:bg-[#3ab8c2]"
             >
-              첫 프로젝트 업로드
+              첫 프로젝트 올리기
             </Button>
           </div>
         ) : (
@@ -208,7 +208,7 @@ export default function MyProjectsPage() {
                           handleDelete(project.id);
                         }}
                       >
-                        <Trash2 className="w-3 h-3 mr-1" /> 삭제
+                        <Trash2 className="w-3 h-3 mr-1" /> 없애기
                       </Button>
                     </div>
                   </div>

@@ -72,7 +72,7 @@ export default function PersonaPage() {
 
         if (!response.ok) {
              const errData = await response.json();
-             throw new Error(errData.error || 'AI 생성 실패');
+             throw new Error(errData.error || 'AI 만들기 실패');
         }
 
         const data = await response.json();
@@ -81,7 +81,7 @@ export default function PersonaPage() {
         toast.success("페르소나가 정의되었습니다!");
     } catch (error) {
         console.error(error);
-        toast.error("생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        toast.error("만들기에 실패했습니다. 잠시 후 다시 시도해주세요.");
     } finally {
         setIsLoading(false);
     }
@@ -177,7 +177,7 @@ ${persona.frustrations.map(f => `- ${f}`).join('\n')}
                 className="h-12 px-6 bg-black hover:bg-gray-800 text-white rounded-lg font-bold text-base gap-2 transition-all min-w-[120px]"
               >
                 {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Wand2 className="w-5 h-5" />}
-                {isLoading ? "분석 중" : "찾기"}
+                {isLoading ? "살펴보기 중" : "찾기"}
               </Button>
             </div>
           </div>

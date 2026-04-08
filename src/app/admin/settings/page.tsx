@@ -113,13 +113,13 @@ export default function AdminSettingsPage() {
     if (!file) return;
 
     try {
-      toast.info("이미지 업로드 중...");
+      toast.info("이미지 올리기 중...");
       // Using 'banners' bucket as it's public and appropriate for site-wide images
       const url = await uploadImage(file, 'banners');
       setConfig(prev => ({ ...prev, seo_og_image: url }));
-      toast.success("이미지가 업로드되었습니다.");
+      toast.success("이미지가 올리기되었습니다.");
     } catch (err) {
-      toast.error("업로드 실패: " + (err as Error).message);
+      toast.error("올리기 실패: " + (err as Error).message);
     }
   };
 
@@ -128,12 +128,12 @@ export default function AdminSettingsPage() {
     if (!file) return;
 
     try {
-      toast.info("파비콘 업로드 중...");
+      toast.info("파비콘 올리기 중...");
       const url = await uploadImage(file, 'banners');
       setConfig(prev => ({ ...prev, seo_favicon: url }));
-      toast.success("파비콘이 업로드되었습니다.");
+      toast.success("파비콘이 올리기되었습니다.");
     } catch (err) {
-      toast.error("업로드 실패: " + (err as Error).message);
+      toast.error("올리기 실패: " + (err as Error).message);
     }
   };
 
@@ -174,7 +174,7 @@ export default function AdminSettingsPage() {
               <CardTitle className="text-xl font-black text-slate-900">SEO 및 메타데이터</CardTitle>
             </div>
             <CardDescription className="text-slate-500 font-medium">
-              검색 엔진(Google, Naver)과 소셜 미디어(Kakao, Facebook)에 표시될 사이트 정보를 설정합니다.
+              찾기 엔진(Google, Naver)과 소셜 미디어(Kakao, Facebook)에 표시될 사이트 정보를 설정합니다.
             </CardDescription>
           </CardHeader>
           <CardContent className="p-8 space-y-8 bg-white">
@@ -189,7 +189,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setConfig(prev => ({ ...prev, seo_title: e.target.value }))}
                   className="h-12 rounded-xl border-slate-200"
                 />
-                <p className="text-xs text-slate-400 font-medium ml-1">브라우저 탭과 검색 결과 제목에 표시됩니다.</p>
+                <p className="text-xs text-slate-400 font-medium ml-1">브라우저 탭과 찾기 결과 제목에 표시됩니다.</p>
               </div>
 
               <div className="space-y-2">
@@ -201,7 +201,7 @@ export default function AdminSettingsPage() {
                   onChange={(e) => setConfig(prev => ({ ...prev, seo_description: e.target.value }))}
                   className="min-h-[100px] rounded-xl border-slate-200 resize-none p-4 leading-relaxed"
                 />
-                <p className="text-xs text-slate-400 font-medium ml-1">검색 결과 사이트 제목 아래에 표시되는 설명 문구입니다.</p>
+                <p className="text-xs text-slate-400 font-medium ml-1">찾기 결과 사이트 제목 아래에 표시되는 설명 문구입니다.</p>
               </div>
             </div>
 

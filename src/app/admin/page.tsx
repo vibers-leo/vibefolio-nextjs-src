@@ -71,7 +71,7 @@ export default function AdminPage() {
   const [weeklyData, setWeeklyData] = useState<any[]>([]);
   const [statsRange, setStatsRange] = useState(7); // 최근 7일(기본) or 30일
 
-  // 관리자가 아니면 접근 차단 - AdminGuard에서 처리하므로 중복 체크 제거
+  // 관리자가 아니면 접근 차단 - AdminGuard에서 처리하므로 중복 체크 없애기
   // useEffect(() => {
   //   if (!isAdminLoading && !isAdmin) {
   //     alert('관리자 권한이 필요합니다.');
@@ -248,7 +248,7 @@ export default function AdminPage() {
     },
     {
       title: "배너 관리",
-      description: "메인 페이지 배너 업로드 및 관리",
+      description: "메인 페이지 배너 올리기 및 관리",
       icon: faImage,
       color: "text-purple-500",
       bgColor: "bg-purple-50",
@@ -302,7 +302,7 @@ export default function AdminPage() {
     },
     {
       title: "통계",
-      description: "사이트 통계 및 분석",
+      description: "사이트 통계 및 살펴보기",
       icon: faChartBar,
       color: "text-indigo-500",
       bgColor: "bg-indigo-50",

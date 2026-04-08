@@ -276,3 +276,18 @@ export type visits = Prisma.visitsModel
  * 
  */
 export type wishlists = Prisma.wishlistsModel
+/**
+ * Model InstagramConnection
+ * 
+ */
+export type InstagramConnection = Prisma.InstagramConnectionModel
+/**
+ * Model YouTubeConnection
+ * 
+ */
+export type YouTubeConnection = Prisma.YouTubeConnectionModel
+/**
+ * Model ProfileLink
+ * 
+ */
+export type ProfileLink = Prisma.ProfileLinkModel

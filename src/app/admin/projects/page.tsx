@@ -136,9 +136,9 @@ export default function AdminProjectsPage() {
     }
   }, [isAdmin, loadProjects]);
 
-  // 프로젝트 삭제
+  // 프로젝트 없애기
   const handleDelete = async (id: number) => {
-    if (!confirm("정말 이 프로젝트를 삭제하시겠습니까?\n(확인 시 DB에서 완전히 삭제되지 않고 숨김 처리됩니다)")) return;
+    if (!confirm("정말 이 프로젝트를 없애기하시겠습니까?\n(확인해요 시 DB에서 완전히 없애기되지 않고 숨김 처리됩니다)")) return;
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -151,14 +151,14 @@ export default function AdminProjectsPage() {
       });
       
       if (res.ok) {
-        alert("프로젝트가 삭제되었습니다.");
+        alert("프로젝트가 없애기되었습니다.");
         loadProjects();
       } else {
         const data = await res.json();
-        alert(data.error || "삭제에 실패했습니다.");
+        alert(data.error || "없애기에 실패했습니다.");
       }
     } catch (error) {
-      console.error("프로젝트 삭제 실패:", error);
+      console.error("프로젝트 없애기 실패:", error);
     }
   };
 
@@ -195,13 +195,13 @@ export default function AdminProjectsPage() {
           </p>
         </div>
 
-        {/* 검색 */}
+        {/* 찾기 */}
         <div className="mb-6 space-y-4">
           <div className="flex items-center gap-4">
             <div className="flex items-center border rounded-lg px-4 py-2 bg-white flex-1">
               <Search size={20} className="text-gray-400 mr-2" />
               <Input
-                placeholder="제목, 내용, 작성자로 검색..."
+                placeholder="제목, 내용, 작성자로 찾기..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="border-none focus-visible:ring-0"
@@ -224,7 +224,7 @@ export default function AdminProjectsPage() {
           </Card>
           <Card>
             <CardContent className="p-6">
-              <p className="text-sm text-gray-600 mb-1">검색 결과</p>
+              <p className="text-sm text-gray-600 mb-1">찾기 결과</p>
               <p className="text-3xl font-bold text-gray-900">{filteredProjects.length}</p>
             </CardContent>
           </Card>
@@ -258,7 +258,7 @@ export default function AdminProjectsPage() {
               </div>
             ) : filteredProjects.length === 0 ? (
               <p className="text-gray-500 text-center py-12">
-                {searchTerm ? "검색 결과가 없습니다" : "등록된 프로젝트가 없습니다"}
+                {searchTerm ? "찾기 결과가 없습니다" : "등록된 프로젝트가 없습니다"}
               </p>
             ) : (
               <div className="space-y-4">
@@ -419,7 +419,7 @@ export default function AdminProjectsPage() {
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setMetadataEditOpen(false)}>취소</Button>
-              <Button onClick={saveMetadata}>저장하기</Button>
+              <Button onClick={saveMetadata}>저장해요</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
