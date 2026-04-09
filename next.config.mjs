@@ -59,13 +59,6 @@ const nextConfig = {
   // 리다이렉트
   async redirects() {
     return [
-      // www → apex 301
-      {
-        source: '/:path*',
-        destination: 'https://vibefolio.net/:path*',
-        permanent: true,
-        has: [{ type: 'host', value: 'www.vibefolio.net' }],
-      },
       {
         source: '/mypage/likes',
         destination: '/mypage',
