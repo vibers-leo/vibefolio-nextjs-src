@@ -1,0 +1,40 @@
+name: Deploy to NCP
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.NCP_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.NCP_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Build Docker image
+        run: docker build -t vibefolio-app:latest .
+
+      - name: Save and transfer image
+        run: |
+          docker save vibefolio-app:latest | gzip > vibefolio-app.tar.gz
+          scp vibefolio-app.tar.gz docker-compose.yml ${{ secrets.NCP_USER }}@${{ secrets.NCP_HOST }}:/root/projects/vibefolio/
+
+      - name: Deploy on NCP
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.NCP_HOST }}
+          username: ${{ secrets.NCP_USER }}
+          key: ${{ secrets.NCP_SSH_KEY }}
+          script: |
+            cd /root/projects/vibefolio
+            docker load < vibefolio-app.tar.gz
+            docker compose down
+            docker compose up -d
+            docker exec npm-app-1 nginx -s reload || true
+            rm vibefolio-app.tar.gz

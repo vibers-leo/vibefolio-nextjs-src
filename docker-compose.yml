@@ -1,0 +1,15 @@
+services:
+  vibefolio-app:
+    image: vibefolio-app:latest
+    container_name: vibefolio-app
+    restart: unless-stopped
+    ports:
+      - "4130:3000"
+    env_file:
+      - .env
+    networks:
+      - npm_default
+
+networks:
+  npm_default:
+    external: true
