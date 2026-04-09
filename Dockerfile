@@ -3,8 +3,8 @@ RUN apk add --no-cache libc6-compat openssl
 
 FROM base AS deps
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm install --legacy-peer-deps
+COPY package.json ./
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 FROM base AS builder
 WORKDIR /app
