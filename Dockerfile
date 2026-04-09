@@ -10,6 +10,9 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# 빌드 타임 환경변수 (URL 파싱 오류 방지용 더미값)
+ENV DATABASE_URL="postgresql://placeholder:placeholder@localhost:5432/placeholder"
+ENV NEXT_PUBLIC_ADOBE_CLIENT_ID="placeholder"
 RUN npx prisma generate
 RUN npm run build
 
