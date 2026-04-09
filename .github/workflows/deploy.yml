@@ -18,7 +18,11 @@ jobs:
           ssh-keyscan -H ${{ secrets.NCP_HOST }} >> ~/.ssh/known_hosts
 
       - name: Build Docker image
-        run: docker build -t vibefolio-app:latest .
+        run: |
+          docker build -t vibefolio-app:latest \
+            --build-arg DATABASE_URL="${{ secrets.DATABASE_URL }}" \
+            --build-arg NEXT_PUBLIC_ADOBE_CLIENT_ID="${{ secrets.NEXT_PUBLIC_ADOBE_CLIENT_ID }}" \
+            .
 
       - name: Save and transfer image
         run: |
