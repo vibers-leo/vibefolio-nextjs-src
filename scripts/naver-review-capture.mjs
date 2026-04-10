@@ -21,7 +21,7 @@ const SITES = [
   {
     name: 'vibefolio',
     domain: 'https://vibefolio.net',
-    icon: '/vibefolio2.png',
+    icon: '/vibefolio3.png',
     pages: [
       { name: 'login',  path: '/login',  waitFor: 'button' },
       { name: 'signup', path: '/signup', waitFor: 'button' },

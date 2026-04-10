@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "정책 및 약관 | 바이브폴리오",
+  title: "정책 및 약관 | Vibefolio",
 };
 
 export default function PolicyLayout({

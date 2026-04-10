@@ -48,7 +48,7 @@ export default function DownloadPage() {
             vibefolio.net
           </Link>
           <div className="flex items-center gap-2">
-            <Image src="/vibefolio2.png" alt="Vibefolio" width={28} height={28} className="rounded-lg" />
+            <Image src="/vibefolio3.png" alt="Vibefolio" width={28} height={28} className="rounded-lg" />
             <span className="font-bold text-slate-900 tracking-tight">Vibefolio</span>
           </div>
         </div>
@@ -127,10 +127,10 @@ export default function DownloadPage() {
           {/* 목업 플레이스홀더 */}
           <div className="flex-shrink-0 flex gap-4">
             <div className="w-36 h-64 bg-gradient-to-b from-indigo-100 to-indigo-50 rounded-3xl border border-indigo-100 flex items-center justify-center shadow-lg">
-              <Image src="/vibefolio2.png" alt="" width={48} height={48} className="opacity-30" />
+              <Image src="/vibefolio3.png" alt="" width={48} height={48} className="opacity-30" />
             </div>
             <div className="w-36 h-64 bg-gradient-to-b from-slate-100 to-slate-50 rounded-3xl border border-slate-100 flex items-center justify-center shadow-lg mt-8">
-              <Image src="/vibefolio2.png" alt="" width={48} height={48} className="opacity-20" />
+              <Image src="/vibefolio3.png" alt="" width={48} height={48} className="opacity-20" />
             </div>
           </div>
         </div>

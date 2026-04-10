@@ -282,7 +282,7 @@ export function NotificationBell() {
             {notifications.length > 5 && (
               <div className="p-3 border-t border-gray-50 bg-gray-50/50 text-center backdrop-blur-sm sticky bottom-0">
                 <Link
-                  href="/mypage/notifications"
+                  href="/mypage"
                   className="text-xs font-bold text-gray-400 hover:text-green-600 transition-colors flex items-center justify-center gap-1"
                 >
                   모든 알림 보기 <FontAwesomeIcon icon={faStar} className="w-3 h-3" />

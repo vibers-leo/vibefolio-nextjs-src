@@ -4,7 +4,7 @@ import RecruitPageClient from "@/components/recruit/RecruitPageClient";
 
 export const metadata: Metadata = {
   title: "AI 채용 & 공모전 | Vibefolio",
-  description: "최신 만들기형 AI 공모전, 해커톤, 개발자 채용 소식을 실시간으로 확인해요하고 도전하세요.",
+  description: "최신 만들기형 AI 공모전, 해커톤, 개발자 채용 소식을 실시간으로 확인하고 도전하세요.",
   keywords: ["AI 공모전", "해커톤", "만들기형 AI", "개발자 채용", "디자이너 채용", "Vibefolio"],
   openGraph: {
     title: "AI 채용 & 공모전 - Vibefolio",
