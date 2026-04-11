@@ -22,6 +22,18 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const hostname = request.headers.get('host');
 
+  // Vercel 환경에서 크론 외 요청 차단 (NCP가 메인 서비스)
+  if (process.env.VERCEL && hostname?.includes('vercel.app')) {
+    const isCron = request.headers.get('authorization')?.startsWith('Bearer ');
+    const isCronPath = url.pathname === '/api/crawl' || url.pathname.startsWith('/api/cron/');
+    if (!(isCron && isCronPath)) {
+      return NextResponse.json(
+        { error: 'This deployment is not the primary service. Visit https://vibefolio.net' },
+        { status: 403 }
+      );
+    }
+  }
+
   // Subdomain rewrite: review.vibefolio.net
   if (hostname === 'review.vibefolio.net') {
      // 1. review.vibefolio.net/ -> /review

@@ -2,11 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import { uploadImageFromUrl } from '@/lib/supabase/storage';
-import { supabase } from '@/lib/supabase/client';
 import { generateText, hasAIProvider } from '@/lib/ai/client';
+import { uploadToNCP, generateFilename } from '@/lib/ncp-storage';
 
 const GEMINI_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 const AI_IMAGE_MODEL = 'gemini-2.5-flash-image';
+
+// extract-url 전용 인메모리 Rate Limit (비인증 3회/일, 인증 10회/일)
+const extractRateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
 // ==================== Deep Content Extraction ====================
 function extractPageContent($: cheerio.CheerioAPI): string {
@@ -331,29 +334,12 @@ Requirements:
     );
     if (!imagePart) return '';
 
-    // Upload to Supabase Storage
+    // Upload to NCP Storage
     const buffer = Buffer.from(imagePart.inlineData.data, 'base64');
-    const fileName = `ai-thumb-${Date.now()}-${Math.random().toString(36).substring(7)}.png`;
-    const filePath = `uploads/${fileName}`;
+    const fileName = generateFilename('ai-thumbnail.png');
 
-    const { error } = await supabase.storage
-      .from('projects')
-      .upload(filePath, buffer, {
-        contentType: 'image/png',
-        cacheControl: '3600',
-        upsert: false,
-      });
-
-    if (error) {
-      console.warn('[extract-url] AI thumbnail upload failed:', error.message);
-      return '';
-    }
-
-    const { data: publicUrlData } = supabase.storage
-      .from('projects')
-      .getPublicUrl(filePath);
-
-    return publicUrlData.publicUrl;
+    const publicUrl = await uploadToNCP(buffer, 'projects/uploads', fileName);
+    return publicUrl;
   } catch (err: any) {
     console.warn('[extract-url] AI thumbnail generation failed:', err?.message);
     return '';
@@ -363,6 +349,29 @@ Requirements:
 // ==================== Main Handler ====================
 export async function POST(request: NextRequest) {
   try {
+    // Rate Limit: 비인증 3회/일, 인증 10회/일
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
+    const authToken = request.headers.get('authorization')?.replace('Bearer ', '');
+    const identifier = authToken || ip;
+    const isAuth = !!authToken;
+    const limit = isAuth ? 10 : 3;
+    const key = `extract:${identifier}`;
+    const now = Date.now();
+    const windowMs = 24 * 60 * 60 * 1000;
+
+    if (!extractRateLimitStore.has(key) || extractRateLimitStore.get(key)!.resetAt <= now) {
+      extractRateLimitStore.set(key, { count: 1, resetAt: now + windowMs });
+    } else {
+      const entry = extractRateLimitStore.get(key)!;
+      entry.count++;
+      if (entry.count > limit) {
+        return NextResponse.json(
+          { error: '일일 URL 분석 횟수를 초과했습니다. 내일 다시 시도해주세요.' },
+          { status: 429 }
+        );
+      }
+    }
+
     const { url } = await request.json();
 
     if (!url || typeof url !== 'string') {
