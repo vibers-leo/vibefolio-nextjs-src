@@ -328,7 +328,7 @@ Requirements:
 
     const data = await res.json();
     if (data.error || !data.candidates?.[0]?.content?.parts) {
-      console.warn('[extract-url] AI image generation failed:', data.error?.message);
+      console.warn('[extract-url] AI image generation failed:', JSON.stringify(data.error || data.candidates?.[0]?.finishReason || 'no candidates'));
       return '';
     }
 
