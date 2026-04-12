@@ -5,7 +5,6 @@ import { uploadImageFromUrl } from '@/lib/supabase/storage';
 import { generateText, hasAIProvider } from '@/lib/ai/client';
 import { uploadToNCP, generateFilename } from '@/lib/ncp-storage';
 
-const GEMINI_API_KEY = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
 const AI_IMAGE_MODEL = 'gemini-2.5-flash-image';
 
 // extract-url 전용 인메모리 Rate Limit (비인증 3회/일, 인증 10회/일)
@@ -291,7 +290,11 @@ async function generateAIThumbnail(
   projectType: string,
   features: string[],
 ): Promise<string> {
-  if (!GEMINI_API_KEY) return '';
+  const geminiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+  if (!geminiKey) {
+    console.warn('[extract-url] GOOGLE_GENERATIVE_AI_API_KEY not set, skipping AI thumbnail');
+    return '';
+  }
 
   try {
     const featureHint = features.length > 0 ? features.slice(0, 3).join(', ') : projectType;
@@ -311,7 +314,7 @@ Requirements:
 - Professional quality suitable for a portfolio platform`;
 
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${AI_IMAGE_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${AI_IMAGE_MODEL}:generateContent?key=${geminiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
