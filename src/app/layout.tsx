@@ -10,6 +10,7 @@ import { AutoLogoutProvider } from "@/components/AutoLogoutProvider";
 import { RootLayoutContent } from "@/components/layout/RootLayoutContent";
 import RealtimeListener from "@/components/RealtimeListener";
 import { VisitTracker } from "@/components/VisitTracker";
+import { ChatWidget } from "@/components/ChatWidget";
 
 const poppins = Poppins({
   weight: ['400', '500', '600', '700', '800'],
@@ -120,6 +121,7 @@ export default function RootLayout({
               </RootLayoutContent>
               <Toaster position="top-center" />
               <ScrollToTop />
+              <ChatWidget />
             </>
           </AutoLogoutProvider>
         </ClientProviders>
