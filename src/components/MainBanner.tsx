@@ -1,9 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import {
-  Card,
-  CardContent,
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -15,132 +12,138 @@ import Link from "next/link";
 import React from "react";
 import Image from "next/image";
 
-interface Banner {
-  id: string;
+interface ContestItem {
+  id?: number;
   title: string;
-  subtitle: string | null;
-  image_url: string;
-  link_url: string | null;
-  display_order: number;
+  description?: string | null;
+  date?: string | null;
+  company?: string | null;
+  link?: string | null;
+  thumbnail?: string | null;
+  prize?: string | null;
+  type?: string;
 }
 
-// 폴백 배너 (DB에 데이터 없을 때)
-const FALLBACK_BANNERS: Banner[] = [
-  {
-    id: "fallback-0",
-    title: "2024 Generative AI Hackathon",
-    subtitle: "PREMIUM CONTEST",
-    image_url: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=2670",
-    link_url: "/recruit",
-    display_order: 0,
-  },
-  {
-    id: "fallback-1",
-    title: "Creative Tech",
-    subtitle: "EVENT",
-    image_url: "https://images.unsplash.com/photo-1558655146-d09347e92766?q=80&w=2664&auto=format&fit=crop",
-    link_url: "/recruit",
-    display_order: 1,
-  },
-];
+function getDday(dateStr: string | null | undefined): string {
+  if (!dateStr) return '';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr);
+  target.setHours(0, 0, 0, 0);
+  const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff < 0) return '마감';
+  if (diff === 0) return 'D-Day';
+  return `D-${diff}`;
+}
+
+function getDdayColor(dateStr: string | null | undefined): string {
+  if (!dateStr) return 'bg-white/20';
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr);
+  target.setHours(0, 0, 0, 0);
+  const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+  if (diff <= 3) return 'bg-red-500/90';
+  if (diff <= 7) return 'bg-orange-500/80';
+  return 'bg-white/20';
+}
 
 interface MainBannerProps {
-  initialBanners?: Banner[];
+  initialContests?: ContestItem[];
 }
 
-export function MainBanner({ initialBanners }: MainBannerProps = {}) {
-  const [banners, setBanners] = useState<Banner[]>(initialBanners || []);
-  const [loading, setLoading] = useState(!initialBanners || initialBanners.length === 0);
+export function MainBanner({ initialContests }: MainBannerProps = {}) {
+  const contests = initialContests && initialContests.length > 0 ? initialContests : [];
 
-  useEffect(() => {
-    // SSR 데이터가 있으면 클라이언트 fetch 불필요
-    if (initialBanners && initialBanners.length > 0) return;
-
-    let isMounted = true;
-    const loadBanners = async () => {
-      try {
-        const res = await fetch("/api/banners?activeOnly=true");
-        if (!res.ok) throw new Error(`API 응답 오류: ${res.status}`);
-        const { banners: data } = await res.json();
-        if (isMounted) setBanners(data && data.length > 0 ? data : FALLBACK_BANNERS);
-      } catch {
-        if (isMounted) setBanners(FALLBACK_BANNERS);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-    loadBanners();
-    return () => { isMounted = false; };
-  }, [initialBanners]);
-
-  if (loading) {
-    return (
-      <section className="w-full">
-        <Carousel className="w-full">
-          <CarouselContent className="w-full flex justify-start gap-4 -ml-4">
-            <Skeleton className="min-w-[90vw] md:min-w-[600px] w-[90vw] md:w-[600px] h-[300px] md:h-[400px] rounded-2xl ml-4" />
-            <Skeleton className="min-w-[90vw] md:min-w-[600px] w-[90vw] md:w-[600px] h-[300px] md:h-[400px] rounded-2xl" />
-          </CarouselContent>
-        </Carousel>
-      </section>
-    );
-  }
-
-  if (banners.length === 0) return null;
+  if (contests.length === 0) return null;
 
   return (
     <section className="w-full pt-6 pb-2">
+      <div className="flex items-center justify-between px-4 md:px-6 mb-3">
+        <h2 className="text-lg font-bold text-gray-900 tracking-tight">
+          공모전 · 해커톤
+        </h2>
+        <Link
+          href="/recruit?type=contest"
+          className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+        >
+          전체보기 →
+        </Link>
+      </div>
       <Carousel
         opts={{
-          align: "center",
-          loop: true,
+          align: "start",
+          loop: contests.length > 2,
         }}
         className="w-full"
       >
-        <CarouselContent className="w-full flex justify-start gap-0 -ml-0 pt-0 pb-0">
-          {banners.map((banner, index) => (
+        <CarouselContent className="w-full flex justify-start gap-0 -ml-0">
+          {contests.map((contest, index) => (
             <CarouselItem
-              key={banner.id}
-              className="basis-[92%] md:basis-[48%] lg:basis-[40%] pl-2 md:pl-4"
+              key={contest.id || index}
+              className="basis-[85%] md:basis-[45%] lg:basis-[35%] pl-2 md:pl-4 first:pl-4 md:first:pl-6"
             >
-              <Link href={banner.link_url || "#"} className={banner.link_url ? "cursor-pointer" : "cursor-default"}>
-                <div
-                  className="w-full aspect-[16/9] md:aspect-[21/9] overflow-hidden rounded-2xl relative group isolate shadow-[0_4px_24px_-8px_rgba(0,0,0,0.12)] ring-1 ring-white/10 transition-all duration-500 ease-supanova hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]"
-                >
+              <Link
+                href={contest.link || '/recruit'}
+                target={contest.link?.startsWith('http') ? '_blank' : undefined}
+                rel={contest.link?.startsWith('http') ? 'noopener noreferrer' : undefined}
+              >
+                <div className="w-full aspect-[2/1] overflow-hidden rounded-2xl relative group isolate shadow-[0_4px_24px_-8px_rgba(0,0,0,0.12)] ring-1 ring-black/5 transition-all duration-500 hover:shadow-[0_8px_40px_-12px_rgba(0,0,0,0.2)] hover:scale-[1.01] active:scale-[0.99]">
+                  {/* 배경 이미지 */}
                   <div className="absolute inset-0 z-0">
-                    <Image
-                      src={banner.image_url || "/placeholder.jpg"}
-                      alt={banner.title}
-                      fill
-                      className="object-cover transition-all duration-700 ease-supanova group-hover:scale-[1.06]"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
-                      priority={index === 0}
-                    />
-                    {/* 프리미엄 멀티레이어 그라데이션 */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-transparent" />
+                    {contest.thumbnail ? (
+                      <Image
+                        src={contest.thumbnail}
+                        alt={contest.title}
+                        fill
+                        className="object-cover transition-all duration-700 group-hover:scale-[1.06]"
+                        sizes="(max-width: 768px) 85vw, (max-width: 1200px) 45vw, 35vw"
+                        priority={index === 0}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-950" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                   </div>
 
-                  <div className="absolute bottom-0 left-0 w-full p-5 md:p-8 z-10 flex flex-col items-start justify-end h-full">
-                    {banner.subtitle && (
-                      <span className="badge-premium bg-white/15 text-white mb-3 backdrop-blur-xl border-white/20 shadow-[0_2px_12px_-4px_rgba(0,0,0,0.3)]">
-                        {banner.subtitle}
+                  {/* 콘텐츠 */}
+                  <div className="absolute bottom-0 left-0 w-full p-4 md:p-6 z-10 flex flex-col items-start justify-end h-full">
+                    {/* D-day 배지 */}
+                    <div className="flex items-center gap-2 mb-2">
+                      {contest.date && (
+                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold text-white backdrop-blur-xl border border-white/20 ${getDdayColor(contest.date)}`}>
+                          {getDday(contest.date)}
+                        </span>
+                      )}
+                      <span className="px-2.5 py-0.5 rounded-full text-xs font-medium text-white/80 bg-white/10 backdrop-blur-xl border border-white/10">
+                        {contest.type === 'event' ? 'EVENT' : 'CONTEST'}
                       </span>
-                    )}
+                    </div>
 
-                    <h2 className="text-[clamp(1.1rem,2.5vw,1.75rem)] font-black text-white leading-snug tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.4)] max-w-2xl break-keep" style={{ textWrap: 'balance' } as React.CSSProperties}>
-                      {banner.title}
-                    </h2>
+                    {/* 제목 */}
+                    <h3 className="text-[clamp(0.9rem,2vw,1.25rem)] font-bold text-white leading-snug tracking-tight line-clamp-2 break-keep" style={{ textWrap: 'balance' } as React.CSSProperties}>
+                      {contest.title}
+                    </h3>
+
+                    {/* 마감일 + 주최 */}
+                    <div className="flex items-center gap-3 mt-2 text-xs text-white/60">
+                      {contest.date && (
+                        <span>마감 {contest.date}</span>
+                      )}
+                      {contest.company && (
+                        <span className="truncate max-w-[120px]">{contest.company}</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </Link>
             </CarouselItem>
           ))}
         </CarouselContent>
-        {banners.length > 1 && (
+        {contests.length > 2 && (
           <>
-            <CarouselPrevious className="left-8 w-12 h-12 rounded-full border-none bg-white/10 hover:bg-white/25 backdrop-blur-xl text-white hidden md:flex shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)] transition-all duration-300 ease-supanova hover:scale-105" />
-            <CarouselNext className="right-8 w-12 h-12 rounded-full border-none bg-white/10 hover:bg-white/25 backdrop-blur-xl text-white hidden md:flex shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)] transition-all duration-300 ease-supanova hover:scale-105" />
+            <CarouselPrevious className="left-8 w-10 h-10 rounded-full border-none bg-white/10 hover:bg-white/25 backdrop-blur-xl text-white hidden md:flex shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)] transition-all duration-300 hover:scale-105" />
+            <CarouselNext className="right-8 w-10 h-10 rounded-full border-none bg-white/10 hover:bg-white/25 backdrop-blur-xl text-white hidden md:flex shadow-[0_4px_16px_-4px_rgba(0,0,0,0.2)] transition-all duration-300 hover:scale-105" />
           </>
         )}
       </Carousel>

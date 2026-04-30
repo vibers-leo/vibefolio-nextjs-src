@@ -141,10 +141,10 @@ function transformProjectToCard(proj: any): ImageDialogProps {
 
 interface HomeClientProps {
   initialProjects: any[];
-  initialBanners?: any[];
+  initialContests?: any[];
 }
 
-function HomeContentInner({ initialProjects, initialBanners }: HomeClientProps) {
+function HomeContentInner({ initialProjects, initialContests }: HomeClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get("q"); // 검색어 가져오기
@@ -457,7 +457,7 @@ function HomeContentInner({ initialProjects, initialBanners }: HomeClientProps) 
       <main className="w-full">
         {/* 메인 배너 */}
         <section className="w-full pt-4 pb-2">
-          <MainBanner initialBanners={initialBanners} />
+          <MainBanner initialContests={initialContests} />
         </section>
 
         {/* 팝업 모달 */}
@@ -627,10 +627,10 @@ function HomeContentInner({ initialProjects, initialBanners }: HomeClientProps) 
 }
 
 // Searchparams를 사용하는 컴포넌트를 Suspense로 감싸기
-export default function HomeClient({ initialProjects, initialBanners }: HomeClientProps) {
+export default function HomeClient({ initialProjects, initialContests }: HomeClientProps) {
   return (
     <Suspense fallback={<div className="min-h-[100dvh] bg-white" />}>
-      <HomeContentInner initialProjects={initialProjects} initialBanners={initialBanners} />
+      <HomeContentInner initialProjects={initialProjects} initialContests={initialContests} />
     </Suspense>
   );
 }

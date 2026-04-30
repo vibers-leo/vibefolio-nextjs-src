@@ -8,8 +8,8 @@ async function getPageData() {
   try {
     const now = new Date();
 
-    // projects + banners 병렬 fetch
-    const [projectsRaw, banners] = await Promise.all([
+    // projects + contests 병렬 fetch
+    const [projectsRaw, contests] = await Promise.all([
       prisma.vf_projects.findMany({
         where: {
           deleted_at: null,
@@ -50,9 +50,15 @@ async function getPageData() {
         orderBy: { created_at: 'desc' },
         take: 20,
       }),
-      prisma.banners.findMany({
-        where: { is_active: true },
-        orderBy: { display_order: 'asc' },
+      prisma.vf_recruit_items.findMany({
+        where: {
+          is_active: true,
+          is_approved: true,
+          type: { in: ['contest', 'event'] },
+          date: { gte: now.toISOString().split('T')[0] },
+        },
+        orderBy: { date: 'asc' },
+        take: 10,
       }),
     ]);
 
@@ -70,19 +76,19 @@ async function getPageData() {
       };
     });
 
-    return { projects, banners };
+    return { projects, contests };
   } catch (error) {
     console.error('[SSR] Failed to fetch page data:', error);
-    return { projects: [], banners: [] };
+    return { projects: [], contests: [] };
   }
 }
 
 export default async function Home() {
-  const { projects, banners } = await getPageData();
+  const { projects, contests } = await getPageData();
 
   return (
     <Suspense fallback={<div className="min-h-screen bg-white" />}>
-      <HomeClient initialProjects={projects} initialBanners={banners} />
+      <HomeClient initialProjects={projects} initialContests={contests} />
     </Suspense>
   );
 }
